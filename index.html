@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS-каналы"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Поиск"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -60,6 +60,51 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-Import-Hbase-Into-Eclipse" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/03/26/Import-Hbase-Into-Eclipse/" class="article-date">
+  <time datetime="2017-03-26T03:20:27.000Z" itemprop="datePublished">2017-03-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/26/Import-Hbase-Into-Eclipse/">Import Hbase Into Eclipse</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="将hbase导入到eclipse"><a href="#将hbase导入到eclipse" class="headerlink" title="将hbase导入到eclipse"></a>将hbase导入到eclipse</h1><p>最近想开始看hbase的源代码，所以想把eclipse导入到eclipse，方便跳转阅读代码。</p>
+<ul>
+<li>下载源代码</li>
+<li>执行mvn clean install -DskipTests和mvn eclipse:eclipse</li>
+<li>执行过程中会出现“错误: 读取/Users/xxx/.m2/repository/org/slf4j/slf4j-log4j12/1.6.4/slf4j-log4j12-1.6.4.jar时出错; zip file is empty”问题，只要把那个文件删除然后重新执行就可以了，不一会儿你就看到build sucess</li>
+<li>然后倒入到eclipse中，各种叹号和红叉，崩溃ing。</li>
+<li>进入方法发现直接说到了jar，没法查看；转到idea，看到idea直接倒入，并且原来的提示的jar包也可以查看代码。</li>
+<li>最后得出结论，何必用eclipse呢，直接用idea不久完了。<code>TODO eclipse导入的mvn问题</code></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj0q56cmt0003ao9s7cg57rih" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-First-weekend-in-hangzhou" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -97,7 +142,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj0pb14720003pv9sua3ino0x" class="article-share-link">Поделиться</a>
+      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj0q56cmp0001ao9srx0z0oyz" class="article-share-link">Share</a>
       
       
     </footer>
@@ -137,7 +182,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj0pb146u0000pv9slk30mfca" class="article-share-link">Поделиться</a>
+      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj0q56cml0000ao9skay8obxf" class="article-share-link">Share</a>
       
       
     </footer>
@@ -183,7 +228,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj0pb146y0001pv9s73wsbeuj" class="article-share-link">Поделиться</a>
+      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj0q56cmr0002ao9s6v9nmjur" class="article-share-link">Share</a>
       
       
     </footer>
@@ -229,7 +274,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj0pb14730004pv9sxppv5oct" class="article-share-link">Поделиться</a>
+      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj0q56cn00005ao9se2go98d4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -276,7 +321,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj0pb14740005pv9s4asra1t6" class="article-share-link">Поделиться</a>
+      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj0q56cn20006ao9s4udmzvmn" class="article-share-link">Share</a>
       
       
     </footer>
@@ -313,7 +358,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj0pb14700002pv9sq4lgfk45" class="article-share-link">Поделиться</a>
+      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj0q56cmv0004ao9suoyw272f" class="article-share-link">Share</a>
       
       
     </footer>
@@ -338,7 +383,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Архив</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
       <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
@@ -348,9 +393,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Недавние записи</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2017/03/26/Import-Hbase-Into-Eclipse/">Import Hbase Into Eclipse</a>
+          </li>
         
           <li>
             <a href="/2017/03/25/First-weekend-in-hangzhou/">First weekend in hangzhou</a>
@@ -368,10 +417,6 @@
             <a href="/2017/03/20/To-HangZhou/">To HangZhou</a>
           </li>
         
-          <li>
-            <a href="/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/">Writing RCFile throws ArrayIndexOutOfBoundsException again and again</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -385,7 +430,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2017 John Doe<br>
-      Создано с помощью <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
