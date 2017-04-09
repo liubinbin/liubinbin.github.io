@@ -61,6 +61,67 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Some-Points-For-MVCC-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/09/Some-Points-For-MVCC-in-HBase/" class="article-date">
+  <time datetime="2017-04-09T15:55:35.000Z" itemprop="datePublished">2017-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/09/Some-Points-For-MVCC-in-HBase/">Some Points For MVCC in HBase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>关键点</p>
+<p>​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。</p>
+<p>​    MultiVersionConsistencyControl在一个Region有一个。</p>
+<p>MultiVersionConsistencyControl{</p>
+<p>memstoreRead：能够读取的序列号。</p>
+<p>memstoreWrite：写操作的序列号。</p>
+<p>writeQueue：写操作队列}</p>
+<p>问题点（就是需要去回答的问题，这些问题十分有助于思考这个大问题）</p>
+<ol>
+<li><p>读取是版本的选择</p>
+<p>在<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner~getNext~QIterator%5C%3CQKeyValue;%3E;%E2%98%82KeyValue" target="_blank" rel="external">KeyValue</a><a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore" target="_blank" rel="external">MemStore</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner" target="_blank" rel="external">MemStoreScanner</a>.getNext(<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner~getNext~QIterator%5C%3CQKeyValue;%3E;%E2%98%82Iterator" target="_blank" rel="external">Iterator</a>&lt;<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner~getNext~QIterator%5C%3CQKeyValue;%3E;%E2%98%82KeyValue" target="_blank" rel="external">KeyValue</a>&gt; it)  L777中判断了曲出来的KeyValue是否到了可以读的范围（v.getMvccVersion() &lt;= this.readPoint）。否则掠过</p>
+<p>在构造scanner时会将readpoint传入到scanner，说明能读到的版本在构造开始就定好了。</p>
+</li>
+<li><p>写的时候的版本</p>
+<p>w = mvcc.beginMemstoreInsert();</p>
+<p>​    申请一个写操作的序列号，使用的变量是memstoreWrite</p>
+<p>mvcc.completeMemstoreInsert(w);</p>
+<p>​    标记操作结束，尽量更新memstoreRead，并且通知readWriters（在compaction和flush时会用到，因为这时需要将那时的版本都等待写完才能操作）。</p>
+<p>​    等待到此操作完成</p>
+</li>
+<li><p>回滚memstore的时候版本的控制</p>
+<p>回滚操作时找kv有版本比较MemStore.java L334。并且会滚后再执行mvcc.completeMemstoreInsert(w);</p>
+</li>
+</ol>
+<p>ps：long <a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.getReadpoint(<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion~getReadpoint~QIsolationLevel;%E2%98%82IsolationLevel" target="_blank" rel="external">IsolationLevel</a> isolationLevel) L1115用了一个隔离级别。之后写一篇隔离级别的小文，加深理解。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1avgymv0005lb9sji47pfhy" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Import-Hbase-Into-Eclipse" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/03/26/Import-Hbase-Into-Eclipse/" class="article-date">
@@ -96,7 +157,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj0q56cmt0003ao9s7cg57rih" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1avgyms0003lb9spw4donjq" class="article-share-link">Share</a>
       
       
     </footer>
@@ -142,7 +203,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj0q56cmp0001ao9srx0z0oyz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1avgymp0001lb9s7ifn0rgx" class="article-share-link">Share</a>
       
       
     </footer>
@@ -177,12 +238,16 @@
         <h1 id="Hbase的简单介绍"><a href="#Hbase的简单介绍" class="headerlink" title="Hbase的简单介绍"></a>Hbase的简单介绍</h1><p>接触到hbase已经三天了，这篇文章介绍一下现阶段我对hbase的理解</p>
 <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="表"><a href="#表" class="headerlink" title="表"></a>表</h3><h2 id="类比"><a href="#类比" class="headerlink" title="类比"></a>类比</h2><p>表-&gt;Region-&gt;Store-&gt;MemStore和n个HFile</p>
 <p>表-&gt;子表(分区)-&gt;ColumnFamily-&gt;内存和持久化数据</p>
+<p>每一个 Region<br>​                都只存储一个 Column Family 的数据，并且是该 CF 中的一段（按 Row 的区间分成多个 Region）</p>
 <h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><h2 id="文件组织"><a href="#文件组织" class="headerlink" title="文件组织"></a>文件组织</h2><p>KeyValue结构</p>
+<h2 id="随便写的（先不组织，以后在组织）"><a href="#随便写的（先不组织，以后在组织）" class="headerlink" title="随便写的（先不组织，以后在组织）"></a>随便写的（先不组织，以后在组织）</h2><p>在大体结构上去了解hbase的话，</p>
+<p>hbase将表按rowkey分割成多个Region，并且是有序的，（第一个Region的StartKey为空，最后一个EndKey为空）。</p>
+<p>HRegionServer由WAL，BlockCache，MenStore，HFile组成。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj0q56cml0000ao9skay8obxf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1avgyml0000lb9sh9c0xs9e" class="article-share-link">Share</a>
       
       
     </footer>
@@ -228,7 +293,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj0q56cmr0002ao9s6v9nmjur" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1avgymr0002lb9svcm2z767" class="article-share-link">Share</a>
       
       
     </footer>
@@ -274,7 +339,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj0q56cn00005ao9se2go98d4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1avgymy0006lb9sx0i98vd9" class="article-share-link">Share</a>
       
       
     </footer>
@@ -321,7 +386,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj0q56cn20006ao9s4udmzvmn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1avgymz0007lb9s4te0p3vb" class="article-share-link">Share</a>
       
       
     </footer>
@@ -358,7 +423,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj0q56cmv0004ao9suoyw272f" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj1avgymt0004lb9sm9hv22zo" class="article-share-link">Share</a>
       
       
     </footer>
@@ -385,7 +450,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -396,6 +461,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2017/04/09/Some-Points-For-MVCC-in-HBase/">Some Points For MVCC in HBase</a>
+          </li>
         
           <li>
             <a href="/2017/03/26/Import-Hbase-Into-Eclipse/">Import Hbase Into Eclipse</a>
@@ -411,10 +480,6 @@
         
           <li>
             <a href="/2017/03/22/First-Impression-Of-Hbase/">First Impression Of Hbase</a>
-          </li>
-        
-          <li>
-            <a href="/2017/03/20/To-HangZhou/">To HangZhou</a>
           </li>
         
       </ul>
