@@ -83,13 +83,11 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>memstore</p>
-<p>主要结构kvset，snapshot</p>
-<p>先说snapshot，主要适用于生成HFile时临时存放的kvset的一个快照。更改的snaphost一定条件判断可以生成HFile时调用<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion~internalFlushcache~QHLog;~J~QMonitoredTask;%E2%98%82FlushResult" target="_blank" rel="external">FlushResult</a> <a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.internalFlushcache(<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion~internalFlushcache~QHLog;~J~QMonitoredTask;%E2%98%82HLog" target="_blank" rel="external">HLog</a> wal, long myseqid, <a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion~internalFlushcache~QHLog;~J~QMonitoredTask;%E2%98%82MonitoredTask" target="_blank" rel="external">MonitoredTask</a> status) </p>
-<p>两种情况会调用</p>
-<p>​    一个关闭时，走<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.doClose(boolean abort, <a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion~doClose~Z~QMonitoredTask;%E2%98%82MonitoredTask" target="_blank" rel="external">MonitoredTask</a> status) </p>
-<p><a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion~internalFlushcache~QHLog;~J~QMonitoredTask;%E2%98%82FlushResult" target="_blank" rel="external">FlushResult</a> <a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.internalFlushcache(<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion~internalFlushcache~QHLog;~J~QMonitoredTask;%E2%98%82HLog" target="_blank" rel="external">HLog</a> wal, long myseqid, <a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion~internalFlushcache~QHLog;~J~QMonitoredTask;%E2%98%82MonitoredTask" target="_blank" rel="external">MonitoredTask</a> status) throws [IOException]</p>
-<ol>
+        <h1 id="memstore"><a href="#memstore" class="headerlink" title="memstore"></a>memstore</h1><h2 id="主要结构"><a href="#主要结构" class="headerlink" title="主要结构"></a>主要结构</h2><p>​    主要结构包括「kvset，snapshot」，先说snapshot，主要适用于生成HFile时临时存放的kvset的一个快照。更改的snaphost一定条件判断可以生成HFile时调用</p>
+<p>​    <figure class="highlight plain"><figcaption><span>org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, long myseqid, MonitoredTask status)```</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">此方法两种情况会调用</div><div class="line"></div><div class="line">​	一个是关闭时。</div><div class="line"></div><div class="line">​	```HRegion.doClose(boolean abort, MonitoredTask status)</div></pre></td></tr></table></figure></p>
+<p>​    另一个时需要flush时。</p>
+<p>​    <code>FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, long myseqid, MonitoredTask status)</code></p>
+<h2 id="flush过程"><a href="#flush过程" class="headerlink" title="flush过程"></a>flush过程</h2><ol>
 <li>准备工作</li>
 <li>获取<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.updatesLock(<code>TODO</code>)的写锁</li>
 <li>获取mvcc事务，并努力前提读点</li>
@@ -102,16 +100,15 @@
 <li>等到mvcc结束</li>
 <li>flushcache()</li>
 <li>commit()<ol>
-<li>才更新构造scanner使用的<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BDefaultStoreFileManager.java%E2%98%83DefaultStoreFileManager" target="_blank" rel="external">DefaultStoreFileManager</a>.storefiles</li>
+<li>才更新构造scanner使用的<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.[DefaultStoreFileManager].storefiles</li>
 </ol>
 </li>
 </ol>
-<p>此处感觉逻辑有问题，可能会导致在某个时间点（flush）已经写入的数据读取不到。</p>
-
+<h2 id="疑问与解释"><a href="#疑问与解释" class="headerlink" title="疑问与解释"></a>疑问与解释</h2><h3 id="问题：此处感觉逻辑有问题，可能会导致在某个时间点（flush），读取不到已经写入的数据。"><a href="#问题：此处感觉逻辑有问题，可能会导致在某个时间点（flush），读取不到已经写入的数据。" class="headerlink" title="问题：此处感觉逻辑有问题，可能会导致在某个时间点（flush），读取不到已经写入的数据。"></a>问题：此处感觉逻辑有问题，可能会导致在某个时间点（flush），读取不到已经写入的数据。</h3><h3 id="回答："><a href="#回答：" class="headerlink" title="回答："></a>回答：</h3>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1dsg77c0006vu9s01ny0idi" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1f3kp760006vf9saxk7nvon" class="article-share-link">Share</a>
       
       
     </footer>
@@ -172,7 +169,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1dsg7790005vu9s89s9s03s" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1f3kp740005vf9swg3imsye" class="article-share-link">Share</a>
       
       
     </footer>
@@ -217,7 +214,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1dsg7770003vu9sud69bp5g" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1f3kp720003vf9so30rsuy2" class="article-share-link">Share</a>
       
       
     </footer>
@@ -263,7 +260,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1dsg7740001vu9sfww3xu31" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1f3kp6x0001vf9syjo0gyw6" class="article-share-link">Share</a>
       
       
     </footer>
@@ -307,7 +304,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1dsg7700000vu9szhlyhaxr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1f3kp6u0000vf9sn4w20fu1" class="article-share-link">Share</a>
       
       
     </footer>
@@ -353,7 +350,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1dsg7760002vu9sd8ns8olg" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1f3kp700002vf9sqxdr55ww" class="article-share-link">Share</a>
       
       
     </footer>
@@ -399,7 +396,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1dsg77c0007vu9s4l843l5n" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1f3kp770007vf9sqxgkuudn" class="article-share-link">Share</a>
       
       
     </footer>
@@ -446,7 +443,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1dsg77g0008vu9szj2sqinz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1f3kp790008vf9s9lahmkno" class="article-share-link">Share</a>
       
       
     </footer>
@@ -483,7 +480,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj1dsg7780004vu9sy7ggx8sc" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj1f3kp730004vf9sa1h1ai4k" class="article-share-link">Share</a>
       
       
     </footer>
