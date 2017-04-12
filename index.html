@@ -61,6 +61,55 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Filters-in-Read-Path-of-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/13/Filters-in-Read-Path-of-HBase/" class="article-date">
+  <time datetime="2017-04-12T16:19:06.000Z" itemprop="datePublished">2017-04-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/13/Filters-in-Read-Path-of-HBase/">Filters in Read Path of HBase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="一些hbase使用到裁剪"><a href="#一些hbase使用到裁剪" class="headerlink" title="一些hbase使用到裁剪"></a>一些hbase使用到裁剪</h1><p>我个人觉得总共几个部分，包括time裁剪，key裁剪，bf和索引</p>
+<p>获取scanner分两个，一个memstore的，另一个是file的。</p>
+<p>主要关注获取有关file的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.storeEngine.getStoreFileManager().getFilesForScanOrGet(isGet, startRow, stopRow);</div><div class="line"></div><div class="line">List&lt;StoreFileScanner&gt; sfScanners = StoreFileScanner.getScannersForStoreFiles(storeFilesToScan,</div><div class="line">        cacheBlocks, usePread, isCompaction, <span class="keyword">false</span>, matcher, readPt);</div></pre></td></tr></table></figure>
+<p>获取有关mem的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">memStoreScanners = <span class="keyword">this</span>.memstore.getScanners(readPt);</div></pre></td></tr></table></figure>
+<p>然后在返回之前做了筛选</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</div><div class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="keyword">this</span>.readPt));</div></pre></td></tr></table></figure>
+<h2 id="time，key和bloomfilter"><a href="#time，key和bloomfilter" class="headerlink" title="time，key和bloomfilter"></a>time，key和bloomfilter</h2><p>分file和mem的，file的如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldUseScanner</span><span class="params">(Scan scan, SortedSet&lt;<span class="keyword">byte</span>[]&gt; columns, <span class="keyword">long</span> oldestUnexpiredTS)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> reader.passesTimerangeFilter(scan.getTimeRange(), oldestUnexpiredTS)</div><div class="line">        &amp;&amp; reader.passesKeyRangeFilter(scan) &amp;&amp; reader.passesBloomFilter(scan, columns);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>三个方面，感觉很清晰。ps：之前看hbase的代码时总是感觉比较的混乱，一脸懵逼的感受。</p>
+<p>mem的如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldSeek</span><span class="params">(Scan scan, <span class="keyword">long</span> oldestUnexpiredTS)</span> </span>&#123;</div><div class="line">    TimeRange timeRange = scan.getTimeRange();</div><div class="line">    <span class="keyword">return</span> (timeRangeTracker.includesTimeRange(timeRange) ||</div><div class="line">        snapshotTimeRangeTracker.includesTimeRange(timeRange)) &amp;&amp;</div><div class="line">        (Math.max(timeRangeTracker.getMax(), snapshotTimeRangeTracker.getMax())</div><div class="line">            &gt;= oldestUnexpiredTS);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1f7ap120001e39spdkfuhwh" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Something-about-memstore-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/04/12/Something-about-memstore-in-HBase/" class="article-date">
@@ -109,7 +158,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1f6c4g30006qo9s0otadqs6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1f7ap1e0008e39s8gzl2pwq" class="article-share-link">Share</a>
       
       
     </footer>
@@ -170,7 +219,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1f6c4g00005qo9snulnx53h" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1f7ap1a0006e39sp6xgm784" class="article-share-link">Share</a>
       
       
     </footer>
@@ -215,7 +264,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1f6c4fx0002qo9s4t3a73ie" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1f7ap170004e39shg4wyq35" class="article-share-link">Share</a>
       
       
     </footer>
@@ -261,7 +310,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1f6c4fy0003qo9sh8z80f2y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1f7ap160003e39swbv6zor6" class="article-share-link">Share</a>
       
       
     </footer>
@@ -305,7 +354,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1f6c4fq0000qo9s5mjpylon" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1f7ap0y0000e39sdons2i99" class="article-share-link">Share</a>
       
       
     </footer>
@@ -351,7 +400,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1f6c4fu0001qo9s9sfez0ud" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1f7ap140002e39sfxlbml75" class="article-share-link">Share</a>
       
       
     </footer>
@@ -397,7 +446,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1f6c4g80008qo9sk7uza64o" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1f7ap1b0007e39szdj9vyen" class="article-share-link">Share</a>
       
       
     </footer>
@@ -444,7 +493,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1f6c4g50007qo9smsfbmk5q" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1f7ap1f0009e39sfw3d35n2" class="article-share-link">Share</a>
       
       
     </footer>
@@ -481,7 +530,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj1f6c4fz0004qo9su5joyhxd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj1f7ap190005e39siv3zc2e0" class="article-share-link">Share</a>
       
       
     </footer>
@@ -521,6 +570,10 @@
       <ul>
         
           <li>
+            <a href="/2017/04/13/Filters-in-Read-Path-of-HBase/">Filters in Read Path of HBase</a>
+          </li>
+        
+          <li>
             <a href="/2017/04/12/Something-about-memstore-in-HBase/">Something about memstore in HBase</a>
           </li>
         
@@ -534,10 +587,6 @@
         
           <li>
             <a href="/2017/03/25/First-weekend-in-hangzhou/">First weekend in hangzhou</a>
-          </li>
-        
-          <li>
-            <a href="/2017/03/25/A-Brief-Introduction-To-Hbase/">A-Brief-Introduction-To-Hbase</a>
           </li>
         
       </ul>
