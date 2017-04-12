@@ -84,10 +84,16 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="memstore"><a href="#memstore" class="headerlink" title="memstore"></a>memstore</h1><h2 id="主要结构"><a href="#主要结构" class="headerlink" title="主要结构"></a>主要结构</h2><p>​    主要结构包括「kvset，snapshot」，先说snapshot，主要适用于生成HFile时临时存放的kvset的一个快照。更改的snaphost一定条件判断可以生成HFile时调用</p>
-<p>​    <figure class="highlight plain"><figcaption><span>org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, long myseqid, MonitoredTask status)```</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">此方法两种情况会调用</div><div class="line"></div><div class="line">​	一个是关闭时。</div><div class="line"></div><div class="line">​	```HRegion.doClose(boolean abort, MonitoredTask status)</div></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, <span class="keyword">long</span> myseqid, MonitoredTask status)</div></pre></td></tr></table></figure>
+<p>此方法两种情况会调用</p>
+<p>​    一个是关闭时。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">HRegion.doClose(<span class="keyword">boolean</span> abort, MonitoredTask status)</div></pre></td></tr></table></figure>
 <p>​    另一个时需要flush时。</p>
-<p>​    <figure class="highlight plain"><figcaption><span>org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, long myseqid, MonitoredTask status)```</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">## flush过程</div><div class="line"></div><div class="line">1. 准备工作</div><div class="line">2. 获取[HRegion](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion).updatesLock(```TODO```)的写锁</div><div class="line">3. 获取mvcc事务，并努力前提读点</div><div class="line">4. 调用prepare（）</div><div class="line">   1. 将snapshot设置为的kvset，并重新生成一个kvset，用于写入。</div><div class="line">5. 释放写锁</div><div class="line">6. 同步wal日志</div><div class="line">7. 等到mvcc结束</div><div class="line">8. flushcache()</div><div class="line">9. commit()</div><div class="line">   1. 才更新构造scanner使用的[org](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg).[apache](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache).[hadoop](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop).[hbase](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase).[regionserver](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver).[DefaultStoreFileManager].storefiles</div><div class="line"></div><div class="line">## 疑问与解释</div><div class="line"></div><div class="line">### 问题：</div><div class="line"></div><div class="line">最开始，我感觉逻辑有问题，可能会导致在某个时间点（flush）时，读取不到已经写入的数据。</div><div class="line"></div><div class="line">### 回答：</div><div class="line"></div><div class="line">有三个方面：</div><div class="line"></div><div class="line">1. 读取数据时会读取snapshot的数据。</div><div class="line"></div><div class="line">   ```java</div><div class="line">       @Override</div><div class="line">       public synchronized KeyValue next() &#123;</div><div class="line">         if (theNext == null) &#123;</div><div class="line">             return null;</div><div class="line">         &#125;</div><div class="line"></div><div class="line">         final KeyValue ret = theNext;</div><div class="line"></div><div class="line">         // Advance one of the iterators</div><div class="line">         if (theNext == kvsetNextRow) &#123;</div><div class="line">           kvsetNextRow = getNext(kvsetIt);</div><div class="line">         &#125; else &#123;</div><div class="line">           snapshotNextRow = getNext(snapshotIt);</div><div class="line">         &#125;</div><div class="line"></div><div class="line">         // Calculate the next value</div><div class="line">         theNext = getLowest(kvsetNextRow, snapshotNextRow);</div><div class="line"></div><div class="line">         //long readpoint = ReadWriteConsistencyControl.getThreadReadPoint();</div><div class="line">         //DebugPrint.println(&quot; MS@&quot; + hashCode() + &quot; next: &quot; + theNext + &quot; next_next: &quot; +</div><div class="line">         //    getLowest() + &quot; threadpoint=&quot; + readpoint);</div><div class="line">         return ret;</div><div class="line">       &#125;</div></pre></td></tr></table></figure></p>
-<ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, <span class="keyword">long</span> myseqid, MonitoredTask status)</div></pre></td></tr></table></figure>
+<h2 id="flush过程"><a href="#flush过程" class="headerlink" title="flush过程"></a>flush过程</h2><ol>
+<li>准备工作</li>
+<li><p>获取<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.updatesLock(<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">3. 获取mvcc事务，并努力前提读点</div><div class="line">4. 调用prepare（）</div><div class="line">   1. 将snapshot设置为的kvset，并重新生成一个kvset，用于写入。</div><div class="line">5. 释放写锁</div><div class="line">6. 同步wal日志</div><div class="line">7. 等到mvcc结束</div><div class="line">8. flushcache()</div><div class="line">9. commit()</div><div class="line">   1. 才更新构造scanner使用的[org](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg).[apache](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache).[hadoop](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop).[hbase](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase).[regionserver](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver).[DefaultStoreFileManager].storefiles</div><div class="line"></div><div class="line">## 疑问与解释</div><div class="line"></div><div class="line">### 问题：</div><div class="line"></div><div class="line">最开始，我感觉逻辑有问题，可能会导致在某个时间点（flush）时，读取不到已经写入的数据。</div><div class="line"></div><div class="line">### 回答：</div><div class="line"></div><div class="line">有三个方面：</div><div class="line"></div><div class="line">1. 读取数据时会读取snapshot的数据。</div><div class="line"></div><div class="line">   ```java</div><div class="line">       @Override</div><div class="line">       public synchronized KeyValue next() &#123;</div><div class="line">         if (theNext == null) &#123;</div><div class="line">             return null;</div><div class="line">         &#125;</div><div class="line"></div><div class="line">         final KeyValue ret = theNext;</div><div class="line"></div><div class="line">         // Advance one of the iterators</div><div class="line">         if (theNext == kvsetNextRow) &#123;</div><div class="line">           kvsetNextRow = getNext(kvsetIt);</div><div class="line">         &#125; else &#123;</div><div class="line">           snapshotNextRow = getNext(snapshotIt);</div><div class="line">         &#125;</div><div class="line"></div><div class="line">         // Calculate the next value</div><div class="line">         theNext = getLowest(kvsetNextRow, snapshotNextRow);</div><div class="line"></div><div class="line">         //long readpoint = ReadWriteConsistencyControl.getThreadReadPoint();</div><div class="line">         //DebugPrint.println(&quot; MS@&quot; + hashCode() + &quot; next: &quot; + theNext + &quot; next_next: &quot; +</div><div class="line">         //    getLowest() + &quot; threadpoint=&quot; + readpoint);</div><div class="line">         return ret;</div><div class="line">       &#125;</div></pre></td></tr></table></figure></p>
+</li>
 <li><p>清除snapshot和更新文件时在一个锁内。</p>
 <p>insertNewFiles方法将刷写成的HFile加入Store的fileManger里storefiles里，此结构用语构造storefilescanner。</p>
 <p>clearSnapshot方法将snapshot设置为一个新的空的结构。</p>
@@ -103,7 +109,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1f68l6n0005ny9s6vfyuw93" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1f6c4g30006qo9s0otadqs6" class="article-share-link">Share</a>
       
       
     </footer>
@@ -164,7 +170,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1f68l6u0008ny9sihjl0l8w" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1f6c4g00005qo9snulnx53h" class="article-share-link">Share</a>
       
       
     </footer>
@@ -209,7 +215,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1f68l6l0003ny9sertxmw82" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1f6c4fx0002qo9s4t3a73ie" class="article-share-link">Share</a>
       
       
     </footer>
@@ -255,7 +261,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1f68l6l0004ny9sjcqu0pan" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1f6c4fy0003qo9sh8z80f2y" class="article-share-link">Share</a>
       
       
     </footer>
@@ -299,7 +305,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1f68l6c0000ny9s3qer1ous" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1f6c4fq0000qo9s5mjpylon" class="article-share-link">Share</a>
       
       
     </footer>
@@ -345,7 +351,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1f68l6g0001ny9s5xj6toyx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1f6c4fu0001qo9s9sfez0ud" class="article-share-link">Share</a>
       
       
     </footer>
@@ -391,7 +397,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1f68l6p0006ny9sjpeswofx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1f6c4g80008qo9sk7uza64o" class="article-share-link">Share</a>
       
       
     </footer>
@@ -438,7 +444,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1f68l6p0007ny9sh1zesh3o" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1f6c4g50007qo9smsfbmk5q" class="article-share-link">Share</a>
       
       
     </footer>
@@ -475,7 +481,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj1f68l6j0002ny9ssywzoeu3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj1f6c4fz0004qo9su5joyhxd" class="article-share-link">Share</a>
       
       
     </footer>
