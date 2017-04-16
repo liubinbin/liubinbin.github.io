@@ -100,7 +100,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1f7ap120001e39spdkfuhwh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1kscqw100010h9sn53tsblm" class="article-share-link">Share</a>
       
       
     </footer>
@@ -141,7 +141,26 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, <span class="keyword">long</span> myseqid, MonitoredTask status)</div></pre></td></tr></table></figure>
 <h2 id="flush过程"><a href="#flush过程" class="headerlink" title="flush过程"></a>flush过程</h2><ol>
 <li>准备工作</li>
-<li><p>获取<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.updatesLock(<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">3. 获取mvcc事务，并努力前提读点</div><div class="line">4. 调用prepare（）</div><div class="line">   1. 将snapshot设置为的kvset，并重新生成一个kvset，用于写入。</div><div class="line">5. 释放写锁</div><div class="line">6. 同步wal日志</div><div class="line">7. 等到mvcc结束</div><div class="line">8. flushcache()</div><div class="line">9. commit()</div><div class="line">   1. 才更新构造scanner使用的[org](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg).[apache](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache).[hadoop](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop).[hbase](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase).[regionserver](eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver).[DefaultStoreFileManager].storefiles</div><div class="line"></div><div class="line">## 疑问与解释</div><div class="line"></div><div class="line">### 问题：</div><div class="line"></div><div class="line">最开始，我感觉逻辑有问题，可能会导致在某个时间点（flush）时，读取不到已经写入的数据。</div><div class="line"></div><div class="line">### 回答：</div><div class="line"></div><div class="line">有三个方面：</div><div class="line"></div><div class="line">1. 读取数据时会读取snapshot的数据。</div><div class="line"></div><div class="line">   ```java</div><div class="line">       @Override</div><div class="line">       public synchronized KeyValue next() &#123;</div><div class="line">         if (theNext == null) &#123;</div><div class="line">             return null;</div><div class="line">         &#125;</div><div class="line"></div><div class="line">         final KeyValue ret = theNext;</div><div class="line"></div><div class="line">         // Advance one of the iterators</div><div class="line">         if (theNext == kvsetNextRow) &#123;</div><div class="line">           kvsetNextRow = getNext(kvsetIt);</div><div class="line">         &#125; else &#123;</div><div class="line">           snapshotNextRow = getNext(snapshotIt);</div><div class="line">         &#125;</div><div class="line"></div><div class="line">         // Calculate the next value</div><div class="line">         theNext = getLowest(kvsetNextRow, snapshotNextRow);</div><div class="line"></div><div class="line">         //long readpoint = ReadWriteConsistencyControl.getThreadReadPoint();</div><div class="line">         //DebugPrint.println(&quot; MS@&quot; + hashCode() + &quot; next: &quot; + theNext + &quot; next_next: &quot; +</div><div class="line">         //    getLowest() + &quot; threadpoint=&quot; + readpoint);</div><div class="line">         return ret;</div><div class="line">       &#125;</div></pre></td></tr></table></figure></p>
+<li>获取<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.updatesLock的写锁</li>
+<li>获取mvcc事务，并努力前提读点</li>
+<li>调用prepare（）<ol>
+<li>将snapshot设置为的kvset，并重新生成一个kvset，用于写入。</li>
+</ol>
+</li>
+<li>释放写锁</li>
+<li>同步wal日志</li>
+<li>等到mvcc结束</li>
+<li>flushcache()</li>
+<li>commit()<ol>
+<li>才更新构造scanner使用的<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.[DefaultStoreFileManager].storefiles</li>
+</ol>
+</li>
+</ol>
+<h2 id="疑问与解释"><a href="#疑问与解释" class="headerlink" title="疑问与解释"></a>疑问与解释</h2><h3 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h3><p>最开始，我感觉逻辑有问题，可能会导致在某个时间点（flush）时，读取不到已经写入的数据。</p>
+<h3 id="回答："><a href="#回答：" class="headerlink" title="回答："></a>回答：</h3><p>有三个方面：</p>
+<ol>
+<li><p>读取数据时会读取snapshot的数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> KeyValue <span class="title">next</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="keyword">if</span> (theNext == <span class="keyword">null</span>) &#123;</div><div class="line">      <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">final</span> KeyValue ret = theNext;</div><div class="line"></div><div class="line">  <span class="comment">// Advance one of the iterators</span></div><div class="line">  <span class="keyword">if</span> (theNext == kvsetNextRow) &#123;</div><div class="line">    kvsetNextRow = getNext(kvsetIt);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    snapshotNextRow = getNext(snapshotIt);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Calculate the next value</span></div><div class="line">  theNext = getLowest(kvsetNextRow, snapshotNextRow);</div><div class="line"></div><div class="line">  <span class="comment">//long readpoint = ReadWriteConsistencyControl.getThreadReadPoint();</span></div><div class="line">  <span class="comment">//DebugPrint.println(" MS@" + hashCode() + " next: " + theNext + " next_next: " +</span></div><div class="line">  <span class="comment">//    getLowest() + " threadpoint=" + readpoint);</span></div><div class="line">  <span class="keyword">return</span> ret;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 </li>
 <li><p>清除snapshot和更新文件时在一个锁内。</p>
 <p>insertNewFiles方法将刷写成的HFile加入Store的fileManger里storefiles里，此结构用语构造storefilescanner。</p>
@@ -158,7 +177,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1f7ap1e0008e39s8gzl2pwq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1kscqw400030h9saeog64c3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -219,7 +238,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1f7ap1a0006e39sp6xgm784" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1kscqwi00060h9shptjec8v" class="article-share-link">Share</a>
       
       
     </footer>
@@ -264,7 +283,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1f7ap170004e39shg4wyq35" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1kscqwf00050h9scawm0d0x" class="article-share-link">Share</a>
       
       
     </footer>
@@ -310,7 +329,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1f7ap160003e39swbv6zor6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1kscqw500040h9sppy30v0k" class="article-share-link">Share</a>
       
       
     </footer>
@@ -354,7 +373,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1f7ap0y0000e39sdons2i99" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1kscqvx00000h9s8avyv4w5" class="article-share-link">Share</a>
       
       
     </footer>
@@ -400,7 +419,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1f7ap140002e39sfxlbml75" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1kscqw300020h9slf2a6g9c" class="article-share-link">Share</a>
       
       
     </footer>
@@ -446,7 +465,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1f7ap1b0007e39szdj9vyen" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1kscqwn00080h9sc22jqbod" class="article-share-link">Share</a>
       
       
     </footer>
@@ -493,7 +512,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1f7ap1f0009e39sfw3d35n2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1kscqwo00090h9s8vukwtd3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -530,7 +549,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj1f7ap190005e39siv3zc2e0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/My-First-Post/" data-id="cj1kscqwk00070h9s3xe0gw73" class="article-share-link">Share</a>
       
       
     </footer>
