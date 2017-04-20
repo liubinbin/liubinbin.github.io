@@ -91,7 +91,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/16/Some-thinkings-about-going-back-home/" data-id="cj1ktn9pv00072v9sg069fmkv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/16/Some-thinkings-about-going-back-home/" data-id="cj1qkwl5f0004119sgy5cme9p" class="article-share-link">Share</a>
       
       
     </footer>
@@ -125,22 +125,45 @@
       
         <h1 id="一些hbase使用到裁剪"><a href="#一些hbase使用到裁剪" class="headerlink" title="一些hbase使用到裁剪"></a>一些hbase使用到裁剪</h1><p>我个人觉得总共几个部分，包括time裁剪，key裁剪，bf和索引</p>
 <p>获取scanner分两个，一个memstore的，另一个是file的。</p>
-<p>主要关注获取有关file的</p>
+<p>获取有关file的Scanner如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.storeEngine.getStoreFileManager().getFilesForScanOrGet(isGet, startRow, stopRow);</div><div class="line"></div><div class="line">List&lt;StoreFileScanner&gt; sfScanners = StoreFileScanner.getScannersForStoreFiles(storeFilesToScan,</div><div class="line">        cacheBlocks, usePread, isCompaction, <span class="keyword">false</span>, matcher, readPt);</div></pre></td></tr></table></figure>
-<p>获取有关mem的</p>
+<p>获取有关mem的Scanner如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">memStoreScanners = <span class="keyword">this</span>.memstore.getScanners(readPt);</div></pre></td></tr></table></figure>
-<p>然后在返回之前做了筛选</p>
+<p>然后在返回之前做了筛选，注意那个selectScannerFrom方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</div><div class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="keyword">this</span>.readPt));</div></pre></td></tr></table></figure>
-<h2 id="time，key和bloomfilter"><a href="#time，key和bloomfilter" class="headerlink" title="time，key和bloomfilter"></a>time，key和bloomfilter</h2><p>分file和mem的，file的如下：</p>
+<p>selectScannerFrom还是分两个分支，有两个实现，file的和mem的。</p>
+<p>file的过滤分三种，time，key和bf。file过滤实现如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldUseScanner</span><span class="params">(Scan scan, SortedSet&lt;<span class="keyword">byte</span>[]&gt; columns, <span class="keyword">long</span> oldestUnexpiredTS)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> reader.passesTimerangeFilter(scan.getTimeRange(), oldestUnexpiredTS)</div><div class="line">        &amp;&amp; reader.passesKeyRangeFilter(scan) &amp;&amp; reader.passesBloomFilter(scan, columns);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>三个方面，感觉很清晰。ps：之前看hbase的代码时总是感觉比较的混乱，一脸懵逼的感受。</p>
-<p>mem的如下：</p>
+<p>memstore的实现如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldSeek</span><span class="params">(Scan scan, <span class="keyword">long</span> oldestUnexpiredTS)</span> </span>&#123;</div><div class="line">    TimeRange timeRange = scan.getTimeRange();</div><div class="line">    <span class="keyword">return</span> (timeRangeTracker.includesTimeRange(timeRange) ||</div><div class="line">        snapshotTimeRangeTracker.includesTimeRange(timeRange)) &amp;&amp;</div><div class="line">        (Math.max(timeRangeTracker.getMax(), snapshotTimeRangeTracker.getMax())</div><div class="line">            &gt;= oldestUnexpiredTS);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>几个方面方面，感觉很清晰。ps：之前看hbase的代码时总是感觉比较的混乱，一脸懵逼的感受。</p>
+<p>接下来应该结合文件格式看了。</p>
+<p>从文件格式看，主要是几个过滤，主要代码如下</p>
+<p>主要的实现在如下方法中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">BlockWithScanInfo blockWithScanInfo =</div><div class="line">  indexReader.loadDataBlockWithScanInfo(key, offset, length, block,</div><div class="line">      cacheBlocks, pread, isCompaction);</div></pre></td></tr></table></figure>
+<p>在HFileReaderV2中，由索引过滤和blockcache的实现，在</p>
+<p>根据索引信息过滤block</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> rootLevelIndex = rootBlockContainingKey(key, keyOffset, keyLength);</div></pre></td></tr></table></figure>
+<p>方法实现如下</p>
+<pre><code>public int rootBlockContainingKey(final byte[] key, int offset,
+    int length) {
+  int pos = Bytes.binarySearch(blockKeys, key, offset, length,
+      comparator);
+  ....}
+</code></pre><p>如果需要读取，会先从blockcache中读取，减少io。blcokcache中读取block，代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">block = cachingBlockReader.readBlock(currentOffset,</div><div class="line">    currentOnDiskSize, shouldCache, pread, isCompaction, <span class="keyword">true</span>,</div><div class="line">    expectedBlockType);</div></pre></td></tr></table></figure>
+<p>两处使用bf索引过滤，一处是seek时</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">requestSeek</span><span class="params">(KeyValue kv, <span class="keyword">boolean</span> forward, <span class="keyword">boolean</span> useBloom)</span></span></div><div class="line">    <span class="keyword">throws</span> IOException &#123;</div><div class="line">  <span class="keyword">if</span> (kv.getFamilyLength() == <span class="number">0</span>) &#123;</div><div class="line">    useBloom = <span class="keyword">false</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">boolean</span> haveToSeek = <span class="keyword">true</span>;</div><div class="line">  <span class="keyword">if</span> (useBloom) &#123;</div><div class="line">    <span class="comment">// check ROWCOL Bloom filter first.</span></div><div class="line">    <span class="keyword">if</span> (reader.getBloomFilterType() == BloomType.ROWCOL) &#123;</div><div class="line">      haveToSeek = reader.passesGeneralBloomFilter(kv.getBuffer(),</div><div class="line">          kv.getRowOffset(), kv.getRowLength(), kv.getBuffer(),</div><div class="line">          kv.getQualifierOffset(), kv.getQualifierLength());</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.matcher != <span class="keyword">null</span> &amp;&amp; !matcher.hasNullColumnInQuery() &amp;&amp;</div><div class="line">        (kv.isDeleteFamily() || kv.isDeleteFamilyVersion())) &#123;</div><div class="line">      <span class="comment">// if there is no such delete family kv in the store file,</span></div><div class="line">      <span class="comment">// then no need to seek.</span></div><div class="line">      haveToSeek = reader.passesDeleteFamilyBloomFilter(kv.getBuffer(),</div><div class="line">          kv.getRowOffset(), kv.getRowLength());</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  ...&#125;</div></pre></td></tr></table></figure>
+<p>另一处时获取scanner时</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">protected</span> List&lt;KeyValueScanner&gt; <span class="title">selectScannersFrom</span><span class="params">(<span class="keyword">final</span> List&lt;? extends KeyValueScanner&gt; allScanners)</span></span></div><div class="line">      </div><div class="line"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldUseScanner</span><span class="params">(Scan scan, SortedSet&lt;<span class="keyword">byte</span>[]&gt; columns, <span class="keyword">long</span> oldestUnexpiredTS)</span> &#123;</div><div class="line">    <span class="keyword">return</span> reader.passesTimerangeFilter(scan.getTimeRange(), oldestUnexpiredTS)</div><div class="line">        &amp;&amp; reader.passesKeyRangeFilter(scan) &amp;&amp; reader.passesBloomFilter(scan, columns);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>后者</p>
+<p>问题：怎么感觉bf的粒度时文件，不是block</p>
+<p>​    而且两处调用底层的bf是一样的。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1ktn9po00022v9svjqwsxvq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1qkwl570000119siwwhhytf" class="article-share-link">Share</a>
       
       
     </footer>
@@ -217,7 +240,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1ktn9q100092v9sou8m1tfr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1qkwl5n0008119s1l7bw8h5" class="article-share-link">Share</a>
       
       
     </footer>
@@ -278,7 +301,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1ktn9pv00062v9sv9ofngnz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1qkwl5j0006119sc7bmncge" class="article-share-link">Share</a>
       
       
     </footer>
@@ -323,7 +346,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1ktn9pr00042v9sukti1bfi" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1qkwl5g0005119sudrh9b13" class="article-share-link">Share</a>
       
       
     </footer>
@@ -369,7 +392,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1ktn9pq00032v9sxckes49r" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1qkwl5f0003119s5avgt7ra" class="article-share-link">Share</a>
       
       
     </footer>
@@ -413,7 +436,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1ktn9pg00002v9sbxnvkwha" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/A-Brief-Introduction-To-Hbase/" data-id="cj1qkwl5b0001119sudjs4jxk" class="article-share-link">Share</a>
       
       
     </footer>
@@ -459,7 +482,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1ktn9pl00012v9sh8l4shzj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1qkwl5d0002119sps1jgno4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -505,7 +528,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1ktn9q000082v9s1gydfm7v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1qkwl5p000a119s0rkm1aes" class="article-share-link">Share</a>
       
       
     </footer>
@@ -552,7 +575,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1ktn9q3000a2v9sbs7xzc7r" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1qkwl5o0009119s7z7ae4p6" class="article-share-link">Share</a>
       
       
     </footer>
