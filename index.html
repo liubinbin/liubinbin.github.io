@@ -61,6 +61,75 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-What-region-will-do-when-receive-a-get" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/25/What-region-will-do-when-receive-a-get/" class="article-date">
+  <time datetime="2017-04-25T14:40:14.000Z" itemprop="datePublished">2017-04-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/25/What-region-will-do-when-receive-a-get/">What region will do when receive a get</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Region收到get请求后的操作"><a href="#Region收到get请求后的操作" class="headerlink" title="Region收到get请求后的操作"></a>Region收到get请求后的操作</h1><p>​    hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。</p>
+<h2 id="处理scanner"><a href="#处理scanner" class="headerlink" title="处理scanner"></a>处理scanner</h2><p>处理scanner大致分为几个步骤：</p>
+<ol>
+<li><p>获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang，bf等）</p>
+<p>获取所有的scanner</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//对此region中每个store（列族）都需要获取scanner</span></div><div class="line"><span class="keyword">for</span> (Map.Entry&lt;<span class="keyword">byte</span>[], NavigableSet&lt;<span class="keyword">byte</span>[]&gt;&gt; entry : scan.getFamilyMap().entrySet()) &#123;</div><div class="line">  <span class="comment">//此方法是获取了scanner，过滤了一些scanner，并且还粗略的检索到需要的位置。</span></div><div class="line">  <span class="comment">//此scanner是一个store对应的</span></div><div class="line">  KeyValueScanner scanner = store.getScanner(scan, entry.getValue(), <span class="keyword">this</span>.readPt);</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.filter == <span class="keyword">null</span> || !scan.doLoadColumnFamiliesOnDemand() || <span class="keyword">this</span>.filter.isFamilyEssential(entry.getKey())) &#123;</div><div class="line">     scanners.add(scanner);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">     <span class="comment">//比如有filter的情况</span></div><div class="line">     joinedScanners.add(scanner);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">//生成俩KeyValueHeap，此处的比较器不知道啥意思。真他妈尴尬</span></div><div class="line">initializeKVHeap(scanners, joinedScanners, region);</div></pre></td></tr></table></figure>
+<p>1.1 跟入store.getScanner方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//获取所有的file，打开文件，做一些过滤等。</span></div><div class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</div><div class="line">seekScanners(scanners, matcher.getStartKey(), explicitColumnQuery &amp;&amp; lazySeekEnabledGlobally, isParallelSeekEnabled);</div><div class="line">resetKVHeap(scanners, store.getComparator());</div></pre></td></tr></table></figure>
+<p>1.1.1 getScannersNoCompaction()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</div><div class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="keyword">this</span>.readPt));</div></pre></td></tr></table></figure>
+<p>​    主要两层，store.getScanners中是获取所有的file，打开文件（获取reader，此处需要注意，和下面的file的scanner的处理有关系）</p>
+<p>​    selectScannersFrom主要做过滤，主要是如下方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">kvs.shouldUseScanner(scan, columns, expiredTimestampCutoff)</div><div class="line">  此方法两个分支，mem和file值得关注，此处就不说了。反正用了一些range和bf（bf只针对单行和单行列族）</div><div class="line">  bf的过滤有一个判断（!scan.isGetScan()），如果是get，并且isStartRowAndEqualsStopRow为<span class="keyword">true</span>才走bf。</div></pre></td></tr></table></figure>
+<p>1.1.2 seekScanners</p>
+<p>​    bf判断，时间判断，伪造kv使其跳过此个检索吧。    </p>
+<p>1.1.3 resetKVHeap</p>
+<p>​    组织成一个KeyValueHeap，比较器有代表时间的id等。</p>
+</li>
+<li><p>我们讲获取到的scanner组织成heap，然后从heap中获取对应的数据。这个heap需要有一定的组织，比如检索到了数据，需要关闭；对于同一个key，需要在所有的scanner中获取到等</p>
+<p>获取到scanner之后就开始获取数据结果了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scanner.next(results);</div></pre></td></tr></table></figure>
+<p>里面一堆逻辑的，实际获取数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> KeyValue <span class="title">populateResult</span><span class="params">(List&lt;Cell&gt; results, KeyValueHeap heap, <span class="keyword">int</span> limit,</span></span></div><div class="line">    <span class="keyword">byte</span>[] currentRow, <span class="keyword">int</span> offset, <span class="keyword">short</span> length) <span class="keyword">throws</span> IOException &#123;</div><div class="line">  KeyValue nextKv;</div><div class="line">    <span class="keyword">do</span> &#123;</div><div class="line">      heap.next(results, limit - results.size());</div><div class="line">      <span class="keyword">if</span> (limit &gt; <span class="number">0</span> &amp;&amp; results.size() == limit) &#123;</div><div class="line">        <span class="keyword">return</span> KV_LIMIT;</div><div class="line">      &#125;</div><div class="line">      nextKv = heap.peek();</div><div class="line">    &#125; <span class="keyword">while</span> (nextKv != <span class="keyword">null</span> &amp;&amp; nextKv.matchingRow(currentRow, offset, length));</div><div class="line">  <span class="keyword">return</span> nextKv;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ol>
+<h2 id="scanner内部"><a href="#scanner内部" class="headerlink" title="scanner内部"></a>scanner内部</h2><h3 id="memscanner"><a href="#memscanner" class="headerlink" title="memscanner"></a>memscanner</h3><p>要从memstore中获取想要的数据，感觉不会很难，因为memstore是个有一定顺序。</p>
+<h3 id="filescanner"><a href="#filescanner" class="headerlink" title="filescanner"></a>filescanner</h3><p>对于filestore的检索，hbase提供了集中方式来加速检索。</p>
+<ol>
+<li>bloomfilter的过滤，见”处理scanner“</li>
+<li>index的过滤</li>
+<li>blockcache的使用</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/04/25/What-region-will-do-when-receive-a-get/" data-id="cj1xnv2rp0006ct9scmzoyquv" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Some-thinkings-about-going-back-home" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/04/16/Some-thinkings-about-going-back-home/" class="article-date">
@@ -91,7 +160,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/16/Some-thinkings-about-going-back-home/" data-id="cj1xmusb90005o89skc6zfzyh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/16/Some-thinkings-about-going-back-home/" data-id="cj1xnv2ro0005ct9snycsu8sg" class="article-share-link">Share</a>
       
       
     </footer>
@@ -163,7 +232,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1xmusay0001o89smglj68gz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1xnv2ri0001ct9swhl05we6" class="article-share-link">Share</a>
       
       
     </footer>
@@ -240,7 +309,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1xmusbd0007o89s2hpv2rye" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1xnv2rq0007ct9sat0939oi" class="article-share-link">Share</a>
       
       
     </footer>
@@ -301,7 +370,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1xmusb70004o89sb86a9kf0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1xnv2rn0004ct9s4bi6on8h" class="article-share-link">Share</a>
       
       
     </footer>
@@ -346,7 +415,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1xmusb70003o89s0nw7xmcm" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1xnv2rl0002ct9ssylyj88s" class="article-share-link">Share</a>
       
       
     </footer>
@@ -392,7 +461,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1xmusb10002o89sm7bovorf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1xnv2re0000ct9si9kybv6y" class="article-share-link">Share</a>
       
       
     </footer>
@@ -438,7 +507,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1xmusau0000o89slmdyy3v9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1xnv2rm0003ct9sz75zuzhf" class="article-share-link">Share</a>
       
       
     </footer>
@@ -484,7 +553,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1xmusbb0006o89swtkn5cnm" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1xnv2ru0008ct9sg1mb64ud" class="article-share-link">Share</a>
       
       
     </footer>
@@ -531,7 +600,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1xmusbh0008o89snwocg2xj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1xnv2rv0009ct9s5eopknuh" class="article-share-link">Share</a>
       
       
     </footer>
@@ -571,6 +640,10 @@
       <ul>
         
           <li>
+            <a href="/2017/04/25/What-region-will-do-when-receive-a-get/">What region will do when receive a get</a>
+          </li>
+        
+          <li>
             <a href="/2017/04/16/Some-thinkings-about-going-back-home/">Some thinkings about going back home</a>
           </li>
         
@@ -584,10 +657,6 @@
         
           <li>
             <a href="/2017/04/09/Some-Points-For-MVCC-in-HBase/">Some Points For MVCC in HBase</a>
-          </li>
-        
-          <li>
-            <a href="/2017/03/26/Import-Hbase-Into-Eclipse/">Import Hbase Into Eclipse</a>
           </li>
         
       </ul>
