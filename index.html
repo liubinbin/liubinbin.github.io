@@ -120,7 +120,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/What-region-will-do-when-receive-a-get/" data-id="cj1xo0gxa0008h49sbyx6wpvl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/What-region-will-do-when-receive-a-get/" data-id="cj1z4ufbw0006bh9sd9sjr6fc" class="article-share-link">Share</a>
       
       
     </footer>
@@ -160,7 +160,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/16/Some-thinkings-about-going-back-home/" data-id="cj1xo0gx30005h49sot9xop0y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/16/Some-thinkings-about-going-back-home/" data-id="cj1z4ufbx0007bh9sgoxpd0lo" class="article-share-link">Share</a>
       
       
     </footer>
@@ -222,7 +222,7 @@
 </code></pre><p>如果需要读取，会先从blockcache中读取，减少io。blcokcache中读取block，代码如下</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">block = cachingBlockReader.readBlock(currentOffset,</div><div class="line">    currentOnDiskSize, shouldCache, pread, isCompaction, <span class="keyword">true</span>,</div><div class="line">    expectedBlockType);</div></pre></td></tr></table></figure>
 <p>两处使用bf索引过滤，一处是seek时</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">requestSeek</span><span class="params">(KeyValue kv, <span class="keyword">boolean</span> forward, <span class="keyword">boolean</span> useBloom)</span></span></div><div class="line">    <span class="keyword">throws</span> IOException &#123;</div><div class="line">  <span class="keyword">if</span> (kv.getFamilyLength() == <span class="number">0</span>) &#123;</div><div class="line">    useBloom = <span class="keyword">false</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">boolean</span> haveToSeek = <span class="keyword">true</span>;</div><div class="line">  <span class="keyword">if</span> (useBloom) &#123;</div><div class="line">    <span class="comment">// check ROWCOL Bloom filter first.</span></div><div class="line">    <span class="keyword">if</span> (reader.getBloomFilterType() == BloomType.ROWCOL) &#123;</div><div class="line">      haveToSeek = reader.passesGeneralBloomFilter(kv.getBuffer(),</div><div class="line">          kv.getRowOffset(), kv.getRowLength(), kv.getBuffer(),</div><div class="line">          kv.getQualifierOffset(), kv.getQualifierLength());</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.matcher != <span class="keyword">null</span> &amp;&amp; !matcher.hasNullColumnInQuery() &amp;&amp;</div><div class="line">        (kv.isDeleteFamily() || kv.isDeleteFamilyVersion())) &#123;</div><div class="line">      <span class="comment">// if there is no such delete family kv in the store file,</span></div><div class="line">      <span class="comment">// then no need to seek.</span></div><div class="line">      haveToSeek = reader.passesDeleteFamilyBloomFilter(kv.getBuffer(),</div><div class="line">          kv.getRowOffset(), kv.getRowLength());</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  ...&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"> </div></pre></td></tr></table></figure>
 <p>另一处时获取scanner时</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">protected</span> List&lt;KeyValueScanner&gt; <span class="title">selectScannersFrom</span><span class="params">(<span class="keyword">final</span> List&lt;? extends KeyValueScanner&gt; allScanners)</span></span></div><div class="line">      </div><div class="line"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldUseScanner</span><span class="params">(Scan scan, SortedSet&lt;<span class="keyword">byte</span>[]&gt; columns, <span class="keyword">long</span> oldestUnexpiredTS)</span> &#123;</div><div class="line">    <span class="keyword">return</span> reader.passesTimerangeFilter(scan.getTimeRange(), oldestUnexpiredTS)</div><div class="line">        &amp;&amp; reader.passesKeyRangeFilter(scan) &amp;&amp; reader.passesBloomFilter(scan, columns);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>后者</p>
@@ -232,7 +232,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1xo0gwr0000h49si0xpkomj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1z4ufbl0000bh9sv12i7j90" class="article-share-link">Share</a>
       
       
     </footer>
@@ -309,7 +309,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1xo0gx50006h49s680i54yt" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1z4ufc10008bh9syvj9w6xx" class="article-share-link">Share</a>
       
       
     </footer>
@@ -370,7 +370,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1xo0gx00004h49snzvmc9qx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1z4ufbu0004bh9s0r2664xu" class="article-share-link">Share</a>
       
       
     </footer>
@@ -415,7 +415,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1xo0gwz0003h49sdayqhcof" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1z4ufbs0002bh9s7hsocup0" class="article-share-link">Share</a>
       
       
     </footer>
@@ -461,7 +461,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1xo0gwy0002h49sznnp3cvl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1z4ufbt0003bh9smwlcwuo3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -507,7 +507,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1xo0gwv0001h49svhe1plqo" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1z4ufbp0001bh9sibwril9y" class="article-share-link">Share</a>
       
       
     </footer>
@@ -553,7 +553,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1xo0gx50007h49s29n1sq1s" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1z4ufc20009bh9s89ev8zdu" class="article-share-link">Share</a>
       
       
     </footer>
@@ -587,10 +587,23 @@
       
         <h1 id="写RCFilc不停报的ArrayIndexOutOfBoundsException"><a href="#写RCFilc不停报的ArrayIndexOutOfBoundsException" class="headerlink" title="写RCFilc不停报的ArrayIndexOutOfBoundsException"></a>写RCFilc不停报的ArrayIndexOutOfBoundsException</h1><pre><code>场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
 最近在一个试运行集群中经常发生数据无法入库情况，然后看了一下系统日志，发现日志在不停的抛出如下异常。
-</code></pre><h2 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h2><p>登录及其的查看异常（不停歇的报此错）如下<br>    java.lang.ArrayIndexOutOfBoundsException: 7107<br>       at org.apache.hadoop.fs.FSOutputSummer.write(FSOutputSummer.java:76)<br>       at org.apache.hadoop.fs.FSDataOutputStream$PositionCache.write(FSDataOutputStream.java:50)<br>        at java.io.DataOutputStream.writeInt(DataOutputStream.java:197)<br>        等等<br>    首先，我看到此日志，我内心第一反应，草泥马的，报尼玛错。</p>
-<h2 id="步骤2"><a href="#步骤2" class="headerlink" title="步骤2"></a>步骤2</h2><p>看到此异常后，我第一反应是得先找到第一个报错的地方并且查看的此报错的原因。然后我就开始看此处涉及到hdfs的代码，想看看为什么会报错。<br>    public void sync() throws IOException {<br>            if (sync != null &amp;&amp; lastSyncPos != out.getPos()) {<br>                out.writeInt(SYNC_ESCAPE); // mark the start of the sync<br>                out.write(sync); // write sync<br>                lastSyncPos = out.getPos(); // update lastSyncPos<br>            }<br>    }<br>RCFile.java中如上代码，程序在out.writeInt就开始报错了，lastSyncPos无法的更新。<br>但是在上层使用如下代码的判断的调用sync<br>        private void checkAndWriteSync() throws IOException {<br>            if (sync != null &amp;&amp; out.getPos() &gt;= lastSyncPos + SYNC_INTERVAL) {<br>                sync();<br>            }<br>        }<br>好吧，这writeInt报错了，这部一直会错吗，我就醉了。</p>
-<h2 id="步骤3"><a href="#步骤3" class="headerlink" title="步骤3"></a>步骤3</h2><p>发现了此处蛋疼的地方后，我将重点转向了第一个报错的地方。因为他是不确定时间报错，我就开始启动程序后，时常的查看日志，终于在之后的某个早上，我在查看日志时，我发现了第一个报错的地方。然后在那上面看到了如下异常<br>java.io.IOException: All datanodes <em>.</em>.<em>.</em>:50010 are bad. Aborting…<br>    at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:1147)<br>    at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:945)<br>    at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:496)<br>然后在日志中找第一个报次错的地方，还发现了其他的报错<br>[ShortCircuitCache_SlotReleaser] (org.apache.hadoop.hdfs.shortcircuit.ShortCircuitCache$SlotReleaser.run:215)  - ShortCircuitCache(0x3fbdc007): failed to release short-circuit shared memory slot Slot(slotIdx=1, shm=DfsClientShm(7bf35643718a2bf0a9d85884afb8f4f8)) by sending ReleaseShortCircuitAccessRequestProto to /var/run/hdfs-sockets/dn.  Closing shared memory segment.<br>java.net.ConnectException: connect(2) error: Connection refused when trying to connect to ‘/var/run/hdfs-sockets/dn’<br>29 七月 2016 10:14:17,390 WARN  [ShortCircuitCache_SlotReleaser] (org.apache.hadoop.hdfs.shortcircuit.DfsClientShmManager$EndpointShmManager.shutdown:380)  - EndpointShmManager(10.139.90.136:50010, parent=ShortCircuitShmManager(5c89577b)): error shutting down shm: got IOException calling shutdown(SHUT_RDWR)<br>java.nio.channels.ClosedChannelException</p>
-<h2 id="步骤4"><a href="#步骤4" class="headerlink" title="步骤4"></a>步骤4</h2><p>看到这些日志后，我感觉在10:14一定发生了什么，于是我开始寻找datanode中相关时间点日志STARTUP_MSG: Starting DataNode这种datanode启动信息，我内心一万只草泥马飘过。<br>在此日志的上面我看到了诸如的<br>2016-07-29 10:14:12,374 INFO org.apache.hadoop.util.JvmPauseMonitor: Detected pause in JVM or host machine (eg GC): pause of approximately 4519ms<br>No GCs detected 的日志。<br>然后就是<br>2016-07-29 10:14:36,720 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: STARTUP_MSG:<br>中间隔了三十秒。<br>从这种情况看感觉应该是datanode进程死了，然后又重启了。</p>
+</code></pre><h2 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h2><p>登录及其的查看异常（不停歇的报此错）如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">java.lang.ArrayIndexOutOfBoundsException: <span class="number">7107</span></div><div class="line">   at org.apache.hadoop.fs.FSOutputSummer.write(FSOutputSummer.java:<span class="number">76</span>)</div><div class="line">   at org.apache.hadoop.fs.FSDataOutputStream$PositionCache.write(FSDataOutputStream.java:<span class="number">50</span>)</div><div class="line">    at java.io.DataOutputStream.writeInt(DataOutputStream.java:<span class="number">197</span>)</div></pre></td></tr></table></figure>
+<p>首先，我看到此日志，我内心第一反应，草泥马的，报尼玛错。</p>
+<h2 id="步骤2"><a href="#步骤2" class="headerlink" title="步骤2"></a>步骤2</h2><p>看到此异常后，我第一反应是得先找到第一个报错的地方并且查看的此报错的原因。然后我就开始看此处涉及到hdfs的代码，想看看为什么会报错。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sync</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">		<span class="keyword">if</span> (sync != <span class="keyword">null</span> &amp;&amp; lastSyncPos != out.getPos()) &#123;</div><div class="line">			out.writeInt(SYNC_ESCAPE); <span class="comment">// mark the start of the sync</span></div><div class="line">			out.write(sync); <span class="comment">// write sync</span></div><div class="line">			lastSyncPos = out.getPos(); <span class="comment">// update lastSyncPos</span></div><div class="line">		&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>RCFile.java中如上代码，程序在out.writeInt就开始报错了，lastSyncPos无法的更新。<br>但是在上层使用如下代码的判断的调用sync.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkAndWriteSync</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">	<span class="keyword">if</span> (sync != <span class="keyword">null</span> &amp;&amp; out.getPos() &gt;= lastSyncPos + SYNC_INTERVAL) &#123;</div><div class="line">		sync();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>好吧，这writeInt报错了，这部一直会错吗，我就醉了。</p>
+<h2 id="步骤3"><a href="#步骤3" class="headerlink" title="步骤3"></a>步骤3</h2><p>发现了此处蛋疼的地方后，我将重点转向了第一个报错的地方。因为他是不确定时间报错，我就开始启动程序后，时常的查看日志，终于在之后的某个早上，我在查看日志时，我发现了第一个报错的地方。然后在那上面看到了如下异常</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">java.io.IOException: All datanodes ...:<span class="number">50010</span> are bad. Aborting...</div><div class="line">  at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:<span class="number">1147</span>)</div><div class="line">at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:<span class="number">945</span>)</div><div class="line">at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:<span class="number">496</span>)</div></pre></td></tr></table></figure>
+<p>然后在日志中找第一个报次错的地方，还发现了其他的报错</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[ShortCircuitCache_SlotReleaser] (org.apache.hadoop.hdfs.shortcircuit.ShortCircuitCache$SlotReleaser.run:<span class="number">215</span>)  - ShortCircuitCache(<span class="number">0x3fbdc007</span>): failed to release <span class="keyword">short</span>-<span class="function">circuit shared memory slot <span class="title">Slot</span><span class="params">(slotIdx=<span class="number">1</span>, shm=DfsClientShm(<span class="number">7</span>bf35643718a2bf0a9d85884afb8f4f8)</span>) by sending ReleaseShortCircuitAccessRequestProto to /var/run/hdfs-sockets/dn.  Closing shared memory segment.</span></div><div class="line"></div><div class="line">java.net.ConnectException: <span class="title">connect</span><span class="params">(<span class="number">2</span>)</span> error: Connection refused when trying to connect to '/var/run/hdfs-sockets/dn'</div><div class="line"></div><div class="line">29 七月 2016 10:14:17,390 WARN  [ShortCircuitCache_SlotReleaser] <span class="params">(org.apache.hadoop.hdfs.shortcircuit.DfsClientShmManager$EndpointShmManager.shutdown:<span class="number">380</span>)</span>  - <span class="title">EndpointShmManager</span><span class="params">(<span class="number">10.139</span><span class="number">.90</span><span class="number">.136</span>:<span class="number">50010</span>, parent=ShortCircuitShmManager(<span class="number">5</span>c89577b)</span>): error shutting down shm: got IOException calling <span class="title">shutdown</span><span class="params">(SHUT_RDWR)</span></div><div class="line"></div><div class="line">java.nio.channels.ClosedChannelException</div></pre></td></tr></table></figure>
+<h2 id="步骤4"><a href="#步骤4" class="headerlink" title="步骤4"></a>步骤4</h2><p>看到这些日志后，我感觉在10:14一定发生了什么，于是我开始寻找datanode中相关时间点日志STARTUP_MSG: Starting DataNode这种datanode启动信息，我内心一万只草泥马飘过。<br>在此日志的上面我看到了诸如的的日志。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="number">2016</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">10</span>:<span class="number">14</span>:<span class="number">12</span>,<span class="number">374</span> INFO org.apache.hadoop.util.JvmPauseMonitor: <span class="function">Detected pause in JVM or host <span class="title">machine</span> <span class="params">(eg GC)</span>: pause of approximately 4519ms</span></div><div class="line">No GCs detected</div></pre></td></tr></table></figure>
+<p>然后就是</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="number">2016</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">10</span>:<span class="number">14</span>:<span class="number">36</span>,<span class="number">720</span> INFO org.apache.hadoop.hdfs.server.datanode.DataNode: STARTUP_MSG:</div></pre></td></tr></table></figure>
+<p>中间隔了三十秒。<br>从这种情况看感觉应该是datanode进程死了，然后又重启了。</p>
 <h2 id="步骤5"><a href="#步骤5" class="headerlink" title="步骤5"></a>步骤5</h2><p>然后我就开始全力找为什么此datanode会挂。列出几点信息，这些信息是感觉有点蛋疼的。</p>
 <ol>
 <li>supervisord.log的日志中有2016-07-29 10:14:16,820 INFO exited: 411-hdfs-DATANODE (terminated by SIGKILL; not expected)此时间正好在10:14:12到10:14:36之间。</li>
@@ -600,7 +613,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1xo0gxb0009h49s4zn2b7is" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1z4ufbv0005bh9sj3u5hqfb" class="article-share-link">Share</a>
       
       
     </footer>
