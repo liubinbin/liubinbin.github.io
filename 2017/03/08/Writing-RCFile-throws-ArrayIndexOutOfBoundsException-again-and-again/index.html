@@ -5,25 +5,25 @@
   
   <title>writing RCFile throws ArrayIndexOutOfBoundsException again and again | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
+  <meta name="description" content="写RCFilc不停报的ArrayIndexOutOfBoundsException场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
 最近在一个试运行集群中经常发生数据无法入库情况，然后看了一下系统日志，发现日志在不停的抛出如下异常。
 步骤1登录及其的查看异常（不停歇的报此错）如下
-1234java.lang.ArrayIndexOutOfBoundsException: 7107   at org.apache.hadoop.fs.FSOu">
+1234java.lang.ArrayIndexOutOfBoundsExcep">
 <meta property="og:type" content="article">
 <meta property="og:title" content="writing RCFile throws ArrayIndexOutOfBoundsException again and again">
 <meta property="og:url" content="http://yoursite.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/index.html">
 <meta property="og:site_name" content="Bean">
-<meta property="og:description" content="场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
+<meta property="og:description" content="写RCFilc不停报的ArrayIndexOutOfBoundsException场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
 最近在一个试运行集群中经常发生数据无法入库情况，然后看了一下系统日志，发现日志在不停的抛出如下异常。
 步骤1登录及其的查看异常（不停歇的报此错）如下
-1234java.lang.ArrayIndexOutOfBoundsException: 7107   at org.apache.hadoop.fs.FSOu">
-<meta property="og:updated_time" content="2017-04-26T16:28:56.000Z">
+1234java.lang.ArrayIndexOutOfBoundsExcep">
+<meta property="og:updated_time" content="2017-04-26T16:29:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="writing RCFile throws ArrayIndexOutOfBoundsException again and again">
-<meta name="twitter:description" content="场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
+<meta name="twitter:description" content="写RCFilc不停报的ArrayIndexOutOfBoundsException场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
 最近在一个试运行集群中经常发生数据无法入库情况，然后看了一下系统日志，发现日志在不停的抛出如下异常。
 步骤1登录及其的查看异常（不停歇的报此错）如下
-1234java.lang.ArrayIndexOutOfBoundsException: 7107   at org.apache.hadoop.fs.FSOu">
+1234java.lang.ArrayIndexOutOfBoundsExcep">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -94,7 +94,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <pre><code>场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
+        <h1 id="写RCFilc不停报的ArrayIndexOutOfBoundsException"><a href="#写RCFilc不停报的ArrayIndexOutOfBoundsException" class="headerlink" title="写RCFilc不停报的ArrayIndexOutOfBoundsException"></a>写RCFilc不停报的ArrayIndexOutOfBoundsException</h1><pre><code>场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
 最近在一个试运行集群中经常发生数据无法入库情况，然后看了一下系统日志，发现日志在不停的抛出如下异常。
 </code></pre><h2 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h2><p>登录及其的查看异常（不停歇的报此错）如下</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">java.lang.ArrayIndexOutOfBoundsException: <span class="number">7107</span></div><div class="line">   at org.apache.hadoop.fs.FSOutputSummer.write(FSOutputSummer.java:<span class="number">76</span>)</div><div class="line">   at org.apache.hadoop.fs.FSDataOutputStream$PositionCache.write(FSDataOutputStream.java:<span class="number">50</span>)</div><div class="line">    at java.io.DataOutputStream.writeInt(DataOutputStream.java:<span class="number">197</span>)</div></pre></td></tr></table></figure>
@@ -122,7 +122,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1z73l3p000mam9s7j8rwer9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1z750xu000hbx9swbw28ha0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flume/">flume</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gc/">gc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
