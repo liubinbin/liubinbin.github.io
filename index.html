@@ -61,6 +61,83 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-balance-in-hdfs" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/26/balance-in-hdfs/" class="article-date">
+  <time datetime="2017-04-26T15:33:10.000Z" itemprop="datePublished">2017-04-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/26/balance-in-hdfs/">balance in hdfs</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="hdfs中的balance的一些解读和问题记录"><a href="#hdfs中的balance的一些解读和问题记录" class="headerlink" title="hdfs中的balance的一些解读和问题记录"></a>hdfs中的balance的一些解读和问题记录</h1><h2 id="balance过程的解读"><a href="#balance过程的解读" class="headerlink" title="balance过程的解读"></a>balance过程的解读</h2><ol>
+<li><p>准备工作<br>获取的namenode</p>
+</li>
+<li><p>调用Balancer.run L1422，开始迭代<br>一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）</p>
+<p>2.1 ReturnStatus r = b.run L1352</p>
+<p>​    2.1.1 initNode获取需要移动的字节数bytesLeftToMove<br>​            计算平均使用率<br>​            计算出过载和未充分利用的节点需要移动的字节数，两者选取较大值（已排除在与平均值相差在threshold内的节点）<br>​    2.1.2 chooseNode获取决定要移动的字节<br>​            chooseDatanodes: 三种匹配类型Matcher选取（同一组，同一机架，剩下的），每一类型做如下类型操作</p>
+<pre><code>          1. 处理过载到未好好利用的。 2. 处理过载到使用少的。 3. 处理多使用到少使用
+chooseCandidate对于每个源节点，选个候选节点（如果能符合匹配规则Matcher就选择他）
+​                matchSourceWithTargetToMove选择两者能移动的少的字节数，形成NodeTask
+2.1.3 dispatchBlockMoves L1103启动线程去移动数据，处理NodeTask
+​    {两个条件会结束noPendingBlockIteration &gt;= MAX_NO_PENDING_BLOCK_ITERATIONS 和Time.now()-startTime &gt; MAX_ITERATION_TIME}
+​    dispatchBlocks L614 为每个source启动一个线程去移动数据(线程放入dispatcherExecutor线程池)，然后等待回复
+​    此处一轮迭代有时间限制
+​        dispatcherExecutor.submit(source.new BlockMoveDispatcher());(调用dispatchBlocks())
+​            chooseNextBlockToMove 获取下一步需要移动block，选择的代理节点是拥有此block但是传递到target比较好。
+​            此处有一个5个任务的限制，难怪增大timeout的时间之后不会quota is exceeded***
+​                chooseBlockAndProxy 选择块和代理节点
+​                    isGoodBlockCandidate 选择好的块
+​                    chooseProxySource 在选中的块中选择一个和target比较好的location
+​            scheduleBlockMove 发送到代理节点并给代理节点的发送复制请求
+​                dispatch() 发送数据(***此处看代码不是异步处理，果然不是***)
+​                在目的节点DataXceiver.replaceBlock方法接受来自proxy的block发送流
+​                    在此处有balanceThrottler限制
+​            filterMovedBlocks 过滤
+​            判断需要不需要更多的block
+​        waitForMoveCompletion()等待所有targets里的pending任务结束(如果没有结束此处会等待)
+shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于零次数少于MAX_NOT_CHANGED_ITERATIONS就是in_progress
+2.2 resetData清楚数据，为再来一次循环做准备
+2.3 根据r判断是否结束，判断条件在上面
+</code></pre></li>
+</ol>
+<p>简单概括</p>
+<pre><code>--&gt; 计算那些需要移动的节点 
+--&gt; 在此节点中选择想要移动的block 
+--&gt; 对此block选择一个proxy（此proxy也有这个block的副本，并且传输起来比较好） 
+--&gt; 建立任务（向target节点发送replaceBlock请求，target节点向proxy节点发送copyBlock请求）拷贝数据
+</code></pre><h2 id="问题与解决"><a href="#问题与解决" class="headerlink" title="问题与解决"></a>问题与解决</h2><ol>
+<li>balancer节点发送请求会有超时，在日志文件中报Read timed out -&gt; 日志会报线程数超出配额 -&gt; 提早退出balance过程，这种情况是balancer节点和target节点之间的rpc断开连接。只要改大超时设置就可以了（不清楚为啥不把超时统一到那个配置，并且hdfs把那些异常处理不打印问题，这个处理方式也很奇怪，可能新版本有改进）。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj1z5o5ao000jzj9sbet3ggqa" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-What-region-will-do-when-receive-a-get" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/04/25/What-region-will-do-when-receive-a-get/" class="article-date">
@@ -120,7 +197,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/What-region-will-do-when-receive-a-get/" data-id="cj1z51tfy000hi49syqkc4qj5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/What-region-will-do-when-receive-a-get/" data-id="cj1z5o5am000fzj9svyzxtdh9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -162,7 +239,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/16/Some-thinkings-about-going-back-home/" data-id="cj1z51tfr0008i49s7oeu975d" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/16/Some-thinkings-about-going-back-home/" data-id="cj1z5o5ah000azj9ss1w90ii1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -236,7 +313,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1z51tfb0000i49svmf5844a" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1z5o5a20000zj9s6ozq546c" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -315,7 +392,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1z51tfv000di49sy1ifzor7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1z5o5af0008zj9suxy34n1i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -378,7 +455,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1z51tfo0005i49svm5vlwmk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1z5o5ae0005zj9s629pe1d8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -425,7 +502,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1z51tfl0003i49sui5vz3ep" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1z5o5ab0003zj9scqotohj1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -473,7 +550,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1z51tfm0004i49swjylgh4g" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1z5o5a60001zj9st7cftvwx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -521,7 +598,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1z51tfg0001i49s184ksh6b" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1z5o5ab0004zj9s6f4nrgqe" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -569,7 +646,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1z51tfs000ai49slp16eixv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1z5o5al000dzj9s93j7a46x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -581,69 +658,11 @@
 
 
   
-    <article id="post-Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" class="article-date">
-  <time datetime="2017-03-08T05:23:28.000Z" itemprop="datePublished">2017-03-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/">Writing RCFile throws ArrayIndexOutOfBoundsException again and again</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="写RCFilc不停报的ArrayIndexOutOfBoundsException"><a href="#写RCFilc不停报的ArrayIndexOutOfBoundsException" class="headerlink" title="写RCFilc不停报的ArrayIndexOutOfBoundsException"></a>写RCFilc不停报的ArrayIndexOutOfBoundsException</h1><pre><code>场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
-最近在一个试运行集群中经常发生数据无法入库情况，然后看了一下系统日志，发现日志在不停的抛出如下异常。
-</code></pre><h2 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h2><p>登录及其的查看异常（不停歇的报此错）如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">java.lang.ArrayIndexOutOfBoundsException: <span class="number">7107</span></div><div class="line">   at org.apache.hadoop.fs.FSOutputSummer.write(FSOutputSummer.java:<span class="number">76</span>)</div><div class="line">   at org.apache.hadoop.fs.FSDataOutputStream$PositionCache.write(FSDataOutputStream.java:<span class="number">50</span>)</div><div class="line">    at java.io.DataOutputStream.writeInt(DataOutputStream.java:<span class="number">197</span>)</div></pre></td></tr></table></figure>
-<p>首先，我看到此日志，我内心第一反应，草泥马的，报尼玛错。</p>
-<h2 id="步骤2"><a href="#步骤2" class="headerlink" title="步骤2"></a>步骤2</h2><p>看到此异常后，我第一反应是得先找到第一个报错的地方并且查看的此报错的原因。然后我就开始看此处涉及到hdfs的代码，想看看为什么会报错。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sync</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">		<span class="keyword">if</span> (sync != <span class="keyword">null</span> &amp;&amp; lastSyncPos != out.getPos()) &#123;</div><div class="line">			out.writeInt(SYNC_ESCAPE); <span class="comment">// mark the start of the sync</span></div><div class="line">			out.write(sync); <span class="comment">// write sync</span></div><div class="line">			lastSyncPos = out.getPos(); <span class="comment">// update lastSyncPos</span></div><div class="line">		&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>RCFile.java中如上代码，程序在out.writeInt就开始报错了，lastSyncPos无法的更新。<br>但是在上层使用如下代码的判断的调用sync.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkAndWriteSync</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">	<span class="keyword">if</span> (sync != <span class="keyword">null</span> &amp;&amp; out.getPos() &gt;= lastSyncPos + SYNC_INTERVAL) &#123;</div><div class="line">		sync();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>好吧，这writeInt报错了，这部一直会错吗，我就醉了。</p>
-<h2 id="步骤3"><a href="#步骤3" class="headerlink" title="步骤3"></a>步骤3</h2><p>发现了此处蛋疼的地方后，我将重点转向了第一个报错的地方。因为他是不确定时间报错，我就开始启动程序后，时常的查看日志，终于在之后的某个早上，我在查看日志时，我发现了第一个报错的地方。然后在那上面看到了如下异常</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">java.io.IOException: All datanodes ...:<span class="number">50010</span> are bad. Aborting...</div><div class="line">  at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:<span class="number">1147</span>)</div><div class="line">at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:<span class="number">945</span>)</div><div class="line">at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:<span class="number">496</span>)</div></pre></td></tr></table></figure>
-<p>然后在日志中找第一个报次错的地方，还发现了其他的报错</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[ShortCircuitCache_SlotReleaser] (org.apache.hadoop.hdfs.shortcircuit.ShortCircuitCache$SlotReleaser.run:<span class="number">215</span>)  - ShortCircuitCache(<span class="number">0x3fbdc007</span>): failed to release <span class="keyword">short</span>-<span class="function">circuit shared memory slot <span class="title">Slot</span><span class="params">(slotIdx=<span class="number">1</span>, shm=DfsClientShm(<span class="number">7</span>bf35643718a2bf0a9d85884afb8f4f8)</span>) by sending ReleaseShortCircuitAccessRequestProto to /var/run/hdfs-sockets/dn.  Closing shared memory segment.</span></div><div class="line"></div><div class="line">java.net.ConnectException: <span class="title">connect</span><span class="params">(<span class="number">2</span>)</span> error: Connection refused when trying to connect to '/var/run/hdfs-sockets/dn'</div><div class="line"></div><div class="line">29 七月 2016 10:14:17,390 WARN  [ShortCircuitCache_SlotReleaser] <span class="params">(org.apache.hadoop.hdfs.shortcircuit.DfsClientShmManager$EndpointShmManager.shutdown:<span class="number">380</span>)</span>  - <span class="title">EndpointShmManager</span><span class="params">(<span class="number">10.139</span><span class="number">.90</span><span class="number">.136</span>:<span class="number">50010</span>, parent=ShortCircuitShmManager(<span class="number">5</span>c89577b)</span>): error shutting down shm: got IOException calling <span class="title">shutdown</span><span class="params">(SHUT_RDWR)</span></div><div class="line"></div><div class="line">java.nio.channels.ClosedChannelException</div></pre></td></tr></table></figure>
-<h2 id="步骤4"><a href="#步骤4" class="headerlink" title="步骤4"></a>步骤4</h2><p>看到这些日志后，我感觉在10:14一定发生了什么，于是我开始寻找datanode中相关时间点日志STARTUP_MSG: Starting DataNode这种datanode启动信息，我内心一万只草泥马飘过。<br>在此日志的上面我看到了诸如的的日志。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="number">2016</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">10</span>:<span class="number">14</span>:<span class="number">12</span>,<span class="number">374</span> INFO org.apache.hadoop.util.JvmPauseMonitor: <span class="function">Detected pause in JVM or host <span class="title">machine</span> <span class="params">(eg GC)</span>: pause of approximately 4519ms</span></div><div class="line">No GCs detected</div></pre></td></tr></table></figure>
-<p>然后就是</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="number">2016</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">10</span>:<span class="number">14</span>:<span class="number">36</span>,<span class="number">720</span> INFO org.apache.hadoop.hdfs.server.datanode.DataNode: STARTUP_MSG:</div></pre></td></tr></table></figure>
-<p>中间隔了三十秒。<br>从这种情况看感觉应该是datanode进程死了，然后又重启了。</p>
-<h2 id="步骤5"><a href="#步骤5" class="headerlink" title="步骤5"></a>步骤5</h2><p>然后我就开始全力找为什么此datanode会挂。列出几点信息，这些信息是感觉有点蛋疼的。</p>
-<ol>
-<li>supervisord.log的日志中有2016-07-29 10:14:16,820 INFO exited: 411-hdfs-DATANODE (terminated by SIGKILL; not expected)此时间正好在10:14:12到10:14:36之间。</li>
-<li>之前无聊时看过datanode虚拟机参数，记得有这么个参数。-XX:OnOutOfMemoryError=/usr/lib64/cmf/service/common/killparent.sh<br>我开始怀疑是不是我这个参数给datanode进程发了kill信号，然后又重新启动。在/var/log/messages中也没发现oom的异常。<h2 id="步骤6"><a href="#步骤6" class="headerlink" title="步骤6"></a>步骤6</h2>开始看killparent.sh脚本，发现在调用此脚本时会将一个字符串写入一个文件，但是我在系统中没有发现这个文件，然后我就有点懵逼了。然后我在此脚本中加了一行我自己的代码，等再看看会不会再出现这种情况。<h2 id="步骤7"><a href="#步骤7" class="headerlink" title="步骤7"></a>步骤7</h2>跟了一个周末后，发现killparent.sh的脚本没有调用。然后开始在晚上搜索，看了一丢丢的hdfs源码，可以确定的是flume的hdfs客户端和datanode之间的连接断了，然后导致，datanode报超时错误，而在flume中报读取流出错。<h2 id="步骤8"><a href="#步骤8" class="headerlink" title="步骤8"></a>步骤8</h2>然后开始了两天完全懵逼的时光，在网上看到说可能ulimit对进程的限制，然后就开始在的集群中查看lsof中flume和datanode的链接使用数量。监控了一晚上他妈屁收获都没有，然后就放弃了。<h2 id="步骤9"><a href="#步骤9" class="headerlink" title="步骤9"></a>步骤9</h2>然后开始猜测是不是flume进程的某些原因，因为我在成个几次重启的过程中没有重启过datanode，而只重启了flume，但是重启了之后集群就可以开始加载了。然后又开始做尝试，同时看到看tailf过滤datanode日志中的error和warn信息和flume的出错日志。不停等，终于等到了出错，发现只有datanode报连接异常的时候才会导致flume出错，这时候就断定是flume和datanode之间的连接，突然想到可能是gc，想到之前的看过datanode没有full gc，那就可能是flume，看了flumegc日志，尼玛在出错时间点之前还真有一次400多秒的gc。我内心是崩溃的。<h2 id="步骤10"><a href="#步骤10" class="headerlink" title="步骤10"></a>步骤10</h2>明天开始尝试将timeout时间再延长，将超时时间设置为3600，跑了周末两天都没什么问题。<h2 id="暂时告一段落"><a href="#暂时告一段落" class="headerlink" title="暂时告一段落"></a>暂时告一段落</h2></li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/Writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cj1z51tfx000ei49s1wkg4pnp" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flume/">flume</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gc/">gc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
 
 
-  
-
+  <nav id="page-nav">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">__('next') &raquo;</a>
+  </nav>
 </section>
         
           <aside id="sidebar">
@@ -665,7 +684,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 10px;">hdfs</a> <a href="/tags/life/" style="font-size: 15px;">life</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a>
+      <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 13.33px;">hdfs</a> <a href="/tags/life/" style="font-size: 16.67px;">life</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a>
     </div>
   </div>
 
@@ -687,6 +706,10 @@
       <ul>
         
           <li>
+            <a href="/2017/04/26/balance-in-hdfs/">balance in hdfs</a>
+          </li>
+        
+          <li>
             <a href="/2017/04/25/What-region-will-do-when-receive-a-get/">What region will do when receive a get</a>
           </li>
         
@@ -700,10 +723,6 @@
         
           <li>
             <a href="/2017/04/12/Something-about-memstore-in-HBase/">Something about memstore in HBase</a>
-          </li>
-        
-          <li>
-            <a href="/2017/04/09/Some-Points-For-MVCC-in-HBase/">Some Points For MVCC in HBase</a>
           </li>
         
       </ul>
