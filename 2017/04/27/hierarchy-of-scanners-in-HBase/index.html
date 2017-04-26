@@ -3,18 +3,30 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Bean</title>
+  <title>hierarchy of scanners in HBase | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="scanner分层">
+  <meta name="description" content="hierarchy of scanners in HBase一个Region一个RegionScannerImpl
+RegionScannerImpl
+​    -&amp;gt; StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) 
+​        -&amp;gt; MemStoreScanner
+​">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Bean">
-<meta property="og:url" content="http://yoursite.com/2017/04/27/scanner分成/index.html">
+<meta property="og:title" content="hierarchy of scanners in HBase">
+<meta property="og:url" content="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/index.html">
 <meta property="og:site_name" content="Bean">
-<meta property="og:description" content="scanner分层">
-<meta property="og:updated_time" content="2017-04-26T16:09:51.000Z">
+<meta property="og:description" content="hierarchy of scanners in HBase一个Region一个RegionScannerImpl
+RegionScannerImpl
+​    -&amp;gt; StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) 
+​        -&amp;gt; MemStoreScanner
+​">
+<meta property="og:updated_time" content="2017-04-26T16:24:18.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Bean">
-<meta name="twitter:description" content="scanner分层">
+<meta name="twitter:title" content="hierarchy of scanners in HBase">
+<meta name="twitter:description" content="hierarchy of scanners in HBase一个Region一个RegionScannerImpl
+RegionScannerImpl
+​    -&amp;gt; StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) 
+​        -&amp;gt; MemStoreScanner
+​">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -63,26 +75,50 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-scanner分成" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-hierarchy-of-scanners-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/04/27/scanner分成/" class="article-date">
-  <time datetime="2017-04-26T16:09:46.000Z" itemprop="datePublished">2017-04-27</time>
+    <a href="/2017/04/27/hierarchy-of-scanners-in-HBase/" class="article-date">
+  <time datetime="2017-04-26T16:22:45.000Z" itemprop="datePublished">2017-04-27</time>
 </a>
     
   </div>
   <div class="article-inner">
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      hierarchy of scanners in HBase
+    </h1>
+  
+
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <p>scanner分层</p>
+        <h1 id="hierarchy-of-scanners-in-HBase"><a href="#hierarchy-of-scanners-in-HBase" class="headerlink" title="hierarchy of scanners in HBase"></a>hierarchy of scanners in HBase</h1><p>一个Region一个RegionScannerImpl</p>
+<p>RegionScannerImpl</p>
+<p>​    -&gt; StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) </p>
+<p>​        -&gt; MemStoreScanner</p>
+<p>​        -&gt; StoreFileScanner </p>
+<p>​         (MemStoreScanner 和 StoreFileScanner 组成heap ，也是一个KeyValueHeap， 用的是store的Comparator)</p>
+<p><em>可以看到一些问题和关注点</em></p>
+<ol>
+<li>RegionScannerImpl里使用StoreScanner 时，各种heap的操作主要需要关注一个记录的组织，因为一条记录的不同列族保存在不同的store中。还要关注什么时候结束。</li>
+<li>StoreScanner中的两种scanner（StoreFileScanner可能有多个）需要协调在不同scanner中的不同的版本的问题。还要关注什么时候结束。</li>
+<li>MemStoreScanner貌似应该不难。</li>
+<li>StoreFileScanner需要主要里meta index 和bf index的处理，以及blockcache的使用。</li>
+</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/27/scanner分成/" data-id="cj1z6f24a0008sz9s2zpo0unl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/" data-id="cj1z6xwgh0004689s636egr0j" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
     </footer>
   </div>
   
@@ -143,7 +179,7 @@
       <ul>
         
           <li>
-            <a href="/2017/04/27/scanner分成/">(no title)</a>
+            <a href="/2017/04/27/hierarchy-of-scanners-in-HBase/">hierarchy of scanners in HBase</a>
           </li>
         
           <li>
