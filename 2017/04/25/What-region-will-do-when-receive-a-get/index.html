@@ -11,13 +11,13 @@
 获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="what region will do when receiving a get">
-<meta property="og:url" content="http://yoursite.com/2017/04/25/What-region-will-do-when-receive-a-get/index.html">
+<meta property="og:url" content="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/index.html">
 <meta property="og:site_name" content="Bean">
 <meta property="og:description" content="Region收到get请求后的操作​    hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。
 处理scanner处理scanner大致分为几个步骤：
 
 获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang">
-<meta property="og:updated_time" content="2017-04-26T15:50:38.000Z">
+<meta property="og:updated_time" content="2017-04-26T16:08:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="what region will do when receiving a get">
 <meta name="twitter:description" content="Region收到get请求后的操作​    hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。
@@ -72,9 +72,9 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-What-region-will-do-when-receive-a-get" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-what-region-will-do-when-receive-a-get" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/04/25/What-region-will-do-when-receive-a-get/" class="article-date">
+    <a href="/2017/04/25/what-region-will-do-when-receive-a-get/" class="article-date">
   <time datetime="2017-04-25T14:40:14.000Z" itemprop="datePublished">2017-04-25</time>
 </a>
     
@@ -117,7 +117,6 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scanner.next(results);</div></pre></td></tr></table></figure>
 <p>里面一堆逻辑的，实际获取数据</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> KeyValue <span class="title">populateResult</span><span class="params">(List&lt;Cell&gt; results, KeyValueHeap heap, <span class="keyword">int</span> limit,</span></span></div><div class="line">    <span class="keyword">byte</span>[] currentRow, <span class="keyword">int</span> offset, <span class="keyword">short</span> length) <span class="keyword">throws</span> IOException &#123;</div><div class="line">  KeyValue nextKv;</div><div class="line">    <span class="keyword">do</span> &#123;</div><div class="line">      heap.next(results, limit - results.size());</div><div class="line">      <span class="keyword">if</span> (limit &gt; <span class="number">0</span> &amp;&amp; results.size() == limit) &#123;</div><div class="line">        <span class="keyword">return</span> KV_LIMIT;</div><div class="line">      &#125;</div><div class="line">      nextKv = heap.peek();</div><div class="line">    &#125; <span class="keyword">while</span> (nextKv != <span class="keyword">null</span> &amp;&amp; nextKv.matchingRow(currentRow, offset, length));</div><div class="line">  <span class="keyword">return</span> nextKv;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>​</p>
 </li>
 </ol>
 <h2 id="scanner内部"><a href="#scanner内部" class="headerlink" title="scanner内部"></a>scanner内部</h2><h3 id="memscanner"><a href="#memscanner" class="headerlink" title="memscanner"></a>memscanner</h3><p>要从memstore中获取想要的数据，感觉不会很难，因为memstore是个有一定顺序。</p>
@@ -131,7 +130,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/What-region-will-do-when-receive-a-get/" data-id="cj1z5vogo000f5d9skp0aqr28" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj1z6ennf000hs39sk50p1gzw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -152,7 +151,7 @@
     </a>
   
   
-    <a href="/2017/04/16/Some-thinkings-about-going-back-home/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2017/04/16/some-thinkings-about-going-back-home/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">some thinkings about going back home</div>
     </a>
@@ -209,19 +208,19 @@
           </li>
         
           <li>
-            <a href="/2017/04/25/What-region-will-do-when-receive-a-get/">what region will do when receiving a get</a>
+            <a href="/2017/04/25/what-region-will-do-when-receive-a-get/">what region will do when receiving a get</a>
           </li>
         
           <li>
-            <a href="/2017/04/16/Some-thinkings-about-going-back-home/">some thinkings about going back home</a>
+            <a href="/2017/04/16/some-thinkings-about-going-back-home/">some thinkings about going back home</a>
           </li>
         
           <li>
-            <a href="/2017/04/13/Filters-in-Read-Path-of-HBase/">filters in read path of HBase</a>
+            <a href="/2017/04/13/filters-in-read-path-of-HBase/">filters in read path of HBase</a>
           </li>
         
           <li>
-            <a href="/2017/04/12/Something-about-memstore-in-HBase/">something about memstore in HBase</a>
+            <a href="/2017/04/12/something-about-memstore-in-HBase/">something about memstore in HBase</a>
           </li>
         
       </ul>

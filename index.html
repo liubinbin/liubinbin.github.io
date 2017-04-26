@@ -126,7 +126,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj1z5vogr000k5d9skofb4c19" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj1z6enmt0000s39sov0uswi1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -138,9 +138,9 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 
 
   
-    <article id="post-What-region-will-do-when-receive-a-get" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-what-region-will-do-when-receive-a-get" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/04/25/What-region-will-do-when-receive-a-get/" class="article-date">
+    <a href="/2017/04/25/what-region-will-do-when-receive-a-get/" class="article-date">
   <time datetime="2017-04-25T14:40:14.000Z" itemprop="datePublished">2017-04-25</time>
 </a>
     
@@ -152,7 +152,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/25/What-region-will-do-when-receive-a-get/">what region will do when receiving a get</a>
+      <a class="article-title" href="/2017/04/25/what-region-will-do-when-receive-a-get/">what region will do when receiving a get</a>
     </h1>
   
 
@@ -183,7 +183,6 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scanner.next(results);</div></pre></td></tr></table></figure>
 <p>里面一堆逻辑的，实际获取数据</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> KeyValue <span class="title">populateResult</span><span class="params">(List&lt;Cell&gt; results, KeyValueHeap heap, <span class="keyword">int</span> limit,</span></span></div><div class="line">    <span class="keyword">byte</span>[] currentRow, <span class="keyword">int</span> offset, <span class="keyword">short</span> length) <span class="keyword">throws</span> IOException &#123;</div><div class="line">  KeyValue nextKv;</div><div class="line">    <span class="keyword">do</span> &#123;</div><div class="line">      heap.next(results, limit - results.size());</div><div class="line">      <span class="keyword">if</span> (limit &gt; <span class="number">0</span> &amp;&amp; results.size() == limit) &#123;</div><div class="line">        <span class="keyword">return</span> KV_LIMIT;</div><div class="line">      &#125;</div><div class="line">      nextKv = heap.peek();</div><div class="line">    &#125; <span class="keyword">while</span> (nextKv != <span class="keyword">null</span> &amp;&amp; nextKv.matchingRow(currentRow, offset, length));</div><div class="line">  <span class="keyword">return</span> nextKv;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>​</p>
 </li>
 </ol>
 <h2 id="scanner内部"><a href="#scanner内部" class="headerlink" title="scanner内部"></a>scanner内部</h2><h3 id="memscanner"><a href="#memscanner" class="headerlink" title="memscanner"></a>memscanner</h3><p>要从memstore中获取想要的数据，感觉不会很难，因为memstore是个有一定顺序。</p>
@@ -197,7 +196,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/What-region-will-do-when-receive-a-get/" data-id="cj1z5vogo000f5d9skp0aqr28" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj1z6ennf000hs39sk50p1gzw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -209,9 +208,9 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 
 
   
-    <article id="post-Some-thinkings-about-going-back-home" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-some-thinkings-about-going-back-home" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/04/16/Some-thinkings-about-going-back-home/" class="article-date">
+    <a href="/2017/04/16/some-thinkings-about-going-back-home/" class="article-date">
   <time datetime="2017-04-16T15:00:56.000Z" itemprop="datePublished">2017-04-16</time>
 </a>
     
@@ -223,7 +222,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/16/Some-thinkings-about-going-back-home/">some thinkings about going back home</a>
+      <a class="article-title" href="/2017/04/16/some-thinkings-about-going-back-home/">some thinkings about going back home</a>
     </h1>
   
 
@@ -239,7 +238,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/16/Some-thinkings-about-going-back-home/" data-id="cj1z5vogk00085d9swsuq51cb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/16/some-thinkings-about-going-back-home/" data-id="cj1z6enna0009s39sfj18d67j" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -251,9 +250,9 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 
 
   
-    <article id="post-Filters-in-Read-Path-of-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-filters-in-read-path-of-HBase" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/04/13/Filters-in-Read-Path-of-HBase/" class="article-date">
+    <a href="/2017/04/13/filters-in-read-path-of-HBase/" class="article-date">
   <time datetime="2017-04-12T16:19:06.000Z" itemprop="datePublished">2017-04-13</time>
 </a>
     
@@ -265,7 +264,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/13/Filters-in-Read-Path-of-HBase/">filters in read path of HBase</a>
+      <a class="article-title" href="/2017/04/13/filters-in-read-path-of-HBase/">filters in read path of HBase</a>
     </h1>
   
 
@@ -313,7 +312,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/13/Filters-in-Read-Path-of-HBase/" data-id="cj1z5vog400005d9sj7rp9w5u" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/13/filters-in-read-path-of-HBase/" data-id="cj1z6enmy0001s39s1jt26ng3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -325,9 +324,9 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 
 
   
-    <article id="post-Something-about-memstore-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-something-about-memstore-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/04/12/Something-about-memstore-in-HBase/" class="article-date">
+    <a href="/2017/04/12/something-about-memstore-in-HBase/" class="article-date">
   <time datetime="2017-04-11T16:01:56.000Z" itemprop="datePublished">2017-04-12</time>
 </a>
     
@@ -339,7 +338,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/12/Something-about-memstore-in-HBase/">something about memstore in HBase</a>
+      <a class="article-title" href="/2017/04/12/something-about-memstore-in-HBase/">something about memstore in HBase</a>
     </h1>
   
 
@@ -392,7 +391,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/Something-about-memstore-in-HBase/" data-id="cj1z5vogm000d5d9s5yasptpt" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj1z6ennd000cs39s6c6dnjax" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -404,9 +403,9 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 
 
   
-    <article id="post-Some-Points-For-MVCC-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-some-points-about-MVCC-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/04/09/Some-Points-For-MVCC-in-HBase/" class="article-date">
+    <a href="/2017/04/09/some-points-about-MVCC-in-HBase/" class="article-date">
   <time datetime="2017-04-09T15:55:35.000Z" itemprop="datePublished">2017-04-09</time>
 </a>
     
@@ -418,7 +417,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/09/Some-Points-For-MVCC-in-HBase/">some points about MVCC in HBase</a>
+      <a class="article-title" href="/2017/04/09/some-points-about-MVCC-in-HBase/">some points about MVCC in HBase</a>
     </h1>
   
 
@@ -455,7 +454,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/Some-Points-For-MVCC-in-HBase/" data-id="cj1z5vogh00055d9s9t5r0zbs" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj1z6enn80008s39s134wspng" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -467,9 +466,9 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 
 
   
-    <article id="post-Import-Hbase-Into-Eclipse" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-import-HBase-into-eclipse" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/03/26/Import-Hbase-Into-Eclipse/" class="article-date">
+    <a href="/2017/03/26/import-HBase-into-eclipse/" class="article-date">
   <time datetime="2017-03-26T03:20:27.000Z" itemprop="datePublished">2017-03-26</time>
 </a>
     
@@ -481,7 +480,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/26/Import-Hbase-Into-Eclipse/">import HBase into eclipse</a>
+      <a class="article-title" href="/2017/03/26/import-HBase-into-eclipse/">import HBase into eclipse</a>
     </h1>
   
 
@@ -502,7 +501,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/Import-Hbase-Into-Eclipse/" data-id="cj1z5voge00045d9syx2s7k90" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj1z6enn50005s39sybn2jy0m" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -514,9 +513,9 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 
 
   
-    <article id="post-First-weekend-in-hangzhou" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-first-weekend-in-Hangzhou" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/03/25/First-weekend-in-hangzhou/" class="article-date">
+    <a href="/2017/03/25/first-weekend-in-Hangzhou/" class="article-date">
   <time datetime="2017-03-25T13:25:20.000Z" itemprop="datePublished">2017-03-25</time>
 </a>
     
@@ -528,7 +527,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/25/First-weekend-in-hangzhou/">first weekend in Hangzhou</a>
+      <a class="article-title" href="/2017/03/25/first-weekend-in-Hangzhou/">first weekend in Hangzhou</a>
     </h1>
   
 
@@ -550,7 +549,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/First-weekend-in-hangzhou/" data-id="cj1z5vogd00035d9s0nso2s4s" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/first-weekend-in-Hangzhou/" data-id="cj1z6enn30004s39sbkchgb9k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -562,9 +561,9 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 
 
   
-    <article id="post-First-Impression-Of-Hbase" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-first-impression-of-HBase" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/03/22/First-Impression-Of-Hbase/" class="article-date">
+    <a href="/2017/03/22/first-impression-of-HBase/" class="article-date">
   <time datetime="2017-03-22T15:14:45.000Z" itemprop="datePublished">2017-03-22</time>
 </a>
     
@@ -576,7 +575,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/22/First-Impression-Of-Hbase/">first impression Of HBase</a>
+      <a class="article-title" href="/2017/03/22/first-impression-of-HBase/">first impression Of HBase</a>
     </h1>
   
 
@@ -598,7 +597,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/First-Impression-Of-Hbase/" data-id="cj1z5vog900015d9sbjic4uob" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/first-impression-of-HBase/" data-id="cj1z6enn20003s39stqiadpdc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -610,9 +609,9 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 
 
   
-    <article id="post-To-HangZhou" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-to-Hangzhou" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/03/20/To-HangZhou/" class="article-date">
+    <a href="/2017/03/20/to-Hangzhou/" class="article-date">
   <time datetime="2017-03-20T14:01:37.000Z" itemprop="datePublished">2017-03-20</time>
 </a>
     
@@ -624,7 +623,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/20/To-HangZhou/">to Hangzhou</a>
+      <a class="article-title" href="/2017/03/20/to-Hangzhou/">to Hangzhou</a>
     </h1>
   
 
@@ -646,7 +645,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/To-HangZhou/" data-id="cj1z5vogl000a5d9swk4mszvm" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/to-Hangzhou/" data-id="cj1z6ennf000es39st8c1u03i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -710,19 +709,19 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
           </li>
         
           <li>
-            <a href="/2017/04/25/What-region-will-do-when-receive-a-get/">what region will do when receiving a get</a>
+            <a href="/2017/04/25/what-region-will-do-when-receive-a-get/">what region will do when receiving a get</a>
           </li>
         
           <li>
-            <a href="/2017/04/16/Some-thinkings-about-going-back-home/">some thinkings about going back home</a>
+            <a href="/2017/04/16/some-thinkings-about-going-back-home/">some thinkings about going back home</a>
           </li>
         
           <li>
-            <a href="/2017/04/13/Filters-in-Read-Path-of-HBase/">filters in read path of HBase</a>
+            <a href="/2017/04/13/filters-in-read-path-of-HBase/">filters in read path of HBase</a>
           </li>
         
           <li>
-            <a href="/2017/04/12/Something-about-memstore-in-HBase/">something about memstore in HBase</a>
+            <a href="/2017/04/12/something-about-memstore-in-HBase/">something about memstore in HBase</a>
           </li>
         
       </ul>
