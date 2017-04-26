@@ -84,12 +84,18 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="hierarchy-of-scanners-in-HBase"><a href="#hierarchy-of-scanners-in-HBase" class="headerlink" title="hierarchy of scanners in HBase"></a>hierarchy of scanners in HBase</h1><p>一个Region一个RegionScannerImpl</p>
-<p>RegionScannerImpl</p>
-<p>​    -&gt; StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) </p>
-<p>​        -&gt; MemStoreScanner</p>
-<p>​        -&gt; StoreFileScanner </p>
-<p>​         (MemStoreScanner 和 StoreFileScanner 组成heap ，也是一个KeyValueHeap， 用的是store的Comparator)</p>
-<p><em>可以看到一些问题和关注点</em></p>
+<hr>
+<p>RegionScannerImpl (下面代表了层级)</p>
+<ul>
+<li>StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) <ul>
+<li>MemStoreScanner</li>
+<li>StoreFileScanner </li>
+</ul>
+</li>
+</ul>
+<p>​      (MemStoreScanner 和 StoreFileScanner 组成heap ，也是一个KeyValueHeap， 用的是store的Comparator)</p>
+<hr>
+<p><strong>可以看到一些问题和关注点</strong></p>
 <ol>
 <li>RegionScannerImpl里使用StoreScanner 时，各种heap的操作主要需要关注一个记录的组织，因为一条记录的不同列族保存在不同的store中。还要关注什么时候结束。</li>
 <li>StoreScanner中的两种scanner（StoreFileScanner可能有多个）需要协调在不同scanner中的不同的版本的问题。还要关注什么时候结束。</li>
@@ -100,7 +106,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/" data-id="cj1z6xwgh0004689s636egr0j" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/" data-id="cj1z71mfa00048z9sd36oi4gi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -177,7 +183,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj1z6xwg10000689sqx4yb373" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj1z71mf000008z9sxxn5vmje" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -247,7 +253,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj1z6xwha000m689su68qypy5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj1z71mfp000j8z9sh81i4q2w" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -289,7 +295,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/16/some-thinkings-about-going-back-home/" data-id="cj1z6xwh7000j689skokxiy73" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/16/some-thinkings-about-going-back-home/" data-id="cj1z71mfh00098z9sszlvu2u6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -363,7 +369,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/13/filters-in-read-path-of-HBase/" data-id="cj1z6xwgg0003689srqgcq4oe" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/13/filters-in-read-path-of-HBase/" data-id="cj1z71mf500018z9suzw87j14" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -442,7 +448,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj1z6xwh2000c689sqvonl7jp" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj1z71mfn000e8z9svcd39nzj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -505,7 +511,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj1z6xwgv0009689shyg26068" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj1z71mfn000c8z9sno0uhk2i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -552,7 +558,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj1z6xwgt0008689sj5558auf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj1z71mff00088z9s2cu5f934" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -600,7 +606,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/first-weekend-in-Hangzhou/" data-id="cj1z6xwgn0005689sdah2veej" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/first-weekend-in-Hangzhou/" data-id="cj1z71mfd00058z9sxlv8pi69" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -648,7 +654,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/first-impression-of-HBase/" data-id="cj1z6xwgb0001689sezuz8gxh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/22/first-impression-of-HBase/" data-id="cj1z71mf900038z9scotf3w1q" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
