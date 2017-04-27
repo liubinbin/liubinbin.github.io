@@ -3,14 +3,36 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Tag: hdfs | Bean</title>
+  <title>first impression Of HBase | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Bean">
-<meta property="og:url" content="http://yoursite.com/tags/hdfs/index.html">
+  <meta name="description" content="Hbase的第一印象从今天开始接触hbase，计划使用一年的时间深入研究hbase，jvm和并发。其他的部分可能会使用python做些有意思的事情。
+对于hbase，有几点还是比较有意思的。
+
+提供行级锁，提供一定级别的事务机制
+数据自动整合，包括在HFile中的排序，HFile的合并和WAL机制
+提供了列族的概念，使得标结构的设计多了一个选择，标结构设计模式和DBMS不太一样
+基于HDFS和zk">
+<meta property="og:type" content="article">
+<meta property="og:title" content="first impression Of HBase">
+<meta property="og:url" content="http://yoursite.com/2017/03/22/first-impression-of-HBase/index.html">
 <meta property="og:site_name" content="Bean">
+<meta property="og:description" content="Hbase的第一印象从今天开始接触hbase，计划使用一年的时间深入研究hbase，jvm和并发。其他的部分可能会使用python做些有意思的事情。
+对于hbase，有几点还是比较有意思的。
+
+提供行级锁，提供一定级别的事务机制
+数据自动整合，包括在HFile中的排序，HFile的合并和WAL机制
+提供了列族的概念，使得标结构的设计多了一个选择，标结构设计模式和DBMS不太一样
+基于HDFS和zk">
+<meta property="og:updated_time" content="2017-04-26T15:52:14.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Bean">
+<meta name="twitter:title" content="first impression Of HBase">
+<meta name="twitter:description" content="Hbase的第一印象从今天开始接触hbase，计划使用一年的时间深入研究hbase，jvm和并发。其他的部分可能会使用python做些有意思的事情。
+对于hbase，有几点还是比较有意思的。
+
+提供行级锁，提供一定级别的事务机制
+数据自动整合，包括在HFile中的排序，HFile的合并和WAL机制
+提供了列族的概念，使得标结构的设计多了一个选择，标结构设计模式和DBMS不太一样
+基于HDFS和zk">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -59,58 +81,72 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/04/26/balance-in-hdfs/" class="archive-article-date">
-  <time datetime="2017-04-26T15:33:10.000Z" itemprop="datePublished">Apr 26</time>
+        <section id="main"><article id="post-first-impression-of-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/03/22/first-impression-of-HBase/" class="article-date">
+  <time datetime="2017-03-22T15:14:45.000Z" itemprop="datePublished">2017-03-22</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/26/balance-in-hdfs/">balance in hdfs</a>
+    <h1 class="article-title" itemprop="name">
+      first impression Of HBase
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" class="archive-article-date">
-  <time datetime="2017-03-08T05:23:28.000Z" itemprop="datePublished">Mar 8</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/">writing RCFile throws ArrayIndexOutOfBoundsException again and again</a>
-    </h1>
-  
+        <h1 id="Hbase的第一印象"><a href="#Hbase的第一印象" class="headerlink" title="Hbase的第一印象"></a>Hbase的第一印象</h1><p>从今天开始接触hbase，计划使用一年的时间深入研究hbase，jvm和并发。其他的部分可能会使用python做些有意思的事情。</p>
+<p>对于hbase，有几点还是比较有意思的。</p>
+<ul>
+<li>提供行级锁，提供一定级别的事务机制</li>
+<li>数据自动整合，包括在HFile中的排序，HFile的合并和WAL机制</li>
+<li>提供了列族的概念，使得标结构的设计多了一个选择，标结构设计模式和DBMS不太一样</li>
+<li>基于HDFS和zk基础提供一定的高可用</li>
+<li>TODO</li>
+</ul>
+<p>此文章会不断补充，并且会在此基础上可能会写几篇关于hbase的系统的文章以及源代码分析。</p>
 
-    </header>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/03/22/first-impression-of-HBase/" data-id="cj20k5sfo0005399sr7r1i1cf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/03/25/first-weekend-in-Hangzhou/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          first weekend in Hangzhou
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/03/20/to-Hangzhou/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">to Hangzhou</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         

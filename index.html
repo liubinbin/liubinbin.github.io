@@ -61,44 +61,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-to-Hangzhou" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/04/27/to-Hangzhou/" class="article-date">
-  <time datetime="2017-04-27T15:16:41.000Z" itemprop="datePublished">2017-04-27</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/27/to-Hangzhou/">to Hangzhou</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/27/to-Hangzhou/" data-id="cj20jz1940003xp9s22ogjbsh" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-hierarchy-of-scanners-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/04/27/hierarchy-of-scanners-in-HBase/" class="article-date">
@@ -144,7 +106,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/" data-id="cj20jz18z0001xp9sy21chs6g" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/" data-id="cj20k5sfp0008399syar30dak" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -221,7 +183,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj20jz18v0000xp9sp2z5m3j8" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj20k5sf90000399sx5lw44bq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -233,7 +195,482 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
 
 
   
+    <article id="post-what-region-will-do-when-receive-a-get" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/25/what-region-will-do-when-receive-a-get/" class="article-date">
+  <time datetime="2017-04-25T14:40:14.000Z" itemprop="datePublished">2017-04-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/25/what-region-will-do-when-receive-a-get/">what region will do when receiving a get</a>
+    </h1>
+  
 
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Region收到get请求后的操作"><a href="#Region收到get请求后的操作" class="headerlink" title="Region收到get请求后的操作"></a>Region收到get请求后的操作</h1><p>​    hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。</p>
+<h2 id="处理scanner"><a href="#处理scanner" class="headerlink" title="处理scanner"></a>处理scanner</h2><p>处理scanner大致分为几个步骤：</p>
+<ol>
+<li><p>获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang，bf等）</p>
+<p>获取所有的scanner</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//对此region中每个store（列族）都需要获取scanner</span></div><div class="line"><span class="keyword">for</span> (Map.Entry&lt;<span class="keyword">byte</span>[], NavigableSet&lt;<span class="keyword">byte</span>[]&gt;&gt; entry : scan.getFamilyMap().entrySet()) &#123;</div><div class="line">  <span class="comment">//此方法是获取了scanner，过滤了一些scanner，并且还粗略的检索到需要的位置。</span></div><div class="line">  <span class="comment">//此scanner是一个store对应的</span></div><div class="line">  KeyValueScanner scanner = store.getScanner(scan, entry.getValue(), <span class="keyword">this</span>.readPt);</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.filter == <span class="keyword">null</span> || !scan.doLoadColumnFamiliesOnDemand() || <span class="keyword">this</span>.filter.isFamilyEssential(entry.getKey())) &#123;</div><div class="line">     scanners.add(scanner);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">     <span class="comment">//比如有filter的情况</span></div><div class="line">     joinedScanners.add(scanner);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">//生成俩KeyValueHeap，此处的比较器不知道啥意思。真他妈尴尬</span></div><div class="line">initializeKVHeap(scanners, joinedScanners, region);</div></pre></td></tr></table></figure>
+<p>1.1 跟入store.getScanner方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//获取所有的file，打开文件，做一些过滤等。</span></div><div class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</div><div class="line">seekScanners(scanners, matcher.getStartKey(), explicitColumnQuery &amp;&amp; lazySeekEnabledGlobally, isParallelSeekEnabled);</div><div class="line">resetKVHeap(scanners, store.getComparator());</div></pre></td></tr></table></figure>
+<p>1.1.1 getScannersNoCompaction()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</div><div class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="keyword">this</span>.readPt));</div></pre></td></tr></table></figure>
+<p>​    主要两层，store.getScanners中是获取所有的file，打开文件（获取reader，此处需要注意，和下面的file的scanner的处理有关系）</p>
+<p>​    selectScannersFrom主要做过滤，主要是如下方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">kvs.shouldUseScanner(scan, columns, expiredTimestampCutoff)</div><div class="line">  此方法两个分支，mem和file值得关注，此处就不说了。反正用了一些range和bf（bf只针对单行和单行列族）</div><div class="line">  bf的过滤有一个判断（!scan.isGetScan()），如果是get，并且isStartRowAndEqualsStopRow为<span class="keyword">true</span>才走bf。</div></pre></td></tr></table></figure>
+<p>1.1.2 seekScanners</p>
+<p>​    bf判断，时间判断，伪造kv使其跳过此个检索吧。    </p>
+<p>1.1.3 resetKVHeap</p>
+<p>​    组织成一个KeyValueHeap，比较器有代表时间的id等。</p>
+</li>
+<li><p>我们讲获取到的scanner组织成heap，然后从heap中获取对应的数据。这个heap需要有一定的组织，比如检索到了数据，需要关闭；对于同一个key，需要在所有的scanner中获取到等</p>
+<p>获取到scanner之后就开始获取数据结果了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scanner.next(results);</div></pre></td></tr></table></figure>
+<p>里面一堆逻辑的，实际获取数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> KeyValue <span class="title">populateResult</span><span class="params">(List&lt;Cell&gt; results, KeyValueHeap heap, <span class="keyword">int</span> limit,</span></span></div><div class="line">    <span class="keyword">byte</span>[] currentRow, <span class="keyword">int</span> offset, <span class="keyword">short</span> length) <span class="keyword">throws</span> IOException &#123;</div><div class="line">  KeyValue nextKv;</div><div class="line">    <span class="keyword">do</span> &#123;</div><div class="line">      heap.next(results, limit - results.size());</div><div class="line">      <span class="keyword">if</span> (limit &gt; <span class="number">0</span> &amp;&amp; results.size() == limit) &#123;</div><div class="line">        <span class="keyword">return</span> KV_LIMIT;</div><div class="line">      &#125;</div><div class="line">      nextKv = heap.peek();</div><div class="line">    &#125; <span class="keyword">while</span> (nextKv != <span class="keyword">null</span> &amp;&amp; nextKv.matchingRow(currentRow, offset, length));</div><div class="line">  <span class="keyword">return</span> nextKv;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="scanner内部"><a href="#scanner内部" class="headerlink" title="scanner内部"></a>scanner内部</h2><h3 id="memscanner"><a href="#memscanner" class="headerlink" title="memscanner"></a>memscanner</h3><p>要从memstore中获取想要的数据，感觉不会很难，因为memstore是个有一定顺序。</p>
+<h3 id="filescanner"><a href="#filescanner" class="headerlink" title="filescanner"></a>filescanner</h3><p>对于filestore的检索，hbase提供了集中方式来加速检索。</p>
+<ol>
+<li>bloomfilter的过滤，见”处理scanner“</li>
+<li>index的过滤</li>
+<li>blockcache的使用</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj20k5sfw000h399s2618024b" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-some-thinkings-about-going-back-home" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/16/some-thinkings-about-going-back-home/" class="article-date">
+  <time datetime="2017-04-16T15:00:56.000Z" itemprop="datePublished">2017-04-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/16/some-thinkings-about-going-back-home/">some thinkings about going back home</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>​    这次周末回家，我感受最深的dy的服务人员的态度，那态度之差让我有点觉得不是那么自在。这也让我想到了几个问题。</p>
+<p>​    首先第一个问题，dy到底有没有前途了。最近的银泰一直没有开业。之前的金天地变成第一百货，然后就这个样子了。之前可以引以为傲的商场关了。感觉从高中开始，dy一直很稳定的让人失望中。在过年的时候，本人很好奇地查阅了东阳的一些数据，包括人口等，反正很失望（当时还查了杭州的人口增长，居然没有北京快，神他妈尴尬）。现在居然感受到了dy服务如此落后，我真是不知道怎么表达心里那尽情狂奔的万头草泥马。不过这个事情也让我坚定以后要移出dy，也许在今年，因为今年hz落户政策貌似要改变。</p>
+<p>​    最近还想了一个问题，其实很多问题的原因是目前很多人还不具备用脚投票的能力。很多人呆在一个地方，感受到了不好的服务，没心没力去解决问题但是也没有能力去离开那个地方。不能细讲这个问题了。</p>
+<p>​    最后一个问题，本人对未来保持十分悲观地态度。从过年开始的一些感受和听闻只让我觉得未来中国的高端人才是可以和世界最顶尖的人相互pk和谈笑风生。但是剩下的80%甚至90%的人，我真的觉得他们的未来生活会很痛苦。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/04/16/some-thinkings-about-going-back-home/" data-id="cj20k5sft000c399sfxjwvmim" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-filters-in-read-path-of-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/13/filters-in-read-path-of-HBase/" class="article-date">
+  <time datetime="2017-04-12T16:19:06.000Z" itemprop="datePublished">2017-04-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/13/filters-in-read-path-of-HBase/">filters in read path of HBase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="一些hbase使用到裁剪"><a href="#一些hbase使用到裁剪" class="headerlink" title="一些hbase使用到裁剪"></a>一些hbase使用到裁剪</h1><p>我个人觉得总共几个部分，包括time裁剪，key裁剪，bf和索引</p>
+<p>获取scanner分两个，一个memstore的，另一个是file的。</p>
+<p>获取有关file的Scanner如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.storeEngine.getStoreFileManager().getFilesForScanOrGet(isGet, startRow, stopRow);</div><div class="line"></div><div class="line">List&lt;StoreFileScanner&gt; sfScanners = StoreFileScanner.getScannersForStoreFiles(storeFilesToScan,</div><div class="line">        cacheBlocks, usePread, isCompaction, <span class="keyword">false</span>, matcher, readPt);</div></pre></td></tr></table></figure>
+<p>获取有关mem的Scanner如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">memStoreScanners = <span class="keyword">this</span>.memstore.getScanners(readPt);</div></pre></td></tr></table></figure>
+<p>然后在返回之前做了筛选，注意那个selectScannerFrom方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</div><div class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="keyword">this</span>.readPt));</div></pre></td></tr></table></figure>
+<p>selectScannerFrom还是分两个分支，有两个实现，file的和mem的。</p>
+<p>file的过滤分三种，time，key和bf。file过滤实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldUseScanner</span><span class="params">(Scan scan, SortedSet&lt;<span class="keyword">byte</span>[]&gt; columns, <span class="keyword">long</span> oldestUnexpiredTS)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> reader.passesTimerangeFilter(scan.getTimeRange(), oldestUnexpiredTS)</div><div class="line">        &amp;&amp; reader.passesKeyRangeFilter(scan) &amp;&amp; reader.passesBloomFilter(scan, columns);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>memstore的实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldSeek</span><span class="params">(Scan scan, <span class="keyword">long</span> oldestUnexpiredTS)</span> </span>&#123;</div><div class="line">    TimeRange timeRange = scan.getTimeRange();</div><div class="line">    <span class="keyword">return</span> (timeRangeTracker.includesTimeRange(timeRange) ||</div><div class="line">        snapshotTimeRangeTracker.includesTimeRange(timeRange)) &amp;&amp;</div><div class="line">        (Math.max(timeRangeTracker.getMax(), snapshotTimeRangeTracker.getMax())</div><div class="line">            &gt;= oldestUnexpiredTS);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>几个方面方面，感觉很清晰。ps：之前看hbase的代码时总是感觉比较的混乱，一脸懵逼的感受。</p>
+<p>接下来应该结合文件格式看了。</p>
+<p>从文件格式看，主要是几个过滤，主要代码如下</p>
+<p>主要的实现在如下方法中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">BlockWithScanInfo blockWithScanInfo =</div><div class="line">  indexReader.loadDataBlockWithScanInfo(key, offset, length, block,</div><div class="line">      cacheBlocks, pread, isCompaction);</div></pre></td></tr></table></figure>
+<p>在HFileReaderV2中，由索引过滤和blockcache的实现，在</p>
+<p>根据索引信息过滤block</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> rootLevelIndex = rootBlockContainingKey(key, keyOffset, keyLength);</div></pre></td></tr></table></figure>
+<p>方法实现如下</p>
+<pre><code>public int rootBlockContainingKey(final byte[] key, int offset,
+    int length) {
+  int pos = Bytes.binarySearch(blockKeys, key, offset, length,
+      comparator);
+  ....}
+</code></pre><p>如果需要读取，会先从blockcache中读取，减少io。blcokcache中读取block，代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">block = cachingBlockReader.readBlock(currentOffset,</div><div class="line">    currentOnDiskSize, shouldCache, pread, isCompaction, <span class="keyword">true</span>,</div><div class="line">    expectedBlockType);</div></pre></td></tr></table></figure>
+<p>两处使用bf索引过滤，一处是seek时</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"> </div></pre></td></tr></table></figure>
+<p>另一处时获取scanner时</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">protected</span> List&lt;KeyValueScanner&gt; <span class="title">selectScannersFrom</span><span class="params">(<span class="keyword">final</span> List&lt;? extends KeyValueScanner&gt; allScanners)</span></span></div><div class="line">      </div><div class="line"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldUseScanner</span><span class="params">(Scan scan, SortedSet&lt;<span class="keyword">byte</span>[]&gt; columns, <span class="keyword">long</span> oldestUnexpiredTS)</span> &#123;</div><div class="line">    <span class="keyword">return</span> reader.passesTimerangeFilter(scan.getTimeRange(), oldestUnexpiredTS)</div><div class="line">        &amp;&amp; reader.passesKeyRangeFilter(scan) &amp;&amp; reader.passesBloomFilter(scan, columns);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>后者</p>
+<p>问题：怎么感觉bf的粒度时文件，不是block</p>
+<p>​    而且两处调用底层的bf是一样的。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/04/13/filters-in-read-path-of-HBase/" data-id="cj20k5sfe0001399si9118cj8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-something-about-memstore-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/12/something-about-memstore-in-HBase/" class="article-date">
+  <time datetime="2017-04-11T16:01:56.000Z" itemprop="datePublished">2017-04-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/12/something-about-memstore-in-HBase/">something about memstore in HBase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="memstore"><a href="#memstore" class="headerlink" title="memstore"></a>memstore</h1><h2 id="主要结构"><a href="#主要结构" class="headerlink" title="主要结构"></a>主要结构</h2><p>​    主要结构包括「kvset，snapshot」，先说snapshot，主要适用于生成HFile时临时存放的kvset的一个快照。更改的snaphost一定条件判断可以生成HFile时调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, <span class="keyword">long</span> myseqid, MonitoredTask status)</div></pre></td></tr></table></figure>
+<p>此方法两种情况会调用</p>
+<p>​    一个是关闭时。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">HRegion.doClose(<span class="keyword">boolean</span> abort, MonitoredTask status)</div></pre></td></tr></table></figure>
+<p>​    另一个时需要flush时。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, <span class="keyword">long</span> myseqid, MonitoredTask status)</div></pre></td></tr></table></figure>
+<h2 id="flush过程"><a href="#flush过程" class="headerlink" title="flush过程"></a>flush过程</h2><ol>
+<li>准备工作</li>
+<li>获取<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.updatesLock的写锁</li>
+<li>获取mvcc事务，并努力前提读点</li>
+<li>调用prepare（）<ol>
+<li>将snapshot设置为的kvset，并重新生成一个kvset，用于写入。</li>
+</ol>
+</li>
+<li>释放写锁</li>
+<li>同步wal日志</li>
+<li>等到mvcc结束</li>
+<li>flushcache()</li>
+<li>commit()<ol>
+<li>才更新构造scanner使用的<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.[DefaultStoreFileManager].storefiles</li>
+</ol>
+</li>
+</ol>
+<h2 id="疑问与解释"><a href="#疑问与解释" class="headerlink" title="疑问与解释"></a>疑问与解释</h2><h3 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h3><p>最开始，我感觉逻辑有问题，可能会导致在某个时间点（flush）时，读取不到已经写入的数据。</p>
+<h3 id="回答："><a href="#回答：" class="headerlink" title="回答："></a>回答：</h3><p>有三个方面：</p>
+<ol>
+<li><p>读取数据时会读取snapshot的数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> KeyValue <span class="title">next</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="keyword">if</span> (theNext == <span class="keyword">null</span>) &#123;</div><div class="line">      <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">final</span> KeyValue ret = theNext;</div><div class="line"></div><div class="line">  <span class="comment">// Advance one of the iterators</span></div><div class="line">  <span class="keyword">if</span> (theNext == kvsetNextRow) &#123;</div><div class="line">    kvsetNextRow = getNext(kvsetIt);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    snapshotNextRow = getNext(snapshotIt);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Calculate the next value</span></div><div class="line">  theNext = getLowest(kvsetNextRow, snapshotNextRow);</div><div class="line"></div><div class="line">  <span class="comment">//long readpoint = ReadWriteConsistencyControl.getThreadReadPoint();</span></div><div class="line">  <span class="comment">//DebugPrint.println(" MS@" + hashCode() + " next: " + theNext + " next_next: " +</span></div><div class="line">  <span class="comment">//    getLowest() + " threadpoint=" + readpoint);</span></div><div class="line">  <span class="keyword">return</span> ret;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>清除snapshot和更新文件时在一个锁内。</p>
+<p>insertNewFiles方法将刷写成的HFile加入Store的fileManger里storefiles里，此结构用语构造storefilescanner。</p>
+<p>clearSnapshot方法将snapshot设置为一个新的空的结构。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.lock.writeLock().lock();</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      <span class="keyword">this</span>.storeEngine.getStoreFileManager().insertNewFiles(sfs);</div><div class="line">      <span class="keyword">this</span>.memstore.clearSnapshot(set);</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">      <span class="comment">// We need the lock, as long as we are updating the storeFiles</span></div><div class="line">      <span class="comment">// or changing the memstore. Let us release it before calling</span></div><div class="line">      <span class="comment">// notifyChangeReadersObservers. See HBASE-4485 for a possible</span></div><div class="line">      <span class="comment">// deadlock scenario that could have happened if continue to hold</span></div><div class="line">      <span class="comment">// the lock.</span></div><div class="line">      <span class="keyword">this</span>.lock.writeLock().unlock();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>第三个方面，注意到第一个方面读取时或去的scanner方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> List&lt;KeyValueScanner&gt; <span class="title">getScanners</span><span class="params">(<span class="keyword">boolean</span> cacheBlocks, <span class="keyword">boolean</span> isGet,</span></span></div><div class="line">     <span class="keyword">boolean</span> usePread, <span class="keyword">boolean</span> isCompaction, ScanQueryMatcher matcher, <span class="keyword">byte</span>[] startRow,</div><div class="line">     <span class="keyword">byte</span>[] stopRow, <span class="keyword">long</span> readPt) <span class="keyword">throws</span> IOException &#123;</div><div class="line">   Collection&lt;StoreFile&gt; storeFilesToScan;</div><div class="line">   List&lt;KeyValueScanner&gt; memStoreScanners;</div><div class="line">   <span class="keyword">this</span>.lock.readLock().lock();</div><div class="line">   <span class="keyword">try</span> &#123;</div><div class="line">     storeFilesToScan =</div><div class="line">         <span class="keyword">this</span>.storeEngine.getStoreFileManager().getFilesForScanOrGet(isGet, startRow, stopRow);</div><div class="line">     memStoreScanners = <span class="keyword">this</span>.memstore.getScanners(readPt);</div><div class="line">   &#125; <span class="keyword">finally</span> &#123;</div><div class="line">     <span class="keyword">this</span>.lock.readLock().unlock();</div><div class="line">   &#125;</div><div class="line">  ....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>snapshot里的数据要么被getScanner引用到要么清空并生成新文件，而且两者互斥（使用的是同一个锁）。这样就可以保证数据能被读取到了。</p>
+<p>​</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj20k5sfx000j399s4ffehzbf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-some-points-about-MVCC-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/09/some-points-about-MVCC-in-HBase/" class="article-date">
+  <time datetime="2017-04-09T15:55:35.000Z" itemprop="datePublished">2017-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/09/some-points-about-MVCC-in-HBase/">some points about MVCC in HBase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>关键点</p>
+<p>​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。</p>
+<p>​    MultiVersionConsistencyControl在一个Region有一个。</p>
+<p>MultiVersionConsistencyControl{</p>
+<p>memstoreRead：能够读取的序列号。</p>
+<p>memstoreWrite：写操作的序列号。</p>
+<p>writeQueue：写操作队列}</p>
+<p>问题点（就是需要去回答的问题，这些问题十分有助于思考这个大问题）</p>
+<ol>
+<li><p>读取是版本的选择</p>
+<p>在<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner~getNext~QIterator%5C%3CQKeyValue;%3E;%E2%98%82KeyValue" target="_blank" rel="external">KeyValue</a><a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore" target="_blank" rel="external">MemStore</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner" target="_blank" rel="external">MemStoreScanner</a>.getNext(<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner~getNext~QIterator%5C%3CQKeyValue;%3E;%E2%98%82Iterator" target="_blank" rel="external">Iterator</a>&lt;<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner~getNext~QIterator%5C%3CQKeyValue;%3E;%E2%98%82KeyValue" target="_blank" rel="external">KeyValue</a>&gt; it)  L777中判断了曲出来的KeyValue是否到了可以读的范围（v.getMvccVersion() &lt;= this.readPoint）。否则掠过</p>
+<p>在构造scanner时会将readpoint传入到scanner，说明能读到的版本在构造开始就定好了。</p>
+</li>
+<li><p>写的时候的版本</p>
+<p>w = mvcc.beginMemstoreInsert();</p>
+<p>​    申请一个写操作的序列号，使用的变量是memstoreWrite</p>
+<p>mvcc.completeMemstoreInsert(w);</p>
+<p>​    标记操作结束，尽量更新memstoreRead，并且通知readWriters（在compaction和flush时会用到，因为这时需要将那时的版本都等待写完才能操作）。</p>
+<p>​    等待到此操作完成</p>
+</li>
+<li><p>回滚memstore的时候版本的控制</p>
+<p>回滚操作时找kv有版本比较MemStore.java L334。并且会滚后再执行mvcc.completeMemstoreInsert(w);</p>
+</li>
+</ol>
+<p>ps：long <a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.getReadpoint(<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion~getReadpoint~QIsolationLevel;%E2%98%82IsolationLevel" target="_blank" rel="external">IsolationLevel</a> isolationLevel) L1115用了一个隔离级别。之后写一篇隔离级别的小文，加深理解。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj20k5sfl0004399soflh0th7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-import-HBase-into-eclipse" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/03/26/import-HBase-into-eclipse/" class="article-date">
+  <time datetime="2017-03-26T03:20:27.000Z" itemprop="datePublished">2017-03-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/26/import-HBase-into-eclipse/">import HBase into eclipse</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="将HBase导入到eclipse"><a href="#将HBase导入到eclipse" class="headerlink" title="将HBase导入到eclipse"></a>将HBase导入到eclipse</h1><p>最近想开始看hbase的源代码，所以想把eclipse导入到eclipse，方便跳转阅读代码。</p>
+<ul>
+<li>下载源代码</li>
+<li>执行mvn clean install -DskipTests和mvn eclipse:eclipse</li>
+<li>执行过程中会出现“错误: 读取/Users/xxx/.m2/repository/org/slf4j/slf4j-log4j12/1.6.4/slf4j-log4j12-1.6.4.jar时出错; zip file is empty”问题，只要把那个文件删除然后重新执行就可以了，不一会儿你就看到build sucess</li>
+<li>然后倒入到eclipse中，各种叹号和红叉，崩溃ing。</li>
+<li>进入方法发现直接说到了jar，没法查看；转到idea，看到idea直接倒入，并且原来的提示的jar包也可以查看代码。</li>
+<li>最后得出结论，何必用eclipse呢，直接用idea不久完了。<code>TODO eclipse导入的mvn问题</code></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj20k5sfq0009399srsj7ljes" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-first-weekend-in-Hangzhou" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/03/25/first-weekend-in-Hangzhou/" class="article-date">
+  <time datetime="2017-03-25T13:25:20.000Z" itemprop="datePublished">2017-03-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/25/first-weekend-in-Hangzhou/">first weekend in Hangzhou</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="在杭州的第一个周末"><a href="#在杭州的第一个周末" class="headerlink" title="在杭州的第一个周末"></a>在杭州的第一个周末</h1><p>来杭州工作几天之后，终于迎来了全国人民欢欣鼓舞的周末。周末嘛，当然是要出去走走，哦，不，要去办事情。</p>
+<p>由于入职需要去了浙大紫荆港校区办理银行卡，于是在他们的校园内走了走，果然三墩人民公园还是很多人去游玩和休息的。感觉浙大学生太爽了，作为工大学生的我感受到了深深的悲伤。</p>
+<p>接下来谈谈对杭州的几点感受</p>
+<ul>
+<li>湖滨的人居多，银泰城里的每个餐厅都有大量的人（感觉比北京的多）在排队，这个很让我吃惊，不知道是杭州的设施太少了，还是消费能力太强了，还是有别的原因。什么时候我要查查一查杭州和北京的数据好好看看<code>TODO</code>。</li>
+<li>果然银行卡的限制开始影响到我这个无产阶级了，我不知道自己居然有两张农业银行的卡，惊呆我了，以前的卡我记得去银行处理过，难道当时的处理方式是”不要理他，反正没差“嘛。</li>
+<li>西湖的喷泉太坑爹，看了一半感觉不知道让我感觉棒棒哒的景象在哪儿。</li>
+<li>总有一种感觉，不确定对不对。我总是感觉杭州的矿泉水的价格比北京要高，但是其他价格比北京便宜，不知道是不是成本的原因，按理说在杭州人这么多，成本不会比北京高啊。</li>
+<li>一个城市没有地铁是鸡肋，一个人冷风中等地铁这事真不太好受，还有等了好久发现尼玛这车晚上7点就没有了，当时的心里os是：<em>*</em>。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/03/25/first-weekend-in-Hangzhou/" data-id="cj20k5sfk0003399sctfpa74l" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-first-impression-of-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/03/22/first-impression-of-HBase/" class="article-date">
+  <time datetime="2017-03-22T15:14:45.000Z" itemprop="datePublished">2017-03-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/22/first-impression-of-HBase/">first impression Of HBase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Hbase的第一印象"><a href="#Hbase的第一印象" class="headerlink" title="Hbase的第一印象"></a>Hbase的第一印象</h1><p>从今天开始接触hbase，计划使用一年的时间深入研究hbase，jvm和并发。其他的部分可能会使用python做些有意思的事情。</p>
+<p>对于hbase，有几点还是比较有意思的。</p>
+<ul>
+<li>提供行级锁，提供一定级别的事务机制</li>
+<li>数据自动整合，包括在HFile中的排序，HFile的合并和WAL机制</li>
+<li>提供了列族的概念，使得标结构的设计多了一个选择，标结构设计模式和DBMS不太一样</li>
+<li>基于HDFS和zk基础提供一定的高可用</li>
+<li>TODO</li>
+</ul>
+<p>此文章会不断补充，并且会在此基础上可能会写几篇关于hbase的系统的文章以及源代码分析。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/03/22/first-impression-of-HBase/" data-id="cj20k5sfo0005399sr7r1i1cf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">__('next') &raquo;</a>
+  </nav>
 </section>
         
           <aside id="sidebar">
@@ -245,7 +682,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
     </div>
   </div>
 
@@ -255,7 +692,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/hbase/" style="font-size: 10px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 10px;">hdfs</a> <a href="/tags/life/" style="font-size: 10px;">life</a>
+      <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 13.33px;">hdfs</a> <a href="/tags/life/" style="font-size: 16.67px;">life</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a>
     </div>
   </div>
 
@@ -264,7 +701,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -277,15 +714,23 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       <ul>
         
           <li>
-            <a href="/2017/04/27/to-Hangzhou/">to Hangzhou</a>
-          </li>
-        
-          <li>
             <a href="/2017/04/27/hierarchy-of-scanners-in-HBase/">hierarchy of scanners in HBase</a>
           </li>
         
           <li>
             <a href="/2017/04/26/balance-in-hdfs/">balance in hdfs</a>
+          </li>
+        
+          <li>
+            <a href="/2017/04/25/what-region-will-do-when-receive-a-get/">what region will do when receiving a get</a>
+          </li>
+        
+          <li>
+            <a href="/2017/04/16/some-thinkings-about-going-back-home/">some thinkings about going back home</a>
+          </li>
+        
+          <li>
+            <a href="/2017/04/13/filters-in-read-path-of-HBase/">filters in read path of HBase</a>
           </li>
         
       </ul>

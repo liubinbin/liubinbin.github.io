@@ -3,48 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>hierarchy of scanners in HBase | Bean</title>
+  <title>some thinkings about going back home | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一个Region一个RegionScannerImpl
-
-RegionScannerImpl (下面代表了层级)
-
-StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) 
-MemStoreScanner
-StoreFileScanner 
-
-
-
-​      (MemStoreScanner">
+  <meta name="description" content="​    这次周末回家，我感受最深的dy的服务人员的态度，那态度之差让我有点觉得不是那么自在。这也让我想到了几个问题。
+​    首先第一个问题，dy到底有没有前途了。最近的银泰一直没有开业。之前的金天地变成第一百货，然后就这个样子了。之前可以引以为傲的商场关了。感觉从高中开始，dy一直很稳定的让人失望中。在过年的时候，本人很好奇地查阅了东阳的一些数据，包括人口等，反正很失望（当时还查了杭州的人口">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hierarchy of scanners in HBase">
-<meta property="og:url" content="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/index.html">
+<meta property="og:title" content="some thinkings about going back home">
+<meta property="og:url" content="http://yoursite.com/2017/04/16/some-thinkings-about-going-back-home/index.html">
 <meta property="og:site_name" content="Bean">
-<meta property="og:description" content="一个Region一个RegionScannerImpl
-
-RegionScannerImpl (下面代表了层级)
-
-StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) 
-MemStoreScanner
-StoreFileScanner 
-
-
-
-​      (MemStoreScanner">
-<meta property="og:updated_time" content="2017-04-26T16:28:38.000Z">
+<meta property="og:description" content="​    这次周末回家，我感受最深的dy的服务人员的态度，那态度之差让我有点觉得不是那么自在。这也让我想到了几个问题。
+​    首先第一个问题，dy到底有没有前途了。最近的银泰一直没有开业。之前的金天地变成第一百货，然后就这个样子了。之前可以引以为傲的商场关了。感觉从高中开始，dy一直很稳定的让人失望中。在过年的时候，本人很好奇地查阅了东阳的一些数据，包括人口等，反正很失望（当时还查了杭州的人口">
+<meta property="og:updated_time" content="2017-04-26T15:51:23.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="hierarchy of scanners in HBase">
-<meta name="twitter:description" content="一个Region一个RegionScannerImpl
-
-RegionScannerImpl (下面代表了层级)
-
-StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) 
-MemStoreScanner
-StoreFileScanner 
-
-
-
-​      (MemStoreScanner">
+<meta name="twitter:title" content="some thinkings about going back home">
+<meta name="twitter:description" content="​    这次周末回家，我感受最深的dy的服务人员的态度，那态度之差让我有点觉得不是那么自在。这也让我想到了几个问题。
+​    首先第一个问题，dy到底有没有前途了。最近的银泰一直没有开业。之前的金天地变成第一百货，然后就这个样子了。之前可以引以为傲的商场关了。感觉从高中开始，dy一直很稳定的让人失望中。在过年的时候，本人很好奇地查阅了东阳的一些数据，包括人口等，反正很失望（当时还查了杭州的人口">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -93,10 +66,10 @@ StoreFileScanner
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-hierarchy-of-scanners-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-some-thinkings-about-going-back-home" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/04/27/hierarchy-of-scanners-in-HBase/" class="article-date">
-  <time datetime="2017-04-26T16:22:45.000Z" itemprop="datePublished">2017-04-27</time>
+    <a href="/2017/04/16/some-thinkings-about-going-back-home/" class="article-date">
+  <time datetime="2017-04-16T15:00:56.000Z" itemprop="datePublished">2017-04-16</time>
 </a>
     
   </div>
@@ -107,7 +80,7 @@ StoreFileScanner
         
   
     <h1 class="article-title" itemprop="name">
-      hierarchy of scanners in HBase
+      some thinkings about going back home
     </h1>
   
 
@@ -115,33 +88,18 @@ StoreFileScanner
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>一个Region一个RegionScannerImpl</p>
-<hr>
-<p>RegionScannerImpl (下面代表了层级)</p>
-<ul>
-<li>StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) <ul>
-<li>MemStoreScanner</li>
-<li>StoreFileScanner </li>
-</ul>
-</li>
-</ul>
-<p>​      (MemStoreScanner 和 StoreFileScanner 组成heap ，也是一个KeyValueHeap， 用的是store的Comparator)</p>
-<hr>
-<p><strong>可以看到一些问题和关注点</strong></p>
-<ol>
-<li>RegionScannerImpl里使用StoreScanner 时，各种heap的操作主要需要关注一个记录的组织，因为一条记录的不同列族保存在不同的store中。还要关注什么时候结束。</li>
-<li>StoreScanner中的两种scanner（StoreFileScanner可能有多个）需要协调在不同scanner中的不同的版本的问题。还要关注什么时候结束。</li>
-<li>MemStoreScanner貌似应该不难。</li>
-<li>StoreFileScanner需要主要里meta index 和bf index的处理，以及blockcache的使用。</li>
-</ol>
+        <p>​    这次周末回家，我感受最深的dy的服务人员的态度，那态度之差让我有点觉得不是那么自在。这也让我想到了几个问题。</p>
+<p>​    首先第一个问题，dy到底有没有前途了。最近的银泰一直没有开业。之前的金天地变成第一百货，然后就这个样子了。之前可以引以为傲的商场关了。感觉从高中开始，dy一直很稳定的让人失望中。在过年的时候，本人很好奇地查阅了东阳的一些数据，包括人口等，反正很失望（当时还查了杭州的人口增长，居然没有北京快，神他妈尴尬）。现在居然感受到了dy服务如此落后，我真是不知道怎么表达心里那尽情狂奔的万头草泥马。不过这个事情也让我坚定以后要移出dy，也许在今年，因为今年hz落户政策貌似要改变。</p>
+<p>​    最近还想了一个问题，其实很多问题的原因是目前很多人还不具备用脚投票的能力。很多人呆在一个地方，感受到了不好的服务，没心没力去解决问题但是也没有能力去离开那个地方。不能细讲这个问题了。</p>
+<p>​    最后一个问题，本人对未来保持十分悲观地态度。从过年开始的一些感受和听闻只让我觉得未来中国的高端人才是可以和世界最顶尖的人相互pk和谈笑风生。但是剩下的80%甚至90%的人，我真的觉得他们的未来生活会很痛苦。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/" data-id="cj20k5sfp0008399syar30dak" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/16/some-thinkings-about-going-back-home/" data-id="cj20k5sft000c399sfxjwvmim" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
 
     </footer>
   </div>
@@ -149,10 +107,19 @@ StoreFileScanner
     
 <nav id="article-nav">
   
+    <a href="/2017/04/25/what-region-will-do-when-receive-a-get/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          what region will do when receiving a get
+        
+      </div>
+    </a>
   
-    <a href="/2017/04/26/balance-in-hdfs/" id="article-nav-older" class="article-nav-link-wrap">
+  
+    <a href="/2017/04/13/filters-in-read-path-of-HBase/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">balance in hdfs</div>
+      <div class="article-nav-title">filters in read path of HBase</div>
     </a>
   
 </nav>
