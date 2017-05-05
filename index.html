@@ -61,6 +61,49 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-HBase-trap" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/05/05/HBase-trap/" class="article-date">
+  <time datetime="2017-05-05T14:29:12.000Z" itemprop="datePublished">2017-05-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/05/HBase-trap/">HBase trap</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="HBase的一些坑"><a href="#HBase的一些坑" class="headerlink" title="HBase的一些坑"></a>HBase的一些坑</h1><ol>
+<li><p>mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&gt; 想再测一次就删除了 =&gt; 这些数据再次加入hbase查不到。 </p>
+<p>因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很比较，可以使用mvcc的版本来解决操作请求的顺序，而不出现delete后加入的数据的不能被显示出来）</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj2bz54is0000b79sd2e7ch7n" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-hierarchy-of-scanners-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/04/27/hierarchy-of-scanners-in-HBase/" class="article-date">
@@ -110,7 +153,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/" data-id="cj20kdzs10005919scmi7ru7k" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/" data-id="cj2bz54j60008b79sta62jccq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -187,7 +230,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj20kdzrm0000919s78flht1o" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj2bz54j10003b79s752vntoi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -257,7 +300,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj20kdzsa000h919slt9pfbhx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj2bz54jd000kb79s1299bgot" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -299,7 +342,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/16/some-thinkings-about-going-back-home/" data-id="cj20kdzs9000c919sbh7r16sj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/16/some-thinkings-about-going-back-home/" data-id="cj2bz54jb000fb79sxu77j0yn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -373,7 +416,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/13/filters-in-read-path-of-HBase/" data-id="cj20kdzrs0001919s3m77iodu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/13/filters-in-read-path-of-HBase/" data-id="cj2bz54iw0001b79sxz8b6kct" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -452,7 +495,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj20kdzs9000e919s0v8hfbg7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj2bz54jc000ib79sdy9ptom1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -515,7 +558,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj20kdzs40009919s57t63g19" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj2bz54ja000db79s80gwvaln" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -562,7 +605,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj20kdzs30008919s4x7mlsbb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj2bz54j7000ab79sju0cld5c" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -610,58 +653,10 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/first-weekend-in-Hangzhou/" data-id="cj20kdzry0004919s31filqvf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/first-weekend-in-Hangzhou/" data-id="cj2bz54j40005b79sowamzhqa" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-first-impression-of-HBase" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/03/22/first-impression-of-HBase/" class="article-date">
-  <time datetime="2017-03-22T15:14:45.000Z" itemprop="datePublished">2017-03-22</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/22/first-impression-of-HBase/">first impression Of HBase</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Hbase的第一印象"><a href="#Hbase的第一印象" class="headerlink" title="Hbase的第一印象"></a>Hbase的第一印象</h1><p>从今天开始接触hbase，计划使用一年的时间深入研究hbase，jvm和并发。其他的部分可能会使用python做些有意思的事情。</p>
-<p>对于hbase，有几点还是比较有意思的。</p>
-<ul>
-<li>提供行级锁，提供一定级别的事务机制</li>
-<li>数据自动整合，包括在HFile中的排序，HFile的合并和WAL机制</li>
-<li>提供了列族的概念，使得标结构的设计多了一个选择，标结构设计模式和DBMS不太一样</li>
-<li>基于HDFS和zk基础提供一定的高可用</li>
-<li>TODO</li>
-</ul>
-<p>此文章会不断补充，并且会在此基础上可能会写几篇关于hbase的系统的文章以及源代码分析。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/22/first-impression-of-HBase/" data-id="cj20kdzry0003919sihtgs74e" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
 
     </footer>
   </div>
@@ -705,7 +700,7 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -716,6 +711,10 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2017/05/05/HBase-trap/">HBase trap</a>
+          </li>
         
           <li>
             <a href="/2017/04/27/hierarchy-of-scanners-in-HBase/">hierarchy of scanners in HBase</a>
@@ -731,10 +730,6 @@ shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于�
         
           <li>
             <a href="/2017/04/16/some-thinkings-about-going-back-home/">some thinkings about going back home</a>
-          </li>
-        
-          <li>
-            <a href="/2017/04/13/filters-in-read-path-of-HBase/">filters in read path of HBase</a>
           </li>
         
       </ul>

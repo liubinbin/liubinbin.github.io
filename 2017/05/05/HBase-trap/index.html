@@ -3,14 +3,24 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Tag: hbase | Bean</title>
+  <title>HBase trap | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Bean">
-<meta property="og:url" content="http://yoursite.com/tags/hbase/index.html">
+  <meta name="description" content="HBase的一些坑
+mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 
+因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HBase trap">
+<meta property="og:url" content="http://yoursite.com/2017/05/05/HBase-trap/index.html">
 <meta property="og:site_name" content="Bean">
+<meta property="og:description" content="HBase的一些坑
+mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 
+因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉">
+<meta property="og:updated_time" content="2017-05-05T15:06:59.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Bean">
+<meta name="twitter:title" content="HBase trap">
+<meta name="twitter:description" content="HBase的一些坑
+mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 
+因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -59,172 +69,58 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/05/05/HBase-trap/" class="archive-article-date">
-  <time datetime="2017-05-05T14:29:12.000Z" itemprop="datePublished">May 5</time>
+        <section id="main"><article id="post-HBase-trap" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/05/05/HBase-trap/" class="article-date">
+  <time datetime="2017-05-05T14:29:12.000Z" itemprop="datePublished">2017-05-05</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/05/HBase-trap/">HBase trap</a>
+    <h1 class="article-title" itemprop="name">
+      HBase trap
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/04/27/hierarchy-of-scanners-in-HBase/" class="archive-article-date">
-  <time datetime="2017-04-26T16:22:45.000Z" itemprop="datePublished">Apr 27</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/27/hierarchy-of-scanners-in-HBase/">hierarchy of scanners in HBase</a>
-    </h1>
-  
+        <h1 id="HBase的一些坑"><a href="#HBase的一些坑" class="headerlink" title="HBase的一些坑"></a>HBase的一些坑</h1><ol>
+<li><p>mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&gt; 想再测一次就删除了 =&gt; 这些数据再次加入hbase查不到。 </p>
+<p>因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很比较，可以使用mvcc的版本来解决操作请求的顺序，而不出现delete后加入的数据的不能被显示出来）</p>
+</li>
+</ol>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/04/25/what-region-will-do-when-receive-a-get/" class="archive-article-date">
-  <time datetime="2017-04-25T14:40:14.000Z" itemprop="datePublished">Apr 25</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/25/what-region-will-do-when-receive-a-get/">what region will do when receiving a get</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/04/13/filters-in-read-path-of-HBase/" class="archive-article-date">
-  <time datetime="2017-04-12T16:19:06.000Z" itemprop="datePublished">Apr 13</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj2bz54is0000b79sd2e7ch7n" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/13/filters-in-read-path-of-HBase/">filters in read path of HBase</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/04/12/something-about-memstore-in-HBase/" class="archive-article-date">
-  <time datetime="2017-04-11T16:01:56.000Z" itemprop="datePublished">Apr 12</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/12/something-about-memstore-in-HBase/">something about memstore in HBase</a>
-    </h1>
-  
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
 
-    </header>
+    </footer>
   </div>
-</article>
   
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/04/09/some-points-about-MVCC-in-HBase/" class="archive-article-date">
-  <time datetime="2017-04-09T15:55:35.000Z" itemprop="datePublished">Apr 9</time>
-</a>
-      
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/09/some-points-about-MVCC-in-HBase/">some points about MVCC in HBase</a>
-    </h1>
   
+    <a href="/2017/04/27/hierarchy-of-scanners-in-HBase/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">hierarchy of scanners in HBase</div>
+    </a>
+  
+</nav>
 
-    </header>
-  </div>
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/03/26/import-HBase-into-eclipse/" class="archive-article-date">
-  <time datetime="2017-03-26T03:20:27.000Z" itemprop="datePublished">Mar 26</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/26/import-HBase-into-eclipse/">import HBase into eclipse</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/03/22/first-impression-of-HBase/" class="archive-article-date">
-  <time datetime="2017-03-22T15:14:45.000Z" itemprop="datePublished">Mar 22</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/22/first-impression-of-HBase/">first impression Of HBase</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
 
 </section>
         
