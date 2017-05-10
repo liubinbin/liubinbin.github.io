@@ -5,16 +5,37 @@
   
   <title>HBase compaction | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。">
+  <meta name="description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。
+触发compaction
+手工出发
+chore线程
+flush触发
+
+执行compaction​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。
+​">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HBase compaction">
 <meta property="og:url" content="http://yoursite.com/2017/05/09/HBase-compaction/index.html">
 <meta property="og:site_name" content="Bean">
-<meta property="og:description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。">
-<meta property="og:updated_time" content="2017-05-09T15:46:32.000Z">
+<meta property="og:description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。
+触发compaction
+手工出发
+chore线程
+flush触发
+
+执行compaction​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。
+​">
+<meta property="og:updated_time" content="2017-05-10T15:51:12.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HBase compaction">
-<meta name="twitter:description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。">
+<meta name="twitter:description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。
+触发compaction
+手工出发
+chore线程
+flush触发
+
+执行compaction​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。
+​">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -54,7 +75,7 @@
         
           <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -86,11 +107,30 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="HBase-compaction"><a href="#HBase-compaction" class="headerlink" title="HBase compaction"></a>HBase compaction</h1><p>像hbase这种基于lsm的架构，compaction是其中很重要一个环节。</p>
+<h2 id="触发compaction"><a href="#触发compaction" class="headerlink" title="触发compaction"></a>触发compaction</h2><ol>
+<li>手工出发</li>
+<li>chore线程</li>
+<li>flush触发</li>
+</ol>
+<h2 id="执行compaction"><a href="#执行compaction" class="headerlink" title="执行compaction"></a>执行compaction</h2><p>​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。</p>
+<p>​    1. 开始合并返回合并的结果。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List&lt;Path&gt; newFiles = compaction.compact(throughputController, user);</div></pre></td></tr></table></figure>
+<p>​    此方法中一个判断是否是major</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ScanType scanType = scannerFactory.getScanType(request);</div></pre></td></tr></table></figure>
+<p>​    此ScanType传递给了ScanQueryMatcher来做scan类型的判断。</p>
+<p>​    2. 结果写入对应的cf的目录中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sfs = moveCompatedFilesIntoPlace(cr, newFiles, user);</div></pre></td></tr></table></figure>
+<p>​    3. 将本次compaction写入HLOG中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">writeCompactionWalRecord(filesToCompact, sfs);</div></pre></td></tr></table></figure>
+<p>​    4. 更新StoreFileManager的storefiles，去除旧的文件，加入新的文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">replaceStoreFiles(filesToCompact, sfs);</div></pre></td></tr></table></figure>
+<p>​    5. 此时已经可以按心的文件读取了，最后一步骤就是删除旧的数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">completeCompaction(filesToCompact);</div></pre></td></tr></table></figure>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj2hqehca0001cz9smmnzy40i" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj2j5wzbv00003w9sbrvvusjk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HBase/">HBase</a></li></ul>
@@ -103,7 +143,7 @@
   
   
     <a href="/2017/05/05/HBase-trap/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ouder</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">HBase trap</div>
     </a>
   
@@ -121,7 +161,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Labels</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/HBase/">HBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
     </div>
@@ -140,7 +180,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archieven</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
       <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
@@ -150,7 +190,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recente berichten</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
         
