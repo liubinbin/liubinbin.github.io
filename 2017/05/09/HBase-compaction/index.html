@@ -8,11 +8,17 @@
   <meta name="description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。
 触发compaction
 手工出发
-chore线程
-flush触发
 
-执行compaction​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。
-​">
+chore线程
+
+CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」
+
+
+flush触发
+。。。
+
+
+执行compaction​    此处才是本文的重点，上面的触发更多">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HBase compaction">
 <meta property="og:url" content="http://yoursite.com/2017/05/09/HBase-compaction/index.html">
@@ -20,22 +26,34 @@ flush触发
 <meta property="og:description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。
 触发compaction
 手工出发
-chore线程
-flush触发
 
-执行compaction​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。
-​">
-<meta property="og:updated_time" content="2017-05-10T15:51:12.000Z">
+chore线程
+
+CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」
+
+
+flush触发
+。。。
+
+
+执行compaction​    此处才是本文的重点，上面的触发更多">
+<meta property="og:updated_time" content="2017-05-11T16:15:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HBase compaction">
 <meta name="twitter:description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。
 触发compaction
 手工出发
-chore线程
-flush触发
 
-执行compaction​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。
-​">
+chore线程
+
+CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」
+
+
+flush触发
+。。。
+
+
+执行compaction​    此处才是本文的重点，上面的触发更多">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -108,11 +126,25 @@ flush触发
       
         <h1 id="HBase-compaction"><a href="#HBase-compaction" class="headerlink" title="HBase compaction"></a>HBase compaction</h1><p>像hbase这种基于lsm的架构，compaction是其中很重要一个环节。</p>
 <h2 id="触发compaction"><a href="#触发compaction" class="headerlink" title="触发compaction"></a>触发compaction</h2><ol>
-<li>手工出发</li>
-<li>chore线程</li>
-<li>flush触发</li>
+<li><p>手工出发</p>
+</li>
+<li><p>chore线程</p>
+<ol>
+<li>CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」</li>
+</ol>
+</li>
+<li><p>flush触发</p>
+<p>。。。</p>
+</li>
 </ol>
 <h2 id="执行compaction"><a href="#执行compaction" class="headerlink" title="执行compaction"></a>执行compaction</h2><p>​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。</p>
+<p>​    首先调用的是如下方法，生成CompactionContext构造CompactionRunner放入线程池中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> CompactionRequest <span class="title">requestCompactionInternal</span><span class="params">(<span class="keyword">final</span> HRegion r, <span class="keyword">final</span> Store s,</span></span></div><div class="line">      <span class="keyword">final</span> String why, <span class="keyword">int</span> priority, CompactionRequest request, <span class="keyword">boolean</span> selectNow, User user)</div></pre></td></tr></table></figure>
+<p>​    在里面调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">boolean</span> completed = region.compact(compaction, store, compactionThroughputController, user);</div></pre></td></tr></table></figure>
+<p>​    然后调用相应store的compact方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">store.compact(compaction, throughputController, user);</div></pre></td></tr></table></figure>
+<p>​    里面一个compact操作具体的步骤如下：</p>
 <p>​    1. 开始合并返回合并的结果。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List&lt;Path&gt; newFiles = compaction.compact(throughputController, user);</div></pre></td></tr></table></figure>
 <p>​    此方法中一个判断是否是major</p>
@@ -130,7 +162,7 @@ flush触发
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj2j5wzbv00003w9sbrvvusjk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj2km8nrz0005e69suitrs4ma" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HBase/">HBase</a></li></ul>

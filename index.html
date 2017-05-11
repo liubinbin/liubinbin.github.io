@@ -85,11 +85,25 @@
       
         <h1 id="HBase-compaction"><a href="#HBase-compaction" class="headerlink" title="HBase compaction"></a>HBase compaction</h1><p>像hbase这种基于lsm的架构，compaction是其中很重要一个环节。</p>
 <h2 id="触发compaction"><a href="#触发compaction" class="headerlink" title="触发compaction"></a>触发compaction</h2><ol>
-<li>手工出发</li>
-<li>chore线程</li>
-<li>flush触发</li>
+<li><p>手工出发</p>
+</li>
+<li><p>chore线程</p>
+<ol>
+<li>CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」</li>
+</ol>
+</li>
+<li><p>flush触发</p>
+<p>。。。</p>
+</li>
 </ol>
 <h2 id="执行compaction"><a href="#执行compaction" class="headerlink" title="执行compaction"></a>执行compaction</h2><p>​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。</p>
+<p>​    首先调用的是如下方法，生成CompactionContext构造CompactionRunner放入线程池中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> CompactionRequest <span class="title">requestCompactionInternal</span><span class="params">(<span class="keyword">final</span> HRegion r, <span class="keyword">final</span> Store s,</span></span></div><div class="line">      <span class="keyword">final</span> String why, <span class="keyword">int</span> priority, CompactionRequest request, <span class="keyword">boolean</span> selectNow, User user)</div></pre></td></tr></table></figure>
+<p>​    在里面调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">boolean</span> completed = region.compact(compaction, store, compactionThroughputController, user);</div></pre></td></tr></table></figure>
+<p>​    然后调用相应store的compact方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">store.compact(compaction, throughputController, user);</div></pre></td></tr></table></figure>
+<p>​    里面一个compact操作具体的步骤如下：</p>
 <p>​    1. 开始合并返回合并的结果。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List&lt;Path&gt; newFiles = compaction.compact(throughputController, user);</div></pre></td></tr></table></figure>
 <p>​    此方法中一个判断是否是major</p>
@@ -107,7 +121,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj2j5wzbv00003w9sbrvvusjk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj2km8nrz0005e69suitrs4ma" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HBase/">HBase</a></li></ul>
@@ -150,7 +164,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj2j5wzbz00013w9sb4dbrd2y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj2km8nrj0000e69s52cvko8d" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -211,7 +225,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/" data-id="cj2j5wzcm000c3w9s3421cwen" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/27/hierarchy-of-scanners-in-HBase/" data-id="cj2km8ns10008e69sqnqqdpv8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -268,7 +282,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj2j5wzc400043w9s8601jfss" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj2km8nrq0001e69sznuzm35f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -338,7 +352,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj2j5wzcz000r3w9s6rll5nuc" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj2km8nsg000oe69sxik5x2xg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -380,7 +394,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/16/some-thinkings-about-going-back-home/" data-id="cj2j5wzca00093w9sshl7a3jk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/16/some-thinkings-about-going-back-home/" data-id="cj2km8ns7000ee69s1qzj59rw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -454,7 +468,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/13/filters-in-read-path-of-HBase/" data-id="cj2j5wzc800083w9sf4cadbk9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/13/filters-in-read-path-of-HBase/" data-id="cj2km8nrw0003e69s1gvp5avt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -533,7 +547,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj2j5wzcn000e3w9slmbvxgha" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj2km8nse000me69sbnqiplui" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -596,7 +610,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj2j5wzco000h3w9s6za4qd5y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj2km8ns9000he69s9yml7l7k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -643,7 +657,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj2j5wzcv000m3w9s3c1c3cz7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj2km8ns20009e69su1hj2vi6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
