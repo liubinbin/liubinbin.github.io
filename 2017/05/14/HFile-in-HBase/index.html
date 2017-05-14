@@ -5,19 +5,19 @@
   
   <title>HFile in HBase | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="HBase里HFile本文讨论0.98版本的hbase
-HFileWriterV2首先，我们知道会引起下HFile的操作有flush和compaction。在此，我们就选择从flush这个入口跟进去看。">
+  <meta name="description" content="HBase里HFile本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
+首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFil">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HFile in HBase">
 <meta property="og:url" content="http://yoursite.com/2017/05/14/HFile-in-HBase/index.html">
 <meta property="og:site_name" content="Bean">
-<meta property="og:description" content="HBase里HFile本文讨论0.98版本的hbase
-HFileWriterV2首先，我们知道会引起下HFile的操作有flush和compaction。在此，我们就选择从flush这个入口跟进去看。">
-<meta property="og:updated_time" content="2017-05-14T14:20:37.000Z">
+<meta property="og:description" content="HBase里HFile本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
+首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFil">
+<meta property="og:updated_time" content="2017-05-14T15:58:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HFile in HBase">
-<meta name="twitter:description" content="HBase里HFile本文讨论0.98版本的hbase
-HFileWriterV2首先，我们知道会引起下HFile的操作有flush和compaction。在此，我们就选择从flush这个入口跟进去看。">
+<meta name="twitter:description" content="HBase里HFile本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
+首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFil">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -55,9 +55,9 @@ HFileWriterV2首先，我们知道会引起下HFile的操作有flush和compactio
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -88,13 +88,36 @@ HFileWriterV2首先，我们知道会引起下HFile的操作有flush和compactio
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="HBase里HFile"><a href="#HBase里HFile" class="headerlink" title="HBase里HFile"></a>HBase里HFile</h1><p>本文讨论0.98版本的hbase</p>
+        <h1 id="HBase里HFile"><a href="#HBase里HFile" class="headerlink" title="HBase里HFile"></a>HBase里HFile</h1><p>本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。</p>
+<p>首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile的元数据。对于HFile，我个人觉得主要把握好几个问题。</p>
+<p>1.block的组织</p>
+<p>2.bf和block的关系</p>
+<p>3.index和block的关系</p>
+<p>4.写入顺序和一些基本的元数据信息结构</p>
+<p>5.记录能不能跨block</p>
+<p>明白这四个问题感觉基本可以大致的描绘出HFile了。</p>
 <h2 id="HFileWriterV2"><a href="#HFileWriterV2" class="headerlink" title="HFileWriterV2"></a>HFileWriterV2</h2><p>首先，我们知道会引起下HFile的操作有flush和compaction。在此，我们就选择从flush这个入口跟进去看。</p>
+<p>在StoreFile中，以下方法主要是为了Store书写到一个HFile中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">long</span> org.apache.hadoop.hbase.regionserver.StoreFlusher.performFlush(InternalScanner scanner, CellSink sink, <span class="keyword">long</span> smallestReadPoint) <span class="keyword">throws</span> IOException</div></pre></td></tr></table></figure>
+<p>在此方法会调用如下方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">append</span><span class="params">(<span class="keyword">final</span> KeyValue kv)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">  <span class="comment">//如下两行主要是来加入到bf中的，下面的这个就是我们经常说的bf索引。</span></div><div class="line">  appendGeneralBloomfilter(kv);</div><div class="line">  appendDeleteFamilyBloomFilter(kv);</div><div class="line">  <span class="comment">//这行是重点</span></div><div class="line">  writer.append(kv);</div><div class="line">  <span class="comment">//这行先不管，处理时间戳</span></div><div class="line">  trackTimestamps(kv);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以下分解append方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//检查key是否有问题，是否按顺序（memstore使用ConcurrentSkipListMap存储，应该不会有此问题）。</span></div><div class="line"><span class="comment">//并且返回key是否重复</span></div><div class="line"><span class="keyword">boolean</span> dupKey = checkKey(key, koffset, klength);</div><div class="line">checkValue(value, voffset, vlength);</div><div class="line"><span class="comment">//如果不重复，则不检查边界，答案不能，因为如果有重复，不会检查边界更不会新建一个block。***问题5***</span></div><div class="line"><span class="keyword">if</span> (!dupKey) &#123;</div><div class="line">  <span class="comment">//此出会检查block的大小，并且有一处需要注意，在里面的代码中有一些记录block信息的，这个以后会有用。</span></div><div class="line">  <span class="comment">//此处会写出chunk，处理readyChunks</span></div><div class="line">  checkBlockBoundary();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面注释中说的那个代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">byte</span>[] indexKey = comparator.calcIndexKey(lastKeyOfPreviousBlock, firstKeyInBlock);</div><div class="line">dataBlockIndexWriter.addEntry(indexKey, lastDataBlockOffset, onDiskSize);</div></pre></td></tr></table></figure>
+<p>append下面是一些很正常的数据写入（都是对stream的添加操作），元数据记录（firstKeyInBlock）等。</p>
+<p>回到appendGeneralBloomfilter(kv)方法，此方法里面有一个判断是值得注意的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//在此代码中会判断key的个数，如果key的个数达到了一定程度就新建一个chunk，放入readyChunks（这个会在checkBlockBoundary中处理），此出会写bf。***问题2***</span></div><div class="line">enqueueReadyChunk(<span class="keyword">false</span>);</div><div class="line">... 这种是处理chunk被写出的时候的操作。重置一些值 ...</div><div class="line"><span class="comment">//真正的添加到bf中</span></div><div class="line">chunk.add(bloomKey, keyOffset, keyLength);</div></pre></td></tr></table></figure>
+<p>在enqueueReadyChunk(false)中有</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ReadyChunk readyChunk = <span class="keyword">new</span> ReadyChunk();</div><div class="line">readyChunk.chunkId = numChunks - <span class="number">1</span>;</div><div class="line">readyChunk.chunk = chunk;</div><div class="line">readyChunk.firstKey = firstKeyInChunk; </div><div class="line">readyChunks.add(readyChunk);</div></pre></td></tr></table></figure>
+<p>然后时间很快就到了close环节。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//此处组织了block</span></div><div class="line"><span class="keyword">long</span> rootIndexOffset = dataBlockIndexWriter.writeIndexBlocks(outputStream);</div></pre></td></tr></table></figure>
+<p>block组织也分两类，一个chunk里组织block（他们共生存啊，用了一个bf），另外是root index和intermedia index的组织，实际这个更多感觉是组织chunk。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj2osg51q0003ar9smofbokl8" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj2osi7we0003ck9s7jvuyftl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HBase/">HBase</a></li></ul>
@@ -107,7 +130,7 @@ HFileWriterV2首先，我们知道会引起下HFile的操作有flush和compactio
   
   
     <a href="/2017/05/09/HBase-compaction/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">HBase compaction</div>
     </a>
   
@@ -125,7 +148,7 @@ HFileWriterV2首先，我们知道会引起下HFile的操作有flush和compactio
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/HBase/">HBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
     </div>
@@ -135,7 +158,7 @@ HFileWriterV2首先，我们知道会引起下HFile的操作有flush和compactio
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
       <a href="/tags/HBase/" style="font-size: 13.33px;">HBase</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 13.33px;">hdfs</a> <a href="/tags/life/" style="font-size: 16.67px;">life</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a>
     </div>
@@ -154,7 +177,7 @@ HFileWriterV2首先，我们知道会引起下HFile的操作有flush和compactio
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
         
@@ -191,7 +214,7 @@ HFileWriterV2首先，我们知道会引起下HFile的操作有flush和compactio
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2017 John Doe<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
