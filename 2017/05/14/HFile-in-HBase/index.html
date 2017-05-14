@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Bean">
 <meta property="og:description" content="HBase里HFile本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
 首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFil">
-<meta property="og:updated_time" content="2017-05-14T16:23:18.000Z">
+<meta property="og:updated_time" content="2017-05-14T16:40:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HFile in HBase">
 <meta name="twitter:description" content="HBase里HFile本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
@@ -113,12 +113,14 @@
 <p>然后时间很快就到了close环节。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//此处组织了block</span></div><div class="line"><span class="keyword">long</span> rootIndexOffset = dataBlockIndexWriter.writeIndexBlocks(outputStream);</div></pre></td></tr></table></figure>
 <p>block组织也分两类，一个chunk里组织block（他们共生存啊，用了一个bf），另外是root index和intermedia index的组织，实际这个更多感觉是组织chunk。</p>
-<p>问题：index的在最后的dataBlockIndexWriter.writeIndexBlocks方法中脱离了，chunk和bf不对应了。看看检索是怎么处理这件事情的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeInlineBlocks</span><span class="params">(<span class="keyword">boolean</span> closing)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">  <span class="comment">//inlineBlockWriters 应该就3个，两个bf和一个block（待确定）</span></div><div class="line">  <span class="keyword">for</span> (InlineBlockWriter ibw : inlineBlockWriters) &#123;</div><div class="line">    <span class="keyword">while</span> (ibw.shouldWriteBlock(closing)) &#123;</div><div class="line">      <span class="keyword">long</span> offset = outputStream.getPos();</div><div class="line">      <span class="keyword">boolean</span> cacheThisBlock = ibw.getCacheOnWrite();</div><div class="line">      ibw.writeInlineBlock(fsBlockWriter.startWriting(</div><div class="line">          ibw.getInlineBlockType()));</div><div class="line">      fsBlockWriter.writeHeaderAndData(outputStream);</div><div class="line">      <span class="comment">//此处添加leaf index block</span></div><div class="line">      ibw.blockWritten(offset, fsBlockWriter.getOnDiskSizeWithHeader(),</div><div class="line">          fsBlockWriter.getUncompressedSizeWithoutHeader());</div><div class="line">      totalUncompressedBytes += fsBlockWriter.getUncompressedSizeWithHeader();</div><div class="line"></div><div class="line">      <span class="keyword">if</span> (cacheThisBlock) &#123;</div><div class="line">        doCacheOnWrite(offset);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>ibw.shouldWriteBlock(closing)方法的判断如下，实际是判断是否有chunk</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldWriteBlock</span><span class="params">(<span class="keyword">boolean</span> closing)</span> </span>&#123;</div><div class="line">  enqueueReadyChunk(closing);</div><div class="line">  <span class="keyword">return</span> !readyChunks.isEmpty();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj2owtoss0003699syc6o65c3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj2oxfdna0003h89s2okmzg18" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HBase/">HBase</a></li></ul>
