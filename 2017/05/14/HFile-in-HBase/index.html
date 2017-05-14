@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Bean">
 <meta property="og:description" content="HBase里HFile本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
 首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFil">
-<meta property="og:updated_time" content="2017-05-14T15:58:01.000Z">
+<meta property="og:updated_time" content="2017-05-14T16:23:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HFile in HBase">
 <meta name="twitter:description" content="HBase里HFile本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
@@ -113,11 +113,12 @@
 <p>然后时间很快就到了close环节。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//此处组织了block</span></div><div class="line"><span class="keyword">long</span> rootIndexOffset = dataBlockIndexWriter.writeIndexBlocks(outputStream);</div></pre></td></tr></table></figure>
 <p>block组织也分两类，一个chunk里组织block（他们共生存啊，用了一个bf），另外是root index和intermedia index的组织，实际这个更多感觉是组织chunk。</p>
+<p>问题：index的在最后的dataBlockIndexWriter.writeIndexBlocks方法中脱离了，chunk和bf不对应了。看看检索是怎么处理这件事情的。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj2osi7we0003ck9s7jvuyftl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj2owtoss0003699syc6o65c3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HBase/">HBase</a></li></ul>
