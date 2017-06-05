@@ -17,7 +17,7 @@
 处理scanner处理scanner大致分为几个步骤：
 
 获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang">
-<meta property="og:updated_time" content="2017-04-26T16:08:00.000Z">
+<meta property="og:updated_time" content="2017-06-05T14:15:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="what region will do when receiving a get">
 <meta name="twitter:description" content="Region收到get请求后的操作​    hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。
@@ -126,11 +126,62 @@
 <li>index的过滤</li>
 <li>blockcache的使用</li>
 </ol>
+<h2 id="scanner的层级"><a href="#scanner的层级" class="headerlink" title="scanner的层级"></a>scanner的层级</h2><p>一个Region一个RegionScannerImpl</p>
+<hr>
+<ul>
+<li><p>RegionScannerImpl (下面代表了层级)</p>
+<ul>
+<li><p>StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) </p>
+<ul>
+<li>MemStoreScanner</li>
+<li>StoreFileScanner </li>
+</ul>
+<p>​  (MemStoreScanner 和 StoreFileScanner 组成heap ，也是一个KeyValueHeap， 用的是store的Comparator)</p>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>可以看到一些问题和关注点</strong></p>
+<ol>
+<li>RegionScannerImpl里使用StoreScanner 时，各种heap的操作主要需要关注一个记录的组织，因为一条记录的不同列族保存在不同的store中。还要关注什么时候结束。</li>
+<li>StoreScanner中的两种scanner（StoreFileScanner可能有多个）需要协调在不同scanner中的不同的版本的问题。还要关注什么时候结束。</li>
+</ol>
+<h2 id="hbase使用到裁剪"><a href="#hbase使用到裁剪" class="headerlink" title="hbase使用到裁剪"></a>hbase使用到裁剪</h2><p>我个人觉得总共几个部分，包括time裁剪，key裁剪，bf和索引</p>
+<p>获取scanner分两个，一个memstore的，另一个是file的。</p>
+<p>获取有关file的Scanner如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.storeEngine.getStoreFileManager().getFilesForScanOrGet(isGet, startRow, stopRow);</div><div class="line"></div><div class="line">List&lt;StoreFileScanner&gt; sfScanners = StoreFileScanner.getScannersForStoreFiles(storeFilesToScan,</div><div class="line">        cacheBlocks, usePread, isCompaction, <span class="keyword">false</span>, matcher, readPt);</div></pre></td></tr></table></figure>
+<p>获取有关mem的Scanner如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">memStoreScanners = <span class="keyword">this</span>.memstore.getScanners(readPt);</div></pre></td></tr></table></figure>
+<p>然后在返回之前做了筛选，注意那个selectScannerFrom方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</div><div class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="keyword">this</span>.readPt));</div></pre></td></tr></table></figure>
+<p>selectScannerFrom还是分两个分支，有两个实现，file的和mem的。</p>
+<p>file的过滤分三种，time，key和bf。file过滤实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldUseScanner</span><span class="params">(Scan scan, SortedSet&lt;<span class="keyword">byte</span>[]&gt; columns, <span class="keyword">long</span> oldestUnexpiredTS)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> reader.passesTimerangeFilter(scan.getTimeRange(), oldestUnexpiredTS)</div><div class="line">        &amp;&amp; reader.passesKeyRangeFilter(scan) &amp;&amp; reader.passesBloomFilter(scan, columns);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>memstore的实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldSeek</span><span class="params">(Scan scan, <span class="keyword">long</span> oldestUnexpiredTS)</span> </span>&#123;</div><div class="line">    TimeRange timeRange = scan.getTimeRange();</div><div class="line">    <span class="keyword">return</span> (timeRangeTracker.includesTimeRange(timeRange) ||</div><div class="line">        snapshotTimeRangeTracker.includesTimeRange(timeRange)) &amp;&amp;</div><div class="line">        (Math.max(timeRangeTracker.getMax(), snapshotTimeRangeTracker.getMax())</div><div class="line">            &gt;= oldestUnexpiredTS);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>几个方面下来，感觉很清晰。ps：之前看hbase的代码时总是感觉比较的混乱，一脸懵逼的感受。</p>
+<p>接下来应该结合文件格式看了。</p>
+<p>从文件格式看，主要是几个过滤，主要代码如下</p>
+<p>主要的实现在如下方法中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">BlockWithScanInfo blockWithScanInfo =</div><div class="line">  indexReader.loadDataBlockWithScanInfo(key, offset, length, block,</div><div class="line">      cacheBlocks, pread, isCompaction);</div></pre></td></tr></table></figure>
+<p>在HFileReaderV2中，由索引过滤和blockcache的实现，在</p>
+<p>根据索引信息过滤block</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> rootLevelIndex = rootBlockContainingKey(key, keyOffset, keyLength);</div></pre></td></tr></table></figure>
+<p>方法实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public int rootBlockContainingKey(final byte[] key, int offset,</div><div class="line">    int length) &#123;</div><div class="line">  int pos = Bytes.binarySearch(blockKeys, key, offset, length,</div><div class="line">      comparator);</div><div class="line">  ....&#125;</div></pre></td></tr></table></figure>
+<p>如果需要读取，会先从blockcache中读取，减少io。blcokcache中读取block，代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">block = cachingBlockReader.readBlock(currentOffset,</div><div class="line">    currentOnDiskSize, shouldCache, pread, isCompaction, <span class="keyword">true</span>,</div><div class="line">    expectedBlockType);</div></pre></td></tr></table></figure>
+<p>两处使用bf索引过滤，一处是isLazy==true时</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">boolean</span> org.apache.hadoop.hbase.regionserver.StoreFileScanner.requestSeek(KeyValue kv, <span class="keyword">boolean</span> forward, <span class="keyword">boolean</span> useBloom)</div></pre></td></tr></table></figure>
+<p>另一处时获取scanner时</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">protected</span> List&lt;KeyValueScanner&gt; <span class="title">selectScannersFrom</span><span class="params">(<span class="keyword">final</span> List&lt;? extends KeyValueScanner&gt; allScanners)</span></span></div><div class="line">      </div><div class="line"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldUseScanner</span><span class="params">(Scan scan, SortedSet&lt;<span class="keyword">byte</span>[]&gt; columns, <span class="keyword">long</span> oldestUnexpiredTS)</span> &#123;</div><div class="line">    <span class="keyword">return</span> reader.passesTimerangeFilter(scan.getTimeRange(), oldestUnexpiredTS)</div><div class="line">        &amp;&amp; reader.passesKeyRangeFilter(scan) &amp;&amp; reader.passesBloomFilter(scan, columns);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>bf的粒度是chunk​。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj3iuk401000uzh9s6ta1qigv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj3k809r1000om19smsv3knew" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
