@@ -5,37 +5,31 @@
   
   <title>some points about MVCC in HBase | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="关键点
-​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。
+  <meta name="description" content="关键点​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。
 ​    MultiVersionConsistencyControl在一个Region有一个。
-MultiVersionConsistencyControl{
-memstoreRead：能够读取的序列号。
-memstoreWrite：写操作的序列号。
-writeQueue：写操作队列}
-问题点（就是需要去回答的">
+​    MultiVersionConsistencyControl{
+​        memstoreRead：能够读取的序列号。
+​        memstoreWrite：写操作的序列号。
+​">
 <meta property="og:type" content="article">
 <meta property="og:title" content="some points about MVCC in HBase">
 <meta property="og:url" content="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/index.html">
 <meta property="og:site_name" content="Bean">
-<meta property="og:description" content="关键点
-​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。
+<meta property="og:description" content="关键点​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。
 ​    MultiVersionConsistencyControl在一个Region有一个。
-MultiVersionConsistencyControl{
-memstoreRead：能够读取的序列号。
-memstoreWrite：写操作的序列号。
-writeQueue：写操作队列}
-问题点（就是需要去回答的">
-<meta property="og:updated_time" content="2017-04-26T15:51:42.000Z">
+​    MultiVersionConsistencyControl{
+​        memstoreRead：能够读取的序列号。
+​        memstoreWrite：写操作的序列号。
+​">
+<meta property="og:updated_time" content="2017-06-05T14:34:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="some points about MVCC in HBase">
-<meta name="twitter:description" content="关键点
-​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。
+<meta name="twitter:description" content="关键点​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。
 ​    MultiVersionConsistencyControl在一个Region有一个。
-MultiVersionConsistencyControl{
-memstoreRead：能够读取的序列号。
-memstoreWrite：写操作的序列号。
-writeQueue：写操作队列}
-问题点（就是需要去回答的">
+​    MultiVersionConsistencyControl{
+​        memstoreRead：能够读取的序列号。
+​        memstoreWrite：写操作的序列号。
+​">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -106,17 +100,16 @@ writeQueue：写操作队列}
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>关键点</p>
-<p>​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。</p>
+        <h2 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h2><p>​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。</p>
 <p>​    MultiVersionConsistencyControl在一个Region有一个。</p>
-<p>MultiVersionConsistencyControl{</p>
-<p>memstoreRead：能够读取的序列号。</p>
-<p>memstoreWrite：写操作的序列号。</p>
-<p>writeQueue：写操作队列}</p>
-<p>问题点（就是需要去回答的问题，这些问题十分有助于思考这个大问题）</p>
+<p>​    MultiVersionConsistencyControl{</p>
+<p>​        memstoreRead：能够读取的序列号。</p>
+<p>​        memstoreWrite：写操作的序列号。</p>
+<p>​        writeQueue：写操作队列}</p>
+<h2 id="问题点"><a href="#问题点" class="headerlink" title="问题点"></a>问题点</h2><p>就是需要去回答的问题，这些问题十分有助于思考这个大问题</p>
 <ol>
 <li><p>读取是版本的选择</p>
-<p>在<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner~getNext~QIterator%5C%3CQKeyValue;%3E;%E2%98%82KeyValue" target="_blank" rel="external">KeyValue</a><a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore" target="_blank" rel="external">MemStore</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner" target="_blank" rel="external">MemStoreScanner</a>.getNext(<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner~getNext~QIterator%5C%3CQKeyValue;%3E;%E2%98%82Iterator" target="_blank" rel="external">Iterator</a>&lt;<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BMemStore.java%E2%98%83MemStore%E2%98%83MemStoreScanner~getNext~QIterator%5C%3CQKeyValue;%3E;%E2%98%82KeyValue" target="_blank" rel="external">KeyValue</a>&gt; it)  L777中判断了曲出来的KeyValue是否到了可以读的范围（v.getMvccVersion() &lt;= this.readPoint）。否则掠过</p>
+<p>在org.apache.hadoop.hbase.regionserver.MemStore.MemStoreScanner.getNext(Iterator<keyvalue> it)  L777中判断了曲出来的KeyValue是否到了可以读的范围（v.getMvccVersion() &lt;= this.readPoint）。否则掠过</keyvalue></p>
 <p>在构造scanner时会将readpoint传入到scanner，说明能读到的版本在构造开始就定好了。</p>
 </li>
 <li><p>写的时候的版本</p>
@@ -130,12 +123,12 @@ writeQueue：写操作队列}
 <p>回滚操作时找kv有版本比较MemStore.java L334。并且会滚后再执行mvcc.completeMemstoreInsert(w);</p>
 </li>
 </ol>
-<p>ps：long <a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.getReadpoint(<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion~getReadpoint~QIsolationLevel;%E2%98%82IsolationLevel" target="_blank" rel="external">IsolationLevel</a> isolationLevel) L1115用了一个隔离级别。之后写一篇隔离级别的小文，加深理解。</p>
+<p>ps：long org.apache.hadoop.hbase.regionserver.HRegion.getReadpoint(IsolationLevel isolationLevel) L1115用了一个隔离级别。之后写一篇隔离级别的小文，加深理解。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj3k809qw000em19s2l0atq9h" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj3k8xm3p000e959se41prfnb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>

@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Bean">
 <meta property="og:description" content="memstore主要结构​    主要结构包括「kvset，snapshot」，先说snapshot，主要适用于生成HFile时临时存放的kvset的一个快照。更改的snaphost一定条件判断可以生成HFile时调用
 1FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, lon">
-<meta property="og:updated_time" content="2017-04-26T15:51:07.000Z">
+<meta property="og:updated_time" content="2017-06-05T14:29:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="something about memstore in HBase">
 <meta name="twitter:description" content="memstore主要结构​    主要结构包括「kvset，snapshot」，先说snapshot，主要适用于生成HFile时临时存放的kvset的一个快照。更改的snaphost一定条件判断可以生成HFile时调用
@@ -97,7 +97,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, <span class="keyword">long</span> myseqid, MonitoredTask status)</div></pre></td></tr></table></figure>
 <h2 id="flush过程"><a href="#flush过程" class="headerlink" title="flush过程"></a>flush过程</h2><ol>
 <li>准备工作</li>
-<li>获取<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver%7BHRegion.java%E2%98%83HRegion" target="_blank" rel="external">HRegion</a>.updatesLock的写锁</li>
+<li>获取HRegion.updatesLock的写锁</li>
 <li>获取mvcc事务，并努力前提读点</li>
 <li>调用prepare（）<ol>
 <li>将snapshot设置为的kvset，并重新生成一个kvset，用于写入。</li>
@@ -108,7 +108,7 @@
 <li>等到mvcc结束</li>
 <li>flushcache()</li>
 <li>commit()<ol>
-<li>才更新构造scanner使用的<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg" target="_blank" rel="external">org</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache" target="_blank" rel="external">apache</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop" target="_blank" rel="external">hadoop</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase" target="_blank" rel="external">hbase</a>.<a href="eclipse-javadoc:%E2%98%82=hbase-server/src%5C/main%5C/java%3Corg.apache.hadoop.hbase.regionserver" target="_blank" rel="external">regionserver</a>.[DefaultStoreFileManager].storefiles</li>
+<li>才更新构造scanner使用的org.apache.hadoop.hbase.regionserver.DefaultStoreFileManager.storefiles</li>
 </ol>
 </li>
 </ol>
@@ -133,7 +133,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj3k809qx000jm19sl0k8d9v0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj3k8xm3r000h959snq91u5wx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -144,11 +144,11 @@
     
 <nav id="article-nav">
   
-    <a href="/2017/04/16/some-thinkings-about-going-back-home/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2017/04/25/what-region-will-do-when-receive-a-get/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          some thinkings about going back home
+          what region will do when receiving a get
         
       </div>
     </a>

@@ -5,25 +5,16 @@
   
   <title>what region will do when receiving a get | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Region收到get请求后的操作​    hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。
-处理scanner处理scanner大致分为几个步骤：
-
-获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang">
+  <meta name="description" content="Region收到get请求后的操作1234567891011121314151617181920212223242526hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。## 处理scanner处理scanner大致分为几个步骤：1. 获取此r">
 <meta property="og:type" content="article">
 <meta property="og:title" content="what region will do when receiving a get">
 <meta property="og:url" content="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/index.html">
 <meta property="og:site_name" content="Bean">
-<meta property="og:description" content="Region收到get请求后的操作​    hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。
-处理scanner处理scanner大致分为几个步骤：
-
-获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang">
-<meta property="og:updated_time" content="2017-06-05T14:15:08.000Z">
+<meta property="og:description" content="Region收到get请求后的操作1234567891011121314151617181920212223242526hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。## 处理scanner处理scanner大致分为几个步骤：1. 获取此r">
+<meta property="og:updated_time" content="2017-06-05T14:41:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="what region will do when receiving a get">
-<meta name="twitter:description" content="Region收到get请求后的操作​    hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。
-处理scanner处理scanner大致分为几个步骤：
-
-获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang">
+<meta name="twitter:description" content="Region收到get请求后的操作1234567891011121314151617181920212223242526hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。## 处理scanner处理scanner大致分为几个步骤：1. 获取此r">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -94,24 +85,19 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Region收到get请求后的操作"><a href="#Region收到get请求后的操作" class="headerlink" title="Region收到get请求后的操作"></a>Region收到get请求后的操作</h1><p>​    hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。</p>
-<h2 id="处理scanner"><a href="#处理scanner" class="headerlink" title="处理scanner"></a>处理scanner</h2><p>处理scanner大致分为几个步骤：</p>
+        <h1 id="Region收到get请求后的操作"><a href="#Region收到get请求后的操作" class="headerlink" title="Region收到get请求后的操作"></a>Region收到get请求后的操作</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。</div><div class="line"></div><div class="line">## 处理scanner</div><div class="line"></div><div class="line">处理scanner大致分为几个步骤：</div><div class="line"></div><div class="line">1. 获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang，bf等）</div><div class="line"></div><div class="line">   获取所有的scanner</div><div class="line"></div><div class="line">   ```java</div><div class="line">   //对此region中每个store（列族）都需要获取scanner</div><div class="line">   for (Map.Entry&lt;byte[], NavigableSet&lt;byte[]&gt;&gt; entry : scan.getFamilyMap().entrySet()) &#123;</div><div class="line">     //此方法是获取了scanner，过滤了一些scanner，并且还粗略的检索到需要的位置。</div><div class="line">     //此scanner是一个store对应的</div><div class="line">     KeyValueScanner scanner = store.getScanner(scan, entry.getValue(), this.readPt);</div><div class="line">     if (this.filter == null || !scan.doLoadColumnFamiliesOnDemand() || this.filter.isFamilyEssential(entry.getKey())) &#123;</div><div class="line">        scanners.add(scanner);</div><div class="line">     &#125; else &#123;</div><div class="line">        //比如有filter的情况</div><div class="line">        joinedScanners.add(scanner);</div><div class="line">     &#125;</div><div class="line">   &#125;</div><div class="line">   //生成俩KeyValueHeap，此处的比较器不知道啥意思。真他妈尴尬</div><div class="line">   initializeKVHeap(scanners, joinedScanners, region);</div></pre></td></tr></table></figure>
+<p>   1.1 跟入store.getScanner方法</p>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//获取所有的file，打开文件，做一些过滤等。</span></div><div class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</div><div class="line">seekScanners(scanners, matcher.getStartKey(), explicitColumnQuery &amp;&amp; lazySeekEnabledGlobally, isParallelSeekEnabled);</div><div class="line">resetKVHeap(scanners, store.getComparator());</div></pre></td></tr></table></figure>
+<p>   1.1.1 getScannersNoCompaction()</p>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</div><div class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="keyword">this</span>.readPt));</div></pre></td></tr></table></figure>
+<p>   ​    主要两层，store.getScanners中是获取所有的file，打开文件（获取reader，此处需要注意，和下面的file的scanner的处理有关系）</p>
+<p>   ​    selectScannersFrom主要做过滤，主要是如下方法</p>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">kvs.shouldUseScanner(scan, columns, expiredTimestampCutoff)</div><div class="line">  此方法两个分支，mem和file值得关注，此处就不说了。反正用了一些range和bf（bf只针对单行和单行列族）</div><div class="line">  bf的过滤有一个判断（!scan.isGetScan()），如果是get，并且isStartRowAndEqualsStopRow为<span class="keyword">true</span>才走bf。</div></pre></td></tr></table></figure>
+<p>   1.1.2 seekScanners</p>
+<p>   ​    bf判断，时间判断，伪造kv使其跳过此个检索吧。    </p>
+<p>   1.1.3 resetKVHeap</p>
+<p>   ​    组织成一个KeyValueHeap，比较器有代表时间的id等。</p>
 <ol>
-<li><p>获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang，bf等）</p>
-<p>获取所有的scanner</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//对此region中每个store（列族）都需要获取scanner</span></div><div class="line"><span class="keyword">for</span> (Map.Entry&lt;<span class="keyword">byte</span>[], NavigableSet&lt;<span class="keyword">byte</span>[]&gt;&gt; entry : scan.getFamilyMap().entrySet()) &#123;</div><div class="line">  <span class="comment">//此方法是获取了scanner，过滤了一些scanner，并且还粗略的检索到需要的位置。</span></div><div class="line">  <span class="comment">//此scanner是一个store对应的</span></div><div class="line">  KeyValueScanner scanner = store.getScanner(scan, entry.getValue(), <span class="keyword">this</span>.readPt);</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.filter == <span class="keyword">null</span> || !scan.doLoadColumnFamiliesOnDemand() || <span class="keyword">this</span>.filter.isFamilyEssential(entry.getKey())) &#123;</div><div class="line">     scanners.add(scanner);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">     <span class="comment">//比如有filter的情况</span></div><div class="line">     joinedScanners.add(scanner);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">//生成俩KeyValueHeap，此处的比较器不知道啥意思。真他妈尴尬</span></div><div class="line">initializeKVHeap(scanners, joinedScanners, region);</div></pre></td></tr></table></figure>
-<p>1.1 跟入store.getScanner方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//获取所有的file，打开文件，做一些过滤等。</span></div><div class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</div><div class="line">seekScanners(scanners, matcher.getStartKey(), explicitColumnQuery &amp;&amp; lazySeekEnabledGlobally, isParallelSeekEnabled);</div><div class="line">resetKVHeap(scanners, store.getComparator());</div></pre></td></tr></table></figure>
-<p>1.1.1 getScannersNoCompaction()</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</div><div class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="keyword">this</span>.readPt));</div></pre></td></tr></table></figure>
-<p>​    主要两层，store.getScanners中是获取所有的file，打开文件（获取reader，此处需要注意，和下面的file的scanner的处理有关系）</p>
-<p>​    selectScannersFrom主要做过滤，主要是如下方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">kvs.shouldUseScanner(scan, columns, expiredTimestampCutoff)</div><div class="line">  此方法两个分支，mem和file值得关注，此处就不说了。反正用了一些range和bf（bf只针对单行和单行列族）</div><div class="line">  bf的过滤有一个判断（!scan.isGetScan()），如果是get，并且isStartRowAndEqualsStopRow为<span class="keyword">true</span>才走bf。</div></pre></td></tr></table></figure>
-<p>1.1.2 seekScanners</p>
-<p>​    bf判断，时间判断，伪造kv使其跳过此个检索吧。    </p>
-<p>1.1.3 resetKVHeap</p>
-<p>​    组织成一个KeyValueHeap，比较器有代表时间的id等。</p>
-</li>
 <li><p>我们讲获取到的scanner组织成heap，然后从heap中获取对应的数据。这个heap需要有一定的组织，比如检索到了数据，需要关闭；对于同一个key，需要在所有的scanner中获取到等</p>
 <p>获取到scanner之后就开始获取数据结果了。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scanner.next(results);</div></pre></td></tr></table></figure>
@@ -181,7 +167,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj3k809r1000om19smsv3knew" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj3k8xm3u000m959se79crxtr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -202,9 +188,9 @@
     </a>
   
   
-    <a href="/2017/04/16/some-thinkings-about-going-back-home/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2017/04/12/something-about-memstore-in-HBase/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">some thinkings about going back home</div>
+      <div class="article-nav-title">something about memstore in HBase</div>
     </a>
   
 </nav>

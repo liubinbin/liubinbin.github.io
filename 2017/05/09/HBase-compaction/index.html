@@ -5,7 +5,7 @@
   
   <title>HBase compaction | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。
+  <meta name="description" content="HBase compaction像hbase这种基于LSM的架构，compaction是其中很重要一个环节。
 触发compaction
 手工出发
 
@@ -15,15 +15,14 @@ CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」
 
 
 flush触发
-。。。
 
 
-执行compaction​    此处才是本文的重点，上面的触发更多">
+执行compaction​    此处才是本文的重点，上面的触发更多是条件的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HBase compaction">
 <meta property="og:url" content="http://yoursite.com/2017/05/09/HBase-compaction/index.html">
 <meta property="og:site_name" content="Bean">
-<meta property="og:description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。
+<meta property="og:description" content="HBase compaction像hbase这种基于LSM的架构，compaction是其中很重要一个环节。
 触发compaction
 手工出发
 
@@ -33,14 +32,13 @@ CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」
 
 
 flush触发
-。。。
 
 
-执行compaction​    此处才是本文的重点，上面的触发更多">
-<meta property="og:updated_time" content="2017-05-16T15:47:25.000Z">
+执行compaction​    此处才是本文的重点，上面的触发更多是条件的">
+<meta property="og:updated_time" content="2017-06-05T14:36:09.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HBase compaction">
-<meta name="twitter:description" content="HBase compaction像hbase这种基于lsm的架构，compaction是其中很重要一个环节。
+<meta name="twitter:description" content="HBase compaction像hbase这种基于LSM的架构，compaction是其中很重要一个环节。
 触发compaction
 手工出发
 
@@ -50,10 +48,9 @@ CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」
 
 
 flush触发
-。。。
 
 
-执行compaction​    此处才是本文的重点，上面的触发更多">
+执行compaction​    此处才是本文的重点，上面的触发更多是条件的">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -124,7 +121,7 @@ flush触发
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="HBase-compaction"><a href="#HBase-compaction" class="headerlink" title="HBase compaction"></a>HBase compaction</h1><p>像hbase这种基于lsm的架构，compaction是其中很重要一个环节。</p>
+        <h1 id="HBase-compaction"><a href="#HBase-compaction" class="headerlink" title="HBase compaction"></a>HBase compaction</h1><p>像hbase这种基于LSM的架构，compaction是其中很重要一个环节。</p>
 <h2 id="触发compaction"><a href="#触发compaction" class="headerlink" title="触发compaction"></a>触发compaction</h2><ol>
 <li><p>手工出发</p>
 </li>
@@ -134,7 +131,6 @@ flush触发
 </ol>
 </li>
 <li><p>flush触发</p>
-<p>。。。</p>
 </li>
 </ol>
 <h2 id="执行compaction"><a href="#执行compaction" class="headerlink" title="执行compaction"></a>执行compaction</h2><p>​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。</p>
@@ -156,13 +152,13 @@ flush触发
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">writeCompactionWalRecord(filesToCompact, sfs);</div></pre></td></tr></table></figure>
 <p>​    4. 更新StoreFileManager的storefiles，去除旧的文件，加入新的文件</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">replaceStoreFiles(filesToCompact, sfs);</div></pre></td></tr></table></figure>
-<p>​    5. 此时已经可以按心的文件读取了，最后一步骤就是删除旧的数据</p>
+<p>​    5. 此时已经可以安心的文件读取了，最后一步骤就是删除旧的数据</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">completeCompaction(filesToCompact);</div></pre></td></tr></table></figure>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj3k809q90000m19s75z4gom1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj3k8xm380000959sby8rwuva" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>

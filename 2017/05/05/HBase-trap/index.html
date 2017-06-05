@@ -6,21 +6,18 @@
   <title>HBase trap | Bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="HBase的一些坑
-mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 
-因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉">
+mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HBase trap">
 <meta property="og:url" content="http://yoursite.com/2017/05/05/HBase-trap/index.html">
 <meta property="og:site_name" content="Bean">
 <meta property="og:description" content="HBase的一些坑
-mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 
-因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉">
-<meta property="og:updated_time" content="2017-05-05T15:06:59.000Z">
+mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很">
+<meta property="og:updated_time" content="2017-06-05T14:36:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HBase trap">
 <meta name="twitter:description" content="HBase的一些坑
-mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 
-因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉">
+mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很">
   
     <link rel="alternate" href="/atom.xml" title="Bean" type="application/atom+xml">
   
@@ -92,15 +89,16 @@ mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="HBase的一些坑"><a href="#HBase的一些坑" class="headerlink" title="HBase的一些坑"></a>HBase的一些坑</h1><ol>
-<li><p>mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&gt; 想再测一次就删除了 =&gt; 这些数据再次加入hbase查不到。 </p>
-<p>因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很比较，可以使用mvcc的版本来解决操作请求的顺序，而不出现delete后加入的数据的不能被显示出来）</p>
-</li>
+<li>mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&gt; 想再测一次就删除了 =&gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很比较，可以使用mvcc的版本来解决操作请求的顺序，而不出现delete后加入的数据的不能被显示出来）</li>
+</ol>
+<ol>
+<li>有时候重启regionserver需要有些region没有上线，需要执行hbase hbck -repair</li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj3k809qd0001m19s9vaoketj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj3k8xm3b0001959s3g0h6n99" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
