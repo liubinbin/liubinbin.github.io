@@ -89,7 +89,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cj3s7w3gu000dyl9sedx1riu1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cj3s8jk1b000cgh9sygmdkvei" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -131,7 +131,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/21/anniverary-of-zju/" data-id="cj3s7w3ge0003yl9s2obaezha" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/21/anniverary-of-zju/" data-id="cj3s8jk0y0004gh9s9u88r3m3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -221,7 +221,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj3s7w3gg0004yl9s8qxiug34" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj3s8jk0x0003gh9slne23dua" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -292,7 +292,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj3s7w3g30000yl9sed4kyb4d" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj3s8jk0m0000gh9suzrea8fd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -336,7 +336,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj3s7w3g70001yl9scfxinvrb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj3s8jk0r0001gh9ssamy1c89" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -393,7 +393,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj3s7w3gp0008yl9sp27gzao4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj3s8jk120005gh9snms4b5ww" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -457,7 +457,7 @@
 <h2 id="scanner的层级"><a href="#scanner的层级" class="headerlink" title="scanner的层级"></a>scanner的层级</h2><p>一个Region一个RegionScannerImpl</p>
 <hr>
 <ul>
-<li><p>RegionScannerImpl (下面代表了层级)</p>
+<li><p>RegionScannerImpl (下面缩进代表了层级)</p>
 <ul>
 <li><p>StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) </p>
 <ul>
@@ -509,11 +509,15 @@
 <p>只执行一次。一个keyvalue只会在一个block中，其实并不需要再去检索，只要检索一次就可以了，感觉是对的。没想到前几天想的有问题。</p>
 <h2 id="scan判断结束"><a href="#scan判断结束" class="headerlink" title="scan判断结束"></a>scan判断结束</h2><p>scan的判断结束</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> (i &lt; rows) &#123;</div><div class="line">  <span class="comment">// Stop collecting results if maxScannerResultSize is set and we have exceeded it</span></div><div class="line">  <span class="keyword">if</span> ((maxResultSize &lt; Long.MAX_VALUE) &amp;&amp;</div><div class="line">      (currentScanResultSize &gt;= maxResultSize)) &#123;</div><div class="line">    builder.setMoreResultsInRegion(<span class="keyword">true</span>);</div><div class="line">    <span class="keyword">break</span>;</div><div class="line">  &#125;</div><div class="line">  <span class="comment">// Collect values to be returned here</span></div><div class="line">  moreRows = scanner.nextRaw(values);</div><div class="line">  <span class="keyword">if</span> (!values.isEmpty()) &#123;</div><div class="line">    <span class="keyword">for</span> (Cell cell : values) &#123;</div><div class="line">      KeyValue kv = KeyValueUtil.ensureKeyValue(cell);</div><div class="line">      currentScanResultSize += kv.heapSizeWithoutTags();</div><div class="line">      totalKvSize += kv.getLength();</div><div class="line">    &#125;</div><div class="line">    results.add(Result.create(values));</div><div class="line">    i++;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (!moreRows) &#123;</div><div class="line">  	<span class="comment">//结束了</span></div><div class="line">    <span class="keyword">break</span>;</div><div class="line">  &#125;</div><div class="line">  values.clear();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="检索keyvalue"><a href="#检索keyvalue" class="headerlink" title="检索keyvalue"></a>检索keyvalue</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> org.apache.hadoop.hbase.io.hfile.HFileReaderV2.AbstractScannerV2.seekTo(<span class="keyword">byte</span>[] key, <span class="keyword">int</span> offset, <span class="keyword">int</span> length, <span class="keyword">boolean</span> rewind) <span class="keyword">throws</span> IOException</div></pre></td></tr></table></figure>
+<p>实现获取block</p>
+<p>​    index 去检索</p>
+<p>检索到指定位置</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj3s7w3gz000iyl9s313s0twe" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj3s8jk1c000egh9s4w0ekj5w" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -592,7 +596,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj3s7w3gz000kyl9sh99cnr66" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj3s8jk1d000jgh9sz6ile43d" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -654,7 +658,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj3s7w3gw000fyl9sz4v4w0ba" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj3s8jk1h000mgh9saxq8lv0z" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -701,7 +705,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj3s7w3gr000ayl9sht9caa7a" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj3s8jk160009gh9sne35pxub" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
