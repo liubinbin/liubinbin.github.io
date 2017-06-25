@@ -89,7 +89,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cj3s8jk1b000cgh9sygmdkvei" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cj4ct9n8z000c1w9s60y3hkla" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -131,7 +131,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/21/anniverary-of-zju/" data-id="cj3s8jk0y0004gh9s9u88r3m3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/21/anniverary-of-zju/" data-id="cj4ct9n8r00041w9s20hrfb6b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -221,7 +221,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj3s8jk0x0003gh9slne23dua" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj4ct9n8q00031w9slw6we8wq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -292,7 +292,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj3s8jk0m0000gh9suzrea8fd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj4ct9n8g00001w9s3t9w5ewc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -336,7 +336,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj3s8jk0r0001gh9ssamy1c89" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj4ct9n8l00011w9sb17ztm1u" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -393,7 +393,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj3s8jk120005gh9snms4b5ww" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj4ct9n8t00051w9sys3cgk49" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -427,7 +427,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Region收到get请求后的操作"><a href="#Region收到get请求后的操作" class="headerlink" title="Region收到get请求后的操作"></a>Region收到get请求后的操作</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。</div><div class="line"></div><div class="line">## 处理scanner</div><div class="line"></div><div class="line">处理scanner大致分为几个步骤：</div><div class="line"></div><div class="line">1. 获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang，bf等）</div><div class="line"></div><div class="line">   获取所有的scanner</div><div class="line"></div><div class="line">   ```java</div><div class="line">   //对此region中每个store（列族）都需要获取scanner</div><div class="line">   for (Map.Entry&lt;byte[], NavigableSet&lt;byte[]&gt;&gt; entry : scan.getFamilyMap().entrySet()) &#123;</div><div class="line">     //此方法是获取了scanner，过滤了一些scanner，并且还粗略的检索到需要的位置。</div><div class="line">     //此scanner是一个store对应的</div><div class="line">     KeyValueScanner scanner = store.getScanner(scan, entry.getValue(), this.readPt);</div><div class="line">     if (this.filter == null || !scan.doLoadColumnFamiliesOnDemand() || this.filter.isFamilyEssential(entry.getKey())) &#123;</div><div class="line">        scanners.add(scanner);</div><div class="line">     &#125; else &#123;</div><div class="line">        //比如有filter的情况</div><div class="line">        joinedScanners.add(scanner);</div><div class="line">     &#125;</div><div class="line">   &#125;</div><div class="line">   //生成俩KeyValueHeap，此处的比较器不知道啥意思。真他妈尴尬</div><div class="line">   initializeKVHeap(scanners, joinedScanners, region);</div></pre></td></tr></table></figure>
+        <h1 id="Region收到get请求后的操作"><a href="#Region收到get请求后的操作" class="headerlink" title="Region收到get请求后的操作"></a>Region收到get请求后的操作</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。</div><div class="line"></div><div class="line">## 处理scanner</div><div class="line"></div><div class="line">处理scanner大致分为几个步骤：</div><div class="line"></div><div class="line">1. 获取此region中的mem和file能组成的scanner，并做一定程度的过滤（rang，bf和ts）</div><div class="line"></div><div class="line">   获取所有的scanner</div><div class="line"></div><div class="line">   ```java</div><div class="line">   //对此region中每个store（列族）都需要获取scanner</div><div class="line">   for (Map.Entry&lt;byte[], NavigableSet&lt;byte[]&gt;&gt; entry : scan.getFamilyMap().entrySet()) &#123;</div><div class="line">     //此方法是获取了scanner，过滤了一些scanner，并且还粗略的检索到需要的位置。</div><div class="line">     //此scanner是一个store对应的</div><div class="line">     KeyValueScanner scanner = store.getScanner(scan, entry.getValue(), this.readPt);</div><div class="line">     if (this.filter == null || !scan.doLoadColumnFamiliesOnDemand() || this.filter.isFamilyEssential(entry.getKey())) &#123;</div><div class="line">        scanners.add(scanner);</div><div class="line">     &#125; else &#123;</div><div class="line">        //比如有filter的情况</div><div class="line">        joinedScanners.add(scanner);</div><div class="line">     &#125;</div><div class="line">   &#125;</div><div class="line">   //生成俩KeyValueHeap，此处的比较器不知道啥意思。真他妈尴尬</div><div class="line">   initializeKVHeap(scanners, joinedScanners, region);</div></pre></td></tr></table></figure>
 <p>   1.1 跟入store.getScanner方法</p>
    <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//获取所有的file，打开文件，做一些过滤等。</span></div><div class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</div><div class="line">seekScanners(scanners, matcher.getStartKey(), explicitColumnQuery &amp;&amp; lazySeekEnabledGlobally, isParallelSeekEnabled);</div><div class="line">resetKVHeap(scanners, store.getComparator());</div></pre></td></tr></table></figure>
 <p>   1.1.1 getScannersNoCompaction()</p>
@@ -513,11 +513,20 @@
 <p>实现获取block</p>
 <p>​    index 去检索</p>
 <p>检索到指定位置</p>
+<h1 id="bloom-index的位置"><a href="#bloom-index的位置" class="headerlink" title="bloom index的位置"></a>bloom index的位置</h1><p>第一层的root index就是chunk的位置。</p>
+<p>但是root index指向的是imtermediate或leaf，理论上来说leaf对应chunk</p>
+<p>HFile中除了Data Block需要索引之外，上一篇文章提到过Bloom Block也需要索引，索引结构实际上就是采用了single-level结构，文中Bloom Index Block就是一种Root Index Block。</p>
+<p>bloom block 和 data block的索引不一致。bloom block采用单层结构，data  block采用多层结构。</p>
+<p>bloom block的单层结构的叶子结点是chunk。</p>
+<h2 id="get请求读取block的种类和情况"><a href="#get请求读取block的种类和情况" class="headerlink" title="get请求读取block的种类和情况"></a>get请求读取block的种类和情况</h2><ol>
+<li>正常读取block的</li>
+</ol>
+<p>get 流程真是复杂。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj3s8jk1c000egh9s4w0ekj5w" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj4ct9n9o000s1w9sfqkatiio" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -596,7 +605,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj3s8jk1d000jgh9sz6ile43d" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cj4ct9n91000h1w9syb9d54bt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -658,7 +667,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj3s8jk1h000mgh9saxq8lv0z" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cj4ct9n90000e1w9s9hvhi898" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -705,7 +714,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj3s8jk160009gh9sne35pxub" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cj4ct9n8y00091w9s8o7x0tl0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
