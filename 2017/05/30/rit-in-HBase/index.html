@@ -6,18 +6,24 @@
   <title>rit in HBase | bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="以前在别人博客中看到看到hbase中RIT的蛋疼，最近也确实感觉这个状态是比较尴尬的，别人会来找你。最近会放一些精力来解析hbase的rit状态，同时也是希望自己能对hbase有更全面和深入的了解。感觉过去两个月对hbase的的检索和加载流程看的比较多了。
-TODO">
+遇到一个case：
+一个region处于pending_open的状态。
+大概逻辑，本来master给某个节点发送open此region的请求">
 <meta property="og:type" content="article">
 <meta property="og:title" content="rit in HBase">
 <meta property="og:url" content="http://yoursite.com/2017/05/30/rit-in-HBase/index.html">
 <meta property="og:site_name" content="bean">
 <meta property="og:description" content="以前在别人博客中看到看到hbase中RIT的蛋疼，最近也确实感觉这个状态是比较尴尬的，别人会来找你。最近会放一些精力来解析hbase的rit状态，同时也是希望自己能对hbase有更全面和深入的了解。感觉过去两个月对hbase的的检索和加载流程看的比较多了。
-TODO">
-<meta property="og:updated_time" content="2017-06-05T14:34:24.000Z">
+遇到一个case：
+一个region处于pending_open的状态。
+大概逻辑，本来master给某个节点发送open此region的请求">
+<meta property="og:updated_time" content="2017-09-10T05:28:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="rit in HBase">
 <meta name="twitter:description" content="以前在别人博客中看到看到hbase中RIT的蛋疼，最近也确实感觉这个状态是比较尴尬的，别人会来找你。最近会放一些精力来解析hbase的rit状态，同时也是希望自己能对hbase有更全面和深入的了解。感觉过去两个月对hbase的的检索和加载流程看的比较多了。
-TODO">
+遇到一个case：
+一个region处于pending_open的状态。
+大概逻辑，本来master给某个节点发送open此region的请求">
   
     <link rel="alternate" href="/atom.xml" title="bean" type="application/atom+xml">
   
@@ -89,12 +95,14 @@ TODO">
     <div class="article-entry" itemprop="articleBody">
       
         <p>以前在别人博客中看到看到hbase中RIT的蛋疼，最近也确实感觉这个状态是比较尴尬的，别人会来找你。最近会放一些精力来解析hbase的rit状态，同时也是希望自己能对hbase有更全面和深入的了解。感觉过去两个月对hbase的的检索和加载流程看的比较多了。</p>
-<p>TODO</p>
+<p>遇到一个case：</p>
+<p>一个region处于pending_open的状态。</p>
+<p>大概逻辑，本来master给某个节点发送open此region的请求，过程进行的很好。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cj6s64pqt000cho9sqbezhhkr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cj7g9b4l6000emj9sjc4ct4vp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -105,11 +113,11 @@ TODO">
     
 <nav id="article-nav">
   
-    <a href="/2017/08/25/some-thoughts-recently/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2017/08/25/some-thoughts/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          some thoughts recently
+          some thoughts
         
       </div>
     </a>
@@ -168,7 +176,7 @@ TODO">
       <ul>
         
           <li>
-            <a href="/2017/08/25/some-thoughts-recently/">some thoughts recently</a>
+            <a href="/2017/08/25/some-thoughts/">some thoughts</a>
           </li>
         
           <li>
