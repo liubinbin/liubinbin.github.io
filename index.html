@@ -61,6 +61,67 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-DFSOutputStream-analysis" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/18/DFSOutputStream-analysis/" class="article-date">
+  <time datetime="2017-10-18T14:59:00.000Z" itemprop="datePublished">2017-10-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/18/DFSOutputStream-analysis/">DFSOutputStream analysis</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>private void waitAndQueueCurrentPacket()<br>调用者：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">flushOrSync</span><span class="params">(<span class="keyword">boolean</span> isSync, EnumSet&lt;SyncFlag&gt; syncFlags)</span></span></div><div class="line"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">writeChunk</span><span class="params">(<span class="keyword">byte</span>[] b, <span class="keyword">int</span> offset, <span class="keyword">int</span> len, <span class="keyword">byte</span>[] checksum)</span> </div><div class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></div></pre></td></tr></table></figure>
+<p>public class DFSOutputStream extends FSOutputSummer<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">implements Syncable, CanSetDropBehind &#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> LinkedList&lt;Packet&gt; dataQueue = <span class="keyword">new</span> LinkedList&lt;Packet&gt;(); <span class="comment">// dataQueue是数据队列，用于保存等待发送给datanode的数据包</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> LinkedList&lt;Packet&gt; ackQueue = <span class="keyword">new</span> LinkedList&lt;Packet&gt;(); <span class="comment">// ackQueue是确认队列，保存还没有被datanode确认接收的数据包</span></div><div class="line">	<span class="keyword">private</span> DataStreamer streamer;  <span class="comment">// streamer线程，不停的从dataQueue中取出数据包，发送给datanode</span></div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataStreamer</span> <span class="keyword">extends</span> <span class="title">Daemon</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> streamerClosed = <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">private</span> ExtendedBlock block; <span class="comment">// its length is number of bytes acked</span></div><div class="line">	<span class="keyword">private</span> Token&lt;BlockTokenIdentifier&gt; accessToken;</div><div class="line">	<span class="keyword">private</span> DataOutputStream blockStream; <span class="comment">// socket的输出流(client-&gt;datanode)，用于将数据传输给datanode</span></div><div class="line">	<span class="keyword">private</span> DataInputStream blockReplyStream; <span class="comment">// socket的输入流(datanode-&gt;client)，用户收到datanode的确认包</span></div><div class="line">	<span class="keyword">private</span> ResponseProcessor response = <span class="keyword">null</span>; <span class="comment">// response线程，用于接收从datanode返回的反馈信息</span></div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>block &gt; packet &gt; chunk(带chunksum)<br>​<br>主要看看writeChunk方法。</p>
+<ol>
+<li>构造currentPacket，写入data和checksum，并且的chunk数++，bytesCurBlock增加数据的长度。</li>
+<li>如果chunk数足够多。则调用waitAndQueueCurrentPacket</li>
+<li>如果如果block的大小足够大的话，</li>
+</ol>
+<p>其中一个处理时添加chunk到缓存中。一下具体处理为判断是否可以添加入发送给datanode的缓存中。lastQueuedSeqno保存了最后一个需要处理的序号。<br>/**</p>
+<ul>
+<li><p>如果没有足够空间话就等待，然后<br>*/<br>​</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">waitAndQueueCurrentPacket</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">  <span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line"> 	<span class="keyword">try</span> &#123;</div><div class="line"> 		<span class="comment">// If queue is full, then wait till we have enough space</span></div><div class="line"> 		<span class="keyword">while</span> (!closed &amp;&amp; dataQueue.size() + ackQueue.size()  &gt; MAX_PACKETS) &#123;</div><div class="line">   			<span class="keyword">try</span> &#123;</div><div class="line"> 				dataQueue.wait();</div><div class="line">      		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">      			Thread.currentThread().interrupt();</div><div class="line"> 				<span class="keyword">break</span>;</div><div class="line">        	&#125;</div><div class="line"> 	&#125;</div><div class="line"> 	checkClosed();</div><div class="line"> 	queueCurrentPacket();</div><div class="line"> 	&#125; <span class="keyword">catch</span> (ClosedChannelException e) &#123;</div><div class="line">	...</div><div class="line"> 	&#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>/**</p>
+</li>
+<li><p>添加dataQueue，设置lastQueuedSeqno<br>*/<br>​</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">queueCurrentPacket</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">		<span class="keyword">if</span> (currentPacket == <span class="keyword">null</span>) <span class="keyword">return</span>;</div><div class="line">		dataQueue.addLast(currentPacket);</div><div class="line">		lastQueuedSeqno = currentPacket.seqno;  <span class="comment">//在waitForAckedSeqno方法使用，判断是否所有数据都被写入并接受到ack了。</span></div><div class="line">		<span class="keyword">if</span> (DFSClient.LOG.isDebugEnabled()) &#123;</div><div class="line">			DFSClient.LOG.debug(<span class="string">"Queued packet "</span> + currentPacket.seqno);</div><div class="line">		&#125;</div><div class="line">		currentPacket = <span class="keyword">null</span>;</div><div class="line">		dataQueue.notifyAll();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ul>
+<p>DataStreamer是处理添加入缓存dataQueue的数据。将他们发送然后添加到ackQueue中。<br>在while中有processDatanodeError的处理。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">  <span class="comment">// move packet from dataQueue to ackQueue</span></div><div class="line">  <span class="keyword">if</span> (!one.isHeartbeatPacket()) &#123;</div><div class="line">    dataQueue.removeFirst();</div><div class="line">    ackQueue.addLast(one);</div><div class="line">    dataQueue.notifyAll();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// write out data to remote datanode</span></div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">  one.writeTo(blockStream);</div><div class="line">  blockStream.flush();   </div><div class="line">&#125;</div><div class="line"></div><div class="line">还需要一个线程接受ack，为ResponseProcessor</div><div class="line"><span class="comment">//获取返回的序号</span></div><div class="line">ack.readFields(blockReplyStream);</div><div class="line"><span class="keyword">long</span> seqno = ack.getSeqno();</div><div class="line"><span class="comment">//获取dataQueue里第一个包的序号</span></div><div class="line">Packet one;</div><div class="line"><span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">  one = ackQueue.getFirst();</div><div class="line">&#125;</div><div class="line"><span class="keyword">if</span> (one.seqno != seqno) &#123;</div><div class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"ResponseProcessor: Expecting seqno "</span> +</div><div class="line">                        <span class="string">" for block "</span> + block +</div><div class="line">                        one.seqno + <span class="string">" but received "</span> + seqno);</div><div class="line">&#125;</div><div class="line"><span class="comment">//移除ackQueuede里的第一个，</span></div><div class="line"><span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">  lastAckedSeqno = seqno; <span class="comment">//lastAckedSeqno在waitForAckedSeqno有使用</span></div><div class="line">  ackQueue.removeFirst();</div><div class="line">  dataQueue.notifyAll();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>toWaitFor = lastQueuedSeqno;<br>waitForAckedSeqno(toWaitFor)在flushInternal和flushOrSync会调用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cj8x68xnz00001x9s15mzap53" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-a-special-case-about-rwlock" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/10/08/a-special-case-about-rwlock/" class="article-date">
@@ -94,7 +155,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cj8iwmleq0004ph9srmh67b61" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cj8x68xo200011x9sqsu6i2uo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
@@ -151,7 +212,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/national-day-holiday-in-2017/" data-id="cj8iwmlez000cph9sc2qw8hut" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/08/national-day-holiday-in-2017/" data-id="cj8x68xoc00091x9sqmgkhh3a" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -215,7 +276,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cj8iwmlf4000lph9soq8px5rb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cj8x68xp7000x1x9s1ezqykxq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -257,7 +318,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cj8iwmlf0000hph9s3e0f4n4u" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cj8x68xoi000h1x9s0aymrihy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -299,7 +360,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/21/anniverary-of-zju/" data-id="cj8iwmlet0005ph9srearka10" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/21/anniverary-of-zju/" data-id="cj8x68xob00081x9ssqkz6aho" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -389,7 +450,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj8iwmlep0003ph9s80j4vysj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cj8x68xoa00051x9sz2pe0aze" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -460,7 +521,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj8iwmleh0000ph9se3zc31nq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cj8x68xo700031x9so1axqjn3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -504,7 +565,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj8iwmlek0001ph9svirjx8ms" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cj8x68xo700041x9swwjgz0od" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -561,139 +622,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj8iwmlev0008ph9sl2q92axh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cj8x68xoh000f1x9sg42ag748" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-what-region-will-do-when-receive-a-get" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/04/25/what-region-will-do-when-receive-a-get/" class="article-date">
-  <time datetime="2017-04-25T14:40:14.000Z" itemprop="datePublished">2017-04-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/25/what-region-will-do-when-receive-a-get/">what region will do when receiving a get</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Region收到get请求后的操作"><a href="#Region收到get请求后的操作" class="headerlink" title="Region收到get请求后的操作"></a>Region收到get请求后的操作</h1><h2 id="scanner的层次"><a href="#scanner的层次" class="headerlink" title="scanner的层次"></a>scanner的层次</h2><p>一个Region对应一个RegionScannerImpl</p>
-<hr>
-<ul>
-<li><p>RegionScannerImpl (下面缩进代表了层级)</p>
-<ul>
-<li><p>StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) </p>
-<ul>
-<li>MemStoreScanner</li>
-<li>StoreFileScanner </li>
-</ul>
-<p>​  (MemStoreScanner 和 StoreFileScanner 组成heap ，也是一个KeyValueHeap， 用的是store的Comparator)</p>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="对scanner预处理（裁剪等）"><a href="#对scanner预处理（裁剪等）" class="headerlink" title="对scanner预处理（裁剪等）"></a>对scanner预处理（裁剪等）</h2><ol>
-<li><p>获取此region中store里的mem和file能组成的scanner，并做一定程度的过滤（rang，bf和ts）</p>
-<p>获取所有的scanner</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//对此region中每个store（列族）都需要获取scanner</span></div><div class="line"><span class="keyword">for</span> (Map.Entry&lt;<span class="keyword">byte</span>[], NavigableSet&lt;<span class="keyword">byte</span>[]&gt;&gt; entry : scan.getFamilyMap().entrySet()) &#123;</div><div class="line">  <span class="comment">//此方法是获取了scanner，过滤了一些scanner，并且还粗略的检索到需要的位置。</span></div><div class="line">  <span class="comment">//此scanner是一个store对应的</span></div><div class="line">  KeyValueScanner scanner = store.getScanner(scan, entry.getValue(), <span class="keyword">this</span>.readPt);</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.filter == <span class="keyword">null</span> || !scan.doLoadColumnFamiliesOnDemand() || 					 <span class="keyword">this</span>.filter.isFamilyEssential(entry.getKey())) &#123;</div><div class="line">     scanners.add(scanner);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">     <span class="comment">//比如有filter的情况</span></div><div class="line">     joinedScanners.add(scanner);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">//生成俩KeyValueHeap，此处的比较器不知道啥意思。真他妈尴尬</span></div><div class="line">initializeKVHeap(scanners, joinedScanners, region);</div></pre></td></tr></table></figure>
-<p>1.1 跟入store.getScanner方法，现在次问题只在一个store中讨论。store间的协调后面会提到。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//此方法和1.1.4节中想呼应。</span></div><div class="line"><span class="keyword">this</span>.store.addChangedReaderObserver(<span class="keyword">this</span>);</div><div class="line"><span class="comment">//获取所有的file，打开文件，做一些过滤等。</span></div><div class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</div><div class="line">seekScanners(scanners, matcher.getStartKey(), explicitColumnQuery &amp;&amp; lazySeekEnabledGlobally, isParallelSeekEnabled);</div><div class="line">resetKVHeap(scanners, store.getComparator());</div></pre></td></tr></table></figure>
-<p>1.1.1 getScannersNoCompaction()里面有重要的方法如下。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</div><div class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="keyword">this</span>.readPt));</div></pre></td></tr></table></figure>
-<p>​    主要两层，store.getScanners中是获取所有的file，打开文件。</p>
-<p>​    selectScannersFrom主要做过滤，主要是如下方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">kvs.shouldUseScanner(scan, columns, expiredTimestampCutoff)</div><div class="line">  此方法两个分支，mem和file值得关注，此处就不说了。反正用了一些range和bf（bf只针对单行和单行列族）</div><div class="line">  bf的过滤有一个判断（!scan.isGetScan()），如果是get，并且isStartRowAndEqualsStopRow为<span class="keyword">true</span>才走bf。</div></pre></td></tr></table></figure>
-<p>1.1.2 seekScanners</p>
-<p>​    bf判断，时间判断，伪造kv使其跳过此个检索吧。    </p>
-<p>1.1.3 resetKVHeap</p>
-<p>​    组织成一个KeyValueHeap，比较器有代表时间的id等。</p>
-<p>1.1.4<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">```java</div><div class="line">notifyChangedReadersObservers()</div></pre></td></tr></table></figure></p>
-</li>
-<li><p>裁剪的storefile和block的方式</p>
-<p>我个人觉得总共几个部分，包括time裁剪，key裁剪，bf和索引</p>
-<p>获取scanner分两个，一个memstore的，另一个是file的。</p>
-<p>获取有关file的Scanner如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.storeEngine.getStoreFileManager().getFilesForScanOrGet(isGet, startRow, stopRow);</div><div class="line"></div><div class="line">List&lt;StoreFileScanner&gt; sfScanners = StoreFileScanner.getScannersForStoreFiles(storeFilesToScan,</div><div class="line">        cacheBlocks, usePread, isCompaction, <span class="keyword">false</span>, matcher, readPt);</div></pre></td></tr></table></figure>
-<p>获取有关mem的Scanner如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">memStoreScanners = <span class="keyword">this</span>.memstore.getScanners(readPt);</div></pre></td></tr></table></figure>
-<p>然后在返回之前做了筛选，注意那个selectScannerFrom方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</div><div class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="keyword">this</span>.readPt));</div></pre></td></tr></table></figure>
-<p>selectScannerFrom还是分两个分支，有两个实现，file的和mem的。</p>
-<p>file的过滤分三种，time，key和bf。file过滤实现如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldUseScanner</span><span class="params">(Scan scan, SortedSet&lt;<span class="keyword">byte</span>[]&gt; columns, <span class="keyword">long</span> oldestUnexpiredTS)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> reader.passesTimerangeFilter(scan.getTimeRange(), oldestUnexpiredTS)</div><div class="line">        &amp;&amp; reader.passesKeyRangeFilter(scan) &amp;&amp; reader.passesBloomFilter(scan, columns);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>memstore的实现如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldSeek</span><span class="params">(Scan scan, <span class="keyword">long</span> oldestUnexpiredTS)</span> </span>&#123;</div><div class="line">    TimeRange timeRange = scan.getTimeRange();</div><div class="line">    <span class="keyword">return</span> (timeRangeTracker.includesTimeRange(timeRange) ||</div><div class="line">        snapshotTimeRangeTracker.includesTimeRange(timeRange)) &amp;&amp;</div><div class="line">        (Math.max(timeRangeTracker.getMax(), snapshotTimeRangeTracker.getMax())</div><div class="line">            &gt;= oldestUnexpiredTS);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>从文件格式看，主要是几个过滤，主要代码如下</p>
-<p>主要的实现在如下方法中</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">BlockWithScanInfo blockWithScanInfo =</div><div class="line">  indexReader.loadDataBlockWithScanInfo(key, offset, length, block, 、</div><div class="line">    cacheBlocks, pread, isCompaction);</div></pre></td></tr></table></figure>
-<p>在HFileReaderV2中，由索引过滤和blockcache的实现，在</p>
-<p>根据索引信息过滤block</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> rootLevelIndex = rootBlockContainingKey(key, keyOffset, keyLength);</div></pre></td></tr></table></figure>
-<p>方法实现如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public int rootBlockContainingKey(final byte[] key, int offset,</div><div class="line">    int length) &#123;</div><div class="line">  int pos = Bytes.binarySearch(blockKeys, key, offset, length,</div><div class="line">      comparator);</div><div class="line">  ....&#125;</div></pre></td></tr></table></figure>
-<p>如果需要读取，会先从blockcache中读取，减少io。blcokcache中读取block，代码如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">block = cachingBlockReader.readBlock(currentOffset,</div><div class="line">    currentOnDiskSize, shouldCache, pread, isCompaction, <span class="keyword">true</span>,</div><div class="line">    expectedBlockType);</div></pre></td></tr></table></figure>
-<p>两处使用bf索引过滤，一处是isLazy==true时</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">boolean</span> org.apache.hadoop.hbase.regionserver.StoreFileScanner.requestSeek(KeyValue kv, <span class="keyword">boolean</span> forward, <span class="keyword">boolean</span> useBloom)</div></pre></td></tr></table></figure>
-<p>bf的粒度是chunk。</p>
-</li>
-</ol>
-<h2 id="协调一个cf下的检索"><a href="#协调一个cf下的检索" class="headerlink" title="协调一个cf下的检索"></a>协调一个cf下的检索</h2><ol>
-<li><p>我们讲获取到的scanner组织成heap，然后从heap中获取对应的数据。这个heap需要有一定的组织，比如检索到了数据，需要关闭；对于同一个key，需要在所有的scanner中获取到等</p>
-<p>获取到scanner之后就开始获取数据结果了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scanner.next(results);</div></pre></td></tr></table></figure>
-<p>里面一堆逻辑的，实际获取数据</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> KeyValue <span class="title">populateResult</span><span class="params">(List&lt;Cell&gt; results, KeyValueHeap heap, <span class="keyword">int</span> limit,</span></span></div><div class="line">    <span class="keyword">byte</span>[] currentRow, <span class="keyword">int</span> offset, <span class="keyword">short</span> length) <span class="keyword">throws</span> IOException &#123;</div><div class="line">  KeyValue nextKv;</div><div class="line">    <span class="keyword">do</span> &#123;</div><div class="line">      heap.next(results, limit - results.size());</div><div class="line">      <span class="keyword">if</span> (limit &gt; <span class="number">0</span> &amp;&amp; results.size() == limit) &#123;</div><div class="line">        <span class="keyword">return</span> KV_LIMIT;</div><div class="line">      &#125;</div><div class="line">      nextKv = heap.peek();</div><div class="line">    &#125; <span class="keyword">while</span> (nextKv != <span class="keyword">null</span> &amp;&amp; nextKv.matchingRow(currentRow, offset, length));</div><div class="line">  <span class="keyword">return</span> nextKv;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="StoreFileScanner中检索相关的处理"><a href="#StoreFileScanner中检索相关的处理" class="headerlink" title="StoreFileScanner中检索相关的处理"></a>StoreFileScanner中检索相关的处理</h2><p>。。。</p>
-<h2 id="协调不同cf下的检索"><a href="#协调不同cf下的检索" class="headerlink" title="协调不同cf下的检索"></a>协调不同cf下的检索</h2><figure class="highlight plain"><figcaption><span>暂时不看，暂时在业务中不需要。</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">=====================   以下太乱 ======================</div><div class="line"></div><div class="line">hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。</div><div class="line"></div><div class="line">## 处理scanner</div><div class="line"></div><div class="line">## scanner内部</div><div class="line"></div><div class="line">### memscanner</div><div class="line"></div><div class="line">要从memstore中获取想要的数据，感觉不会很难，因为memstore是个有一定顺序。</div><div class="line"></div><div class="line">### filescanner</div><div class="line"></div><div class="line">对于filestore的检索，hbase提供了集中方式来加速检索。</div><div class="line"></div><div class="line">1. bloomfilter的过滤，见”处理scanner“</div><div class="line">2. index的过滤</div><div class="line">3. blockcache的使用</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">## 对一个get的请求怎么判断结束</div><div class="line"></div><div class="line">boolean org.apache.hadoop.hbase.regionserver.HRegion.RegionScannerImpl.nextInternal(List&lt;Cell&gt; results, int limit)  </div><div class="line"></div><div class="line">只执行一次。一个keyvalue只会在一个block中，其实并不需要再去检索，只要检索一次就可以了，感觉是对的。没想到前几天想的有问题。</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">## scan判断结束</div><div class="line"></div><div class="line">scan的判断结束</div><div class="line"></div><div class="line">```java</div><div class="line">while (i &lt; rows) &#123;</div><div class="line">  // Stop collecting results if maxScannerResultSize is set and we have exceeded it</div><div class="line">  if ((maxResultSize &lt; Long.MAX_VALUE) &amp;&amp;</div><div class="line">      (currentScanResultSize &gt;= maxResultSize)) &#123;</div><div class="line">    builder.setMoreResultsInRegion(true);</div><div class="line">    break;</div><div class="line">  &#125;</div><div class="line">  // Collect values to be returned here</div><div class="line">  moreRows = scanner.nextRaw(values);</div><div class="line">  if (!values.isEmpty()) &#123;</div><div class="line">    for (Cell cell : values) &#123;</div><div class="line">      KeyValue kv = KeyValueUtil.ensureKeyValue(cell);</div><div class="line">      currentScanResultSize += kv.heapSizeWithoutTags();</div><div class="line">      totalKvSize += kv.getLength();</div><div class="line">    &#125;</div><div class="line">    results.add(Result.create(values));</div><div class="line">    i++;</div><div class="line">  &#125;</div><div class="line">  if (!moreRows) &#123;</div><div class="line">  	//结束了</div><div class="line">    break;</div><div class="line">  &#125;</div><div class="line">  values.clear();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="检索keyvalue"><a href="#检索keyvalue" class="headerlink" title="检索keyvalue"></a>检索keyvalue</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> org.apache.hadoop.hbase.io.hfile.HFileReaderV2.AbstractScannerV2.seekTo(<span class="keyword">byte</span>[] key, <span class="keyword">int</span> offset, <span class="keyword">int</span> length, <span class="keyword">boolean</span> rewind) <span class="keyword">throws</span> IOException</div></pre></td></tr></table></figure>
-<p>实现获取block</p>
-<p>​    index 去检索</p>
-<p>检索到指定位置</p>
-<h1 id="bloom-index的位置"><a href="#bloom-index的位置" class="headerlink" title="bloom index的位置"></a>bloom index的位置</h1><p>第一层的root index就是chunk的位置。</p>
-<p>但是root index指向的是imtermediate或leaf，理论上来说leaf对应chunk</p>
-<p>HFile中除了Data Block需要索引之外，上一篇文章提到过Bloom Block也需要索引，索引结构实际上就是采用了single-level结构，文中Bloom Index Block就是一种Root Index Block。</p>
-<p>bloom block 和 data block的索引不一致。bloom block采用单层结构，data  block采用多层结构。</p>
-<p>bloom block的单层结构的叶子结点是chunk。</p>
-<h2 id="get请求读取block的种类和情况"><a href="#get请求读取block的种类和情况" class="headerlink" title="get请求读取block的种类和情况"></a>get请求读取block的种类和情况</h2><ol>
-<li>正常读取block的</li>
-</ol>
-<p>get 流程真是复杂。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">seek</span><span class="params">(KeyValue key)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">    <span class="keyword">if</span> (seekCount != <span class="keyword">null</span>) seekCount.incrementAndGet();</div><div class="line"></div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      <span class="keyword">try</span> &#123;</div><div class="line">        <span class="keyword">if</span>(!seekAtOrAfter(hfs, key)) &#123;</div><div class="line">          LOG.info(<span class="string">"liubb seekAtOrAfter false"</span>);</div><div class="line">          close();</div><div class="line">          <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">          LOG.info(<span class="string">"liubb seekAtOrAfter true"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        cur = hfs.getKeyValue();</div><div class="line"></div><div class="line">        <span class="keyword">return</span> !hasMVCCInfo ? <span class="keyword">true</span> : skipKVsNewerThanReadpoint();</div><div class="line">      &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        realSeekDone = <span class="keyword">true</span>;</div><div class="line">      &#125;</div><div class="line">    &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</div><div class="line">      <span class="keyword">throw</span> e;</div><div class="line">    &#125; <span class="keyword">catch</span> (IOException ioe) &#123;</div><div class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Could not seek "</span> + <span class="keyword">this</span> + <span class="string">" to key "</span> + key, ioe);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">里面的seekAtOrAfter很重要。</div></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ScanQueryMatcher.MatchCode qcode = matcher.match(kv);</div><div class="line">qcode = optimize(qcode, kv);</div><div class="line"><span class="keyword">switch</span>(qcode) &#123;</div><div class="line">   </div><div class="line">此处各种code的解释对于不同storefile的理解也很好。</div></pre></td></tr></table></figure>
-<p><strong>可以看到一些问题和关注点</strong></p>
-<ol>
-<li>RegionScannerImpl里使用StoreScanner 时，各种heap的操作主要需要关注一个记录的组织，因为一条记录的不同列族保存在不同的store中。还要关注什么时候结束。</li>
-<li>StoreScanner中的两种scanner（StoreFileScanner可能有多个）需要协调在不同scanner中的不同的版本的问题。还要关注什么时候结束。</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cj8iwmlf9000qph9sm2rs3dym" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
 
     </footer>
   </div>
@@ -750,6 +682,10 @@
       <ul>
         
           <li>
+            <a href="/2017/10/18/DFSOutputStream-analysis/">DFSOutputStream analysis</a>
+          </li>
+        
+          <li>
             <a href="/2017/10/08/a-special-case-about-rwlock/">a special case about rwlock</a>
           </li>
         
@@ -763,10 +699,6 @@
         
           <li>
             <a href="/2017/05/30/rit-in-HBase/">rit in HBase</a>
-          </li>
-        
-          <li>
-            <a href="/2017/05/21/anniverary-of-zju/">anniverary of zju</a>
           </li>
         
       </ul>

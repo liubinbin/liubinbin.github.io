@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>DFSOutputStream analysis | bean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="private void waitAndQueueCurrentPacket()调用者：
+123private void flushOrSync(boolean isSync, EnumSet&amp;lt;SyncFlag&amp;gt; syncFlags)protected synchronized void writeChunk(byte[] b, int offset, int len, byte[]">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DFSOutputStream analysis">
+<meta property="og:url" content="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/index.html">
+<meta property="og:site_name" content="bean">
+<meta property="og:description" content="private void waitAndQueueCurrentPacket()调用者：
+123private void flushOrSync(boolean isSync, EnumSet&amp;lt;SyncFlag&amp;gt; syncFlags)protected synchronized void writeChunk(byte[] b, int offset, int len, byte[]">
+<meta property="og:updated_time" content="2017-10-18T15:07:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DFSOutputStream analysis">
+<meta name="twitter:description" content="private void waitAndQueueCurrentPacket()调用者：
+123private void flushOrSync(boolean isSync, EnumSet&amp;lt;SyncFlag&amp;gt; syncFlags)protected synchronized void writeChunk(byte[] b, int offset, int len, byte[]">
+  
+    <link rel="alternate" href="/atom.xml" title="bean" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">bean</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-DFSOutputStream-analysis" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/18/DFSOutputStream-analysis/" class="article-date">
+  <time datetime="2017-10-18T14:59:00.000Z" itemprop="datePublished">2017-10-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      DFSOutputStream analysis
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>private void waitAndQueueCurrentPacket()<br>调用者：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">flushOrSync</span><span class="params">(<span class="keyword">boolean</span> isSync, EnumSet&lt;SyncFlag&gt; syncFlags)</span></span></div><div class="line"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">writeChunk</span><span class="params">(<span class="keyword">byte</span>[] b, <span class="keyword">int</span> offset, <span class="keyword">int</span> len, <span class="keyword">byte</span>[] checksum)</span> </div><div class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></div></pre></td></tr></table></figure>
+<p>public class DFSOutputStream extends FSOutputSummer<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">implements Syncable, CanSetDropBehind &#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> LinkedList&lt;Packet&gt; dataQueue = <span class="keyword">new</span> LinkedList&lt;Packet&gt;(); <span class="comment">// dataQueue是数据队列，用于保存等待发送给datanode的数据包</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> LinkedList&lt;Packet&gt; ackQueue = <span class="keyword">new</span> LinkedList&lt;Packet&gt;(); <span class="comment">// ackQueue是确认队列，保存还没有被datanode确认接收的数据包</span></div><div class="line">	<span class="keyword">private</span> DataStreamer streamer;  <span class="comment">// streamer线程，不停的从dataQueue中取出数据包，发送给datanode</span></div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataStreamer</span> <span class="keyword">extends</span> <span class="title">Daemon</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> streamerClosed = <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">private</span> ExtendedBlock block; <span class="comment">// its length is number of bytes acked</span></div><div class="line">	<span class="keyword">private</span> Token&lt;BlockTokenIdentifier&gt; accessToken;</div><div class="line">	<span class="keyword">private</span> DataOutputStream blockStream; <span class="comment">// socket的输出流(client-&gt;datanode)，用于将数据传输给datanode</span></div><div class="line">	<span class="keyword">private</span> DataInputStream blockReplyStream; <span class="comment">// socket的输入流(datanode-&gt;client)，用户收到datanode的确认包</span></div><div class="line">	<span class="keyword">private</span> ResponseProcessor response = <span class="keyword">null</span>; <span class="comment">// response线程，用于接收从datanode返回的反馈信息</span></div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>block &gt; packet &gt; chunk(带chunksum)<br>​<br>主要看看writeChunk方法。</p>
+<ol>
+<li>构造currentPacket，写入data和checksum，并且的chunk数++，bytesCurBlock增加数据的长度。</li>
+<li>如果chunk数足够多。则调用waitAndQueueCurrentPacket</li>
+<li>如果如果block的大小足够大的话，</li>
+</ol>
+<p>其中一个处理时添加chunk到缓存中。一下具体处理为判断是否可以添加入发送给datanode的缓存中。lastQueuedSeqno保存了最后一个需要处理的序号。<br>/**</p>
+<ul>
+<li><p>如果没有足够空间话就等待，然后<br>*/<br>​</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">waitAndQueueCurrentPacket</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">  <span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line"> 	<span class="keyword">try</span> &#123;</div><div class="line"> 		<span class="comment">// If queue is full, then wait till we have enough space</span></div><div class="line"> 		<span class="keyword">while</span> (!closed &amp;&amp; dataQueue.size() + ackQueue.size()  &gt; MAX_PACKETS) &#123;</div><div class="line">   			<span class="keyword">try</span> &#123;</div><div class="line"> 				dataQueue.wait();</div><div class="line">      		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">      			Thread.currentThread().interrupt();</div><div class="line"> 				<span class="keyword">break</span>;</div><div class="line">        	&#125;</div><div class="line"> 	&#125;</div><div class="line"> 	checkClosed();</div><div class="line"> 	queueCurrentPacket();</div><div class="line"> 	&#125; <span class="keyword">catch</span> (ClosedChannelException e) &#123;</div><div class="line">	...</div><div class="line"> 	&#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>/**</p>
+</li>
+<li><p>添加dataQueue，设置lastQueuedSeqno<br>*/<br>​</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">queueCurrentPacket</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">		<span class="keyword">if</span> (currentPacket == <span class="keyword">null</span>) <span class="keyword">return</span>;</div><div class="line">		dataQueue.addLast(currentPacket);</div><div class="line">		lastQueuedSeqno = currentPacket.seqno;  <span class="comment">//在waitForAckedSeqno方法使用，判断是否所有数据都被写入并接受到ack了。</span></div><div class="line">		<span class="keyword">if</span> (DFSClient.LOG.isDebugEnabled()) &#123;</div><div class="line">			DFSClient.LOG.debug(<span class="string">"Queued packet "</span> + currentPacket.seqno);</div><div class="line">		&#125;</div><div class="line">		currentPacket = <span class="keyword">null</span>;</div><div class="line">		dataQueue.notifyAll();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ul>
+<p>DataStreamer是处理添加入缓存dataQueue的数据。将他们发送然后添加到ackQueue中。<br>在while中有processDatanodeError的处理。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">  <span class="comment">// move packet from dataQueue to ackQueue</span></div><div class="line">  <span class="keyword">if</span> (!one.isHeartbeatPacket()) &#123;</div><div class="line">    dataQueue.removeFirst();</div><div class="line">    ackQueue.addLast(one);</div><div class="line">    dataQueue.notifyAll();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// write out data to remote datanode</span></div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">  one.writeTo(blockStream);</div><div class="line">  blockStream.flush();   </div><div class="line">&#125;</div><div class="line"></div><div class="line">还需要一个线程接受ack，为ResponseProcessor</div><div class="line"><span class="comment">//获取返回的序号</span></div><div class="line">ack.readFields(blockReplyStream);</div><div class="line"><span class="keyword">long</span> seqno = ack.getSeqno();</div><div class="line"><span class="comment">//获取dataQueue里第一个包的序号</span></div><div class="line">Packet one;</div><div class="line"><span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">  one = ackQueue.getFirst();</div><div class="line">&#125;</div><div class="line"><span class="keyword">if</span> (one.seqno != seqno) &#123;</div><div class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"ResponseProcessor: Expecting seqno "</span> +</div><div class="line">                        <span class="string">" for block "</span> + block +</div><div class="line">                        one.seqno + <span class="string">" but received "</span> + seqno);</div><div class="line">&#125;</div><div class="line"><span class="comment">//移除ackQueuede里的第一个，</span></div><div class="line"><span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">  lastAckedSeqno = seqno; <span class="comment">//lastAckedSeqno在waitForAckedSeqno有使用</span></div><div class="line">  ackQueue.removeFirst();</div><div class="line">  dataQueue.notifyAll();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>toWaitFor = lastQueuedSeqno;<br>waitForAckedSeqno(toWaitFor)在flushInternal和flushOrSync会调用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cj8x68xnz00001x9s15mzap53" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/10/08/a-special-case-about-rwlock/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">a special case about rwlock</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 13.33px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 16.67px;">life</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/10/18/DFSOutputStream-analysis/">DFSOutputStream analysis</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/08/a-special-case-about-rwlock/">a special case about rwlock</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/08/national-day-holiday-in-2017/">national day holiday in 2017</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/25/some-thoughts/">some thoughts</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/30/rit-in-HBase/">rit in HBase</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 liu binbin<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
