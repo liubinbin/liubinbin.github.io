@@ -61,6 +61,201 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-long-distance-running" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/28/long-distance-running/" class="article-date">
+  <time datetime="2018-10-28T13:00:52.000Z" itemprop="datePublished">2018-10-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/28/long-distance-running/">long-distance-running</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="长跑"><a href="#长跑" class="headerlink" title="长跑"></a>长跑</h1><p>最近两周跑了四次左右的八公里或十公里，需要记录一下感受。</p>
+<ul>
+<li>肯定是有助于减肥，而且随着最近跑量的增加，感觉在6分钟配速跑五公里也没这么累，跑八公里的时候也没以前觉得累，不是一直跑五公里，选几次跑到八公里和十公里是个好的选择。</li>
+<li>跑步过程中会有一些的不好的感受，比如孤独，疼痛。但是跑了几次之后，现在感觉长跑的过程和其他很多东西很像，比如解决一个问题，需要深入理解问题，中间可能会有烦躁，有迷惘，但是坚持到最后得到的满足感是足够强烈。比如买股票，最近证券市场行情不太好，能理性的看待目前的状态并且不随大众恐慌性的操作账户，确实内心会承受一些煎熬，这种煎熬相当的痛苦，不过现在的策略就是少去看股票账户，专注到工作就好了，心态就会好很多。</li>
+<li>很多大佬有长跑的习惯，我现在感觉到我们在面对困难时都需要承受一些的不好的感受，甚至到能让你放弃的境界。我们可能没办法一直让自己经历这种面对困难的痛苦，但是我们可以在习惯中加入长跑等运动，在此过程中让自己能比较频繁的面对这种痛苦的感受，也许在面对生活中真正的痛苦的时候会更加的淡定和从容。从这个角度看，长跑不是为加入习惯列表好的选项。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/28/long-distance-running/" data-id="cjnsw5njq000ltp9shhodpu55" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-vmware安装centos" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/07/01/vmware安装centos/" class="article-date">
+  <time datetime="2018-07-01T11:43:12.859Z" itemprop="datePublished">2018-07-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="vmware安装centos"><a href="#vmware安装centos" class="headerlink" title="vmware安装centos"></a>vmware安装centos</h1><p>此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。</p>
+<h2 id="第0步-安装vmware和下载centos"><a href="#第0步-安装vmware和下载centos" class="headerlink" title="第0步 安装vmware和下载centos"></a>第0步 安装vmware和下载centos</h2><p>下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。</p>
+<h2 id="第1步-创建centos虚拟机"><a href="#第1步-创建centos虚拟机" class="headerlink" title="第1步 创建centos虚拟机"></a>第1步 创建centos虚拟机</h2><p><img src="/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.54.00 PM.png" alt="Screen Shot 2018-07-01 at 7.54.00 PM"></p>
+<p>选择Create a custom virtual machine</p>
+<p><img src="/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.55.03 PM.png" alt="Screen Shot 2018-07-01 at 7.55.03 PM"></p>
+<p>选择对应的版本CentOS 64-bit</p>
+<p><img src="/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.55.53 PM.png" alt="Screen Shot 2018-07-01 at 7.55.53 PM"></p>
+<p>选择Create a new virtual disk</p>
+<p><img src="/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.56.45 PM.png" alt="Screen Shot 2018-07-01 at 7.56.45 PM"></p>
+<p>选择Customize Settings，然后选择Save.</p>
+<p>然后开始设置配置，主要如下：</p>
+<ul>
+<li>Processors &amp; Memory    (4core 8G)</li>
+<li>Hard Disk (80G)</li>
+<li>CD/DVD (IDE) (此处一定需要设置，将下载的iso加入配置中，并且需要连接DVD)</li>
+</ul>
+<p>然后开始安装，更改mini 安装模式，添加gnome桌面，然后进入正常的linux安装界面。之后一切就比较顺利。</p>
+<p>最后可能需要安装图形界面：<strong>yum groupinstall</strong> “GNOME Desktop”，重启进入root执行“init 5”</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/07/01/vmware安装centos/" data-id="cjnsw5nk40015tp9sx6at8vzt" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-paper-reading" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/04/paper-reading/" class="article-date">
+  <time datetime="2018-03-04T09:37:56.000Z" itemprop="datePublished">2018-03-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/04/paper-reading/">paper reading</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="论文阅读"><a href="#论文阅读" class="headerlink" title="论文阅读"></a>论文阅读</h1><p>写此文主要目的是鞭策自己多看论文，论文顺序应该和下面的排序类似，读完论文也督促自己写一个系统，尽早完成心中伟大的理想（写一个数据库系统==！）。</p>
+<h2 id="ambry"><a href="#ambry" class="headerlink" title="ambry"></a>ambry</h2><h1 id="to-be-read"><a href="#to-be-read" class="headerlink" title="to be read"></a>to be read</h1><p>lsm</p>
+<p>hbase + hdfs + zookeeper + bigtable</p>
+<p><a href="https://github.com/rxin/db-readings" target="_blank" rel="external">https://github.com/rxin/db-readings</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/04/paper-reading/" data-id="cjnsw5njt000rtp9sriv1jmzb" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/paper/">paper</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-docker-basics" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/02/22/docker-basics/" class="article-date">
+  <time datetime="2018-02-22T02:58:48.052Z" itemprop="datePublished">2018-02-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>mysql出了需要grant之外，还要修改bind-address</p>
+<p>docker 基本命令</p>
+<p>docker 中container基于image制作，image类似一个模版，基于某个image制作的contaner都具有和image一样的内容</p>
+<p>我们可以根据REPOSITORY来判断这个镜像是来自哪个服务器，如果没有 / 则表示官方镜像，并且在search的时候会标有OFFICIAL，类似于ip:port/repos_name则表示的是私服。</p>
+<p>docker pull username/repository&lt;:tag_name&gt; 或者 docker pull repository，pull和push相对应。</p>
+<h4 id="5-2-运行出一个container放到后台运行"><a href="#5-2-运行出一个container放到后台运行" class="headerlink" title="5.2 运行出一个container放到后台运行"></a>5.2 运行出一个container放到后台运行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># docker run -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 2; done&quot;</div><div class="line">ae60c4b642058fefcc61ada85a610914bed9f5df0e2aa147100eab85cea785dc</div></pre></td></tr></table></figure>
+<p>它将直接把启动的container挂起放在后台运行（这才叫saas），并且会输出一个<code>CONTAINER ID</code>，通过<code>docker ps</code>可以看到这个容器的信息，可在container外面查看它的输出<code>docker logs ae60c4b64205</code>，也可以通过<code>docker attach ae60c4b64205</code>连接到这个正在运行的终端，此时在<code>Ctrl+C</code>退出container就消失了，按ctrl-p ctrl-q可以退出到宿主机，而保持container仍然在运行</p>
+<p>端口映射</p>
+<p>Docker中运行的程序的端口是不能直接访问的，需要映射到本地，通过-p参数实现，例如将6379端口映射到本机的6378端口</p>
+<p>容器日志</p>
+<p>查看当前容器的日志</p>
+<p><code>docker logs container-name/container-id</code></p>
+<p>我们可以查看之前redis镜像的容器</p>
+<p><code>docker logs test-redis</code></p>
+<p>可以看到redis启动的日志</p>
+<p>运行中的容器其实就是一个完备的Linux操作系统，我们可以登录访问当前容器，登录后可以在容器中进行常规的Linux操作。<br><code>docker exec -it container-id/container-name bash</code></p>
+<p>系统版本</p>
+<p>[root@bogon yum.repos.d]# uname -a<br>Linux bogon 2.6.32-642.el6.x86_64 #1 SMP Tue May 10 17:27:01 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux<br>[root@bogon yum.repos.d]# cat /etc/redhat-release<br>CentOS release 6.8 (Final)</p>
+<p>安装EPEL</p>
+<p>因为系统自带的repo中不带docker需要安装epel</p>
+<p>rpm -Uvh <a href="http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm" target="_blank" rel="external">http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm</a></p>
+<p>安装Docker</p>
+<p>yum install -y docker-io</p>
+<p>开机自启动与启动Docker</p>
+<p>[root@bogon yum.repos.d]# service docker start<br>Starting cgconfig service:                                 [  OK  ]<br>Starting docker:                                       [  OK  ]<br>[root@bogon yum.repos.d]# chkconfig docker on<br>[root@bogon yum.repos.d]# chkconfig docker –list<br>docker          0:off   1:off   2:on    3:on    4:on    5:on    6:off<br>[root@bogon yum.repos.d]# </p>
+<p>至此docker已经安装完成</p>
+<p>docker rm 删除container</p>
+<p>docker rmi 删除image</p>
+<p><a href="http://blog.csdn.net/permike/article/details/51879578" target="_blank" rel="external">http://blog.csdn.net/permike/article/details/51879578</a> 总结的非常好</p>
+<p>已完成<br>docker pull morrisjobke/docker-swift-onlyone<br>docker pull kahing/docker-swift<br>docker pull debian</p>
+<p>docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]</p>
+<p>启动container<br>  docker run -d -P -v /srv/node/sdb1/docker/:/swift/nodes -t bouncestorage/swift-aio<br>通过docker ps 获取端口<br>然后通过<a href="http://127.0.0.1" target="_blank" rel="external">http://127.0.0.1</a>:<port>/auth/v1.0 进行系统的操作和访问<br>具体的命令形式如下<br>  swift -A <a href="http://127.0.0.1:32770/auth/v1.0" target="_blank" rel="external">http://127.0.0.1:32770/auth/v1.0</a> -U test:tester -K testing</port></p>
+<p>swift-aio-docker</p>
+<p>docker run -it –rm debian bash<br>  -it: 这是两个参数，一个是 -i：交互式操作，一个是 -t 终端。<br>  –rm: 这个参数是说容器退出后随之将其删除</p>
+<p><code>bash</code>：放在镜像名后的是<strong>命令</strong>，这里我们希望有个交互式 Shell</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]</div></pre></td></tr></table></figure>
+<p>Docker Registry 地址[:端口号] 默认docker hub</p>
+<p>仓库名为<code>&lt;用户名&gt;/&lt;软件名&gt;</code> ，默认为 <code>library</code></p>
+<p>latest为默认标签<br>​    </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/02/22/docker-basics/" data-id="cjnsw5njm000dtp9sli83stie" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-impression-after-reading-optiona-B" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/12/10/impression-after-reading-optiona-B/" class="article-date">
@@ -96,7 +291,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/12/10/impression-after-reading-optiona-B/" data-id="cjb0ka0yo000dgc9s720tt461" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/12/10/impression-after-reading-optiona-B/" data-id="cjnsw5njo000itp9skwk1ubdr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life-read/">life,read</a></li></ul>
@@ -136,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/object-storage/" data-id="cjb0ka0z9000tgc9swrl8uxum" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/18/object-storage/" data-id="cjnsw5njs000ptp9sq4nfgawf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/minio-swift/">minio,swift</a></li></ul>
@@ -197,7 +392,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cjb0ka0ye0003gc9s8vrge2au" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cjnsw5nj50000tp9sz1rwu9sa" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -242,7 +437,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjb0ka0yn000agc9sxxgzzq11" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjnsw5njd0004tp9s8ycctn97" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
@@ -299,7 +494,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/national-day-holiday-in-2017/" data-id="cjb0ka0z6000sgc9swdy9amwo" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/08/national-day-holiday-in-2017/" data-id="cjnsw5njr000ntp9skovqpr07" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -363,255 +558,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cjb0ka0zg000zgc9srwgyglee" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cjnsw5nk0000ytp9sgi4ayrl2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-rit-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/05/30/rit-in-HBase/" class="article-date">
-  <time datetime="2017-05-30T12:08:15.000Z" itemprop="datePublished">2017-05-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/30/rit-in-HBase/">rit in HBase</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>以前在别人博客中看到看到hbase中RIT的蛋疼，最近也确实感觉这个状态是比较尴尬的，别人会来找你。最近会放一些精力来解析hbase的rit状态，同时也是希望自己能对hbase有更全面和深入的了解。感觉过去两个月对hbase的的检索和加载流程看的比较多了。</p>
-<p>遇到一个case：</p>
-<p>一个region处于pending_open的状态。</p>
-<p>大概逻辑，本来master给某个节点发送open此region的请求，过程进行的很好。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjb0ka0zc000vgc9sd3pirlej" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-anniverary-of-zju" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/05/21/anniverary-of-zju/" class="article-date">
-  <time datetime="2017-05-21T13:32:40.000Z" itemprop="datePublished">2017-05-21</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/21/anniverary-of-zju/">anniverary of zju</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="围观浙大百廿校庆引发之感"><a href="#围观浙大百廿校庆引发之感" class="headerlink" title="围观浙大百廿校庆引发之感"></a>围观浙大百廿校庆引发之感</h1><p>已经去了好几次浙大了，每次去还是觉得很舒服，很向往。当然，不可否认，浙大曾经是我的梦想大学，对浙大本省是带有很强的好感的。在高中时很希望自己能考上浙大。</p>
-<p>最近两件事让我觉得有写感触：一，奇葩说讨论孩子的人生需不需要定制 二，“摔跤吧，爸爸”的女孩子的命运的改变。</p>
-<p>首先，我个人非常赞同一个周围环境的好坏对一个人的巨大的影响。</p>
-<p><code>TODO</code></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/21/anniverary-of-zju/" data-id="cjb0ka0yk0008gc9sr5zp5f7f" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-HFile-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/05/14/HFile-in-HBase/" class="article-date">
-  <time datetime="2017-05-14T02:01:39.000Z" itemprop="datePublished">2017-05-14</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/14/HFile-in-HBase/">HFile in HBase</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="HFile的一些记录"><a href="#HFile的一些记录" class="headerlink" title="HFile的一些记录"></a>HFile的一些记录</h1><p>本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。</p>
-<p>首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile的元数据。对于HFile，我个人觉得主要把握好几个问题。</p>
-<ol>
-<li>block的组织</li>
-<li>bf和block的关系</li>
-<li>index和block的关系</li>
-<li>写入顺序和一些基本的元数据信息结构</li>
-<li>记录能不能跨block</li>
-</ol>
-<p>明白这四个问题感觉基本可以大致的描绘出HFile了。</p>
-<h2 id="HFileWriterV2"><a href="#HFileWriterV2" class="headerlink" title="HFileWriterV2"></a>HFileWriterV2</h2><p>首先，我们知道会引起下HFile的操作有flush和compaction。在此，我们就选择从flush这个入口跟进去看。</p>
-<p>在StoreFile中，以下方法主要是为了Store书写到一个HFile中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">long</span> org.apache.hadoop.hbase.regionserver.StoreFlusher.performFlush(InternalScanner scanner, CellSink sink, <span class="keyword">long</span> smallestReadPoint) <span class="keyword">throws</span> IOException</div></pre></td></tr></table></figure>
-<p>在此方法会调用如下方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">append</span><span class="params">(<span class="keyword">final</span> KeyValue kv)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">  <span class="comment">//如下两行主要是来加入到bf中的，下面的这个就是我们经常说的bf索引。</span></div><div class="line">  appendGeneralBloomfilter(kv);</div><div class="line">  appendDeleteFamilyBloomFilter(kv);</div><div class="line">  <span class="comment">//这行是重点</span></div><div class="line">  writer.append(kv);</div><div class="line">  <span class="comment">//这行先不管，处理时间戳</span></div><div class="line">  trackTimestamps(kv);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>以下分解append方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//检查key是否有问题，是否按顺序（memstore使用ConcurrentSkipListMap存储，应该不会有此问题）。</span></div><div class="line"><span class="comment">//并且返回key是否重复</span></div><div class="line"><span class="keyword">boolean</span> dupKey = checkKey(key, koffset, klength);</div><div class="line">checkValue(value, voffset, vlength);</div><div class="line"><span class="comment">//如果不重复，则不检查边界，答案不能，因为如果有重复，不会检查边界更不会新建一个block。***问题5***</span></div><div class="line"><span class="keyword">if</span> (!dupKey) &#123;</div><div class="line">  <span class="comment">//此出会检查block的大小，并且有一处需要注意，在里面的代码中有一些记录block信息的，这个以后会有用。</span></div><div class="line">  <span class="comment">//此处会写出chunk，处理readyChunks</span></div><div class="line">  checkBlockBoundary();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>上面注释中说的那个代码如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">byte</span>[] indexKey = comparator.calcIndexKey(lastKeyOfPreviousBlock, firstKeyInBlock);</div><div class="line">dataBlockIndexWriter.addEntry(indexKey, lastDataBlockOffset, onDiskSize);</div></pre></td></tr></table></figure>
-<p>append下面是一些很正常的数据写入（都是对stream的添加操作），元数据记录（firstKeyInBlock）等。</p>
-<p>回到appendGeneralBloomfilter(kv)方法，此方法里面有一个判断是值得注意的。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//在此代码中会判断key的个数，如果key的个数达到了一定程度就新建一个chunk，放入readyChunks（这个会在checkBlockBoundary中处理），此出会写bf。***问题2***</span></div><div class="line">enqueueReadyChunk(<span class="keyword">false</span>);</div><div class="line">... 这种是处理chunk被写出的时候的操作。重置一些值 ...</div><div class="line"><span class="comment">//真正的添加到bf中</span></div><div class="line">chunk.add(bloomKey, keyOffset, keyLength);</div></pre></td></tr></table></figure>
-<p>在enqueueReadyChunk(false)中有</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ReadyChunk readyChunk = <span class="keyword">new</span> ReadyChunk();</div><div class="line">readyChunk.chunkId = numChunks - <span class="number">1</span>;</div><div class="line">readyChunk.chunk = chunk;</div><div class="line">readyChunk.firstKey = firstKeyInChunk; </div><div class="line">readyChunks.add(readyChunk);</div></pre></td></tr></table></figure>
-<p>然后时间很快就到了close环节。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//此处组织了block，将加入到此HFile的chunk生成树的结构。</span></div><div class="line"><span class="keyword">long</span> rootIndexOffset = dataBlockIndexWriter.writeIndexBlocks(outputStream);</div></pre></td></tr></table></figure>
-<p>block组织也分两类，一个chunk里组织block（他们共生存啊，用了一个bf），另外是root index和intermedia index的组织，实际这个更多感觉是组织chunk。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeInlineBlocks</span><span class="params">(<span class="keyword">boolean</span> closing)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">  <span class="comment">//inlineBlockWriters 应该就3个，两个bf和一个block（待确定）</span></div><div class="line">  <span class="keyword">for</span> (InlineBlockWriter ibw : inlineBlockWriters) &#123;</div><div class="line">    <span class="keyword">while</span> (ibw.shouldWriteBlock(closing)) &#123;</div><div class="line">      <span class="keyword">long</span> offset = outputStream.getPos();</div><div class="line">      <span class="keyword">boolean</span> cacheThisBlock = ibw.getCacheOnWrite();</div><div class="line">      ibw.writeInlineBlock(fsBlockWriter.startWriting(</div><div class="line">          ibw.getInlineBlockType()));</div><div class="line">      fsBlockWriter.writeHeaderAndData(outputStream);</div><div class="line">      <span class="comment">//此处添加leaf index block</span></div><div class="line">      ibw.blockWritten(offset, fsBlockWriter.getOnDiskSizeWithHeader(),</div><div class="line">          fsBlockWriter.getUncompressedSizeWithoutHeader());</div><div class="line">      totalUncompressedBytes += fsBlockWriter.getUncompressedSizeWithHeader();</div><div class="line"></div><div class="line">      <span class="keyword">if</span> (cacheThisBlock) &#123;</div><div class="line">        doCacheOnWrite(offset);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>ibw.shouldWriteBlock(closing)方法的判断如下，实际是判断是否有chunk</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldWriteBlock</span><span class="params">(<span class="keyword">boolean</span> closing)</span> </span>&#123;</div><div class="line">  enqueueReadyChunk(closing);</div><div class="line">  <span class="comment">//readyChunks中保存的是chunk，也就是lead index block</span></div><div class="line">  <span class="keyword">return</span> !readyChunks.isEmpty();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>下面是写入bloom meta index，感觉就是chunk的那些。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bloomBlockIndexWriter.writeSingleLevelIndex(out, <span class="string">"Bloom filter"</span>);</div></pre></td></tr></table></figure>
-<p>其实还有部分元数据（各种offset和树的生成）没有分析。以后在说吧。</p>
-<h2 id="HFileReaderV2"><a href="#HFileReaderV2" class="headerlink" title="HFileReaderV2"></a>HFileReaderV2</h2><p>由上述的代码分析来看，其实读取的时候最主要要解决的是是否读此block。决定了读此block之后已经没有太多需要在此文章中分析了，因为那是检索流程的事情（组织memstore和storefile）</p>
-<ol>
-<li>读block index和bloom filter信息</li>
-<li>使用这两种索引过滤block</li>
-</ol>
-<p>HFileReader主要涉及到的几个方法，包括获取和open。发生在在检索获取scanner和过滤scanner时。</p>
-<p>在List<keyvaluescanner> HStore.getScanners(boolean cacheBlocks, boolean isGet, boolean usePread, boolean isCompaction, ScanQueryMatcher matcher, byte[] startRow, byte[] stopRow, long readPt)中如下代码，获取此store中的file对应的scanner。</keyvaluescanner></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List&lt;StoreFileScanner&gt; sfScanners = StoreFileScanner.getScannersForStoreFiles(storeFilesToScan, cacheBlocks, usePread, isCompaction, <span class="keyword">false</span>, matcher, readPt);</div></pre></td></tr></table></figure>
-<p>此方法调用了如下方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//此方法会调用Open方法</span></div><div class="line">StoreFile.Reader r = file.createReader(canUseDrop);</div></pre></td></tr></table></figure>
-<p>接着调用open方法，方法如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div></pre></td><td class="code"><pre><div class="line">   <span class="keyword">if</span> (<span class="keyword">this</span>.reader != <span class="keyword">null</span>) &#123;</div><div class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> IllegalAccessError(<span class="string">"Already open"</span>);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="comment">// Open the StoreFile.Reader</span></div><div class="line">   <span class="keyword">this</span>.reader = fileInfo.open(<span class="keyword">this</span>.fs, <span class="keyword">this</span>.cacheConf, canUseDropBehind);</div><div class="line"></div><div class="line">   <span class="comment">// Load up indices and fileinfo. This also loads Bloom filter type.</span></div><div class="line">   metadataMap = Collections.unmodifiableMap(<span class="keyword">this</span>.reader.loadFileInfo());</div><div class="line"></div><div class="line">   <span class="comment">// Read in our metadata.</span></div><div class="line">   <span class="keyword">byte</span> [] b = metadataMap.get(MAX_SEQ_ID_KEY);</div><div class="line">   <span class="keyword">if</span> (b != <span class="keyword">null</span>) &#123;</div><div class="line">     <span class="comment">// By convention, if halfhfile, top half has a sequence number &gt; bottom</span></div><div class="line">     <span class="comment">// half. Thats why we add one in below. Its done for case the two halves</span></div><div class="line">     <span class="comment">// are ever merged back together --rare.  Without it, on open of store,</span></div><div class="line">     <span class="comment">// since store files are distinguished by sequence id, the one half would</span></div><div class="line">     <span class="comment">// subsume the other.</span></div><div class="line">     <span class="keyword">this</span>.sequenceid = Bytes.toLong(b);</div><div class="line">     <span class="keyword">if</span> (fileInfo.isTopReference()) &#123;</div><div class="line">       <span class="keyword">this</span>.sequenceid += <span class="number">1</span>;</div><div class="line">     &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="keyword">if</span> (isBulkLoadResult())&#123;</div><div class="line">     <span class="comment">// generate the sequenceId from the fileName</span></div><div class="line">     <span class="comment">// fileName is of the form &lt;randomName&gt;_SeqId_&lt;id-when-loaded&gt;_</span></div><div class="line">     String fileName = <span class="keyword">this</span>.getPath().getName();</div><div class="line">     <span class="comment">// Use lastIndexOf() to get the last, most recent bulk load seqId.</span></div><div class="line">     <span class="keyword">int</span> startPos = fileName.lastIndexOf(<span class="string">"SeqId_"</span>);</div><div class="line">     <span class="keyword">if</span> (startPos != -<span class="number">1</span>) &#123;</div><div class="line">       <span class="keyword">this</span>.sequenceid = Long.parseLong(fileName.substring(startPos + <span class="number">6</span>,</div><div class="line">           fileName.indexOf(<span class="string">'_'</span>, startPos + <span class="number">6</span>)));</div><div class="line">       <span class="comment">// Handle reference files as done above.</span></div><div class="line">       <span class="keyword">if</span> (fileInfo.isTopReference()) &#123;</div><div class="line">         <span class="keyword">this</span>.sequenceid += <span class="number">1</span>;</div><div class="line">       &#125;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">this</span>.reader.setBulkLoaded(<span class="keyword">true</span>);</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">this</span>.reader.setSequenceID(<span class="keyword">this</span>.sequenceid);</div><div class="line"></div><div class="line">   b = metadataMap.get(HFileWriterV2.MAX_MEMSTORE_TS_KEY);</div><div class="line">   <span class="keyword">if</span> (b != <span class="keyword">null</span>) &#123;</div><div class="line">     <span class="keyword">this</span>.maxMemstoreTS = Bytes.toLong(b);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   b = metadataMap.get(MAJOR_COMPACTION_KEY);</div><div class="line">   <span class="keyword">if</span> (b != <span class="keyword">null</span>) &#123;</div><div class="line">     <span class="keyword">boolean</span> mc = Bytes.toBoolean(b);</div><div class="line">     <span class="keyword">if</span> (<span class="keyword">this</span>.majorCompaction == <span class="keyword">null</span>) &#123;</div><div class="line">       <span class="keyword">this</span>.majorCompaction = <span class="keyword">new</span> AtomicBoolean(mc);</div><div class="line">     &#125; <span class="keyword">else</span> &#123;</div><div class="line">       <span class="keyword">this</span>.majorCompaction.set(mc);</div><div class="line">     &#125;</div><div class="line">   &#125; <span class="keyword">else</span> &#123;</div><div class="line">     <span class="comment">// Presume it is not major compacted if it doesn't explicity say so</span></div><div class="line">     <span class="comment">// HFileOutputFormat explicitly sets the major compacted key.</span></div><div class="line">     <span class="keyword">this</span>.majorCompaction = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   b = metadataMap.get(EXCLUDE_FROM_MINOR_COMPACTION_KEY);</div><div class="line">   <span class="keyword">this</span>.excludeFromMinorCompaction = (b != <span class="keyword">null</span> &amp;&amp; Bytes.toBoolean(b));</div><div class="line"></div><div class="line"><span class="comment">//此出会读取bloom filter</span></div><div class="line">   BloomType hfileBloomType = reader.getBloomFilterType();</div><div class="line">   <span class="keyword">if</span> (cfBloomType != BloomType.NONE) &#123;</div><div class="line">     reader.loadBloomfilter(BlockType.GENERAL_BLOOM_META);</div><div class="line">     <span class="keyword">if</span> (hfileBloomType != cfBloomType) &#123;</div><div class="line">       LOG.info(<span class="string">"HFile Bloom filter type for "</span></div><div class="line">           + reader.getHFileReader().getName() + <span class="string">": "</span> + hfileBloomType</div><div class="line">           + <span class="string">", but "</span> + cfBloomType + <span class="string">" specified in column family "</span></div><div class="line">           + <span class="string">"configuration"</span>);</div><div class="line">     &#125;</div><div class="line">   &#125; <span class="keyword">else</span> <span class="keyword">if</span> (hfileBloomType != BloomType.NONE) &#123;</div><div class="line">     LOG.info(<span class="string">"Bloom filter turned off by CF config for "</span></div><div class="line">         + reader.getHFileReader().getName());</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="comment">// load delete family bloom filter</span></div><div class="line">   reader.loadBloomfilter(BlockType.DELETE_FAMILY_BLOOM_META);</div><div class="line"></div><div class="line">   <span class="keyword">try</span> &#123;</div><div class="line">     <span class="keyword">this</span>.reader.timeRange = TimeRangeTracker.getTimeRange(metadataMap.get(TIMERANGE_KEY));</div><div class="line">   &#125; <span class="keyword">catch</span> (IllegalArgumentException e) &#123;</div><div class="line">     LOG.error(<span class="string">"Error reading timestamp range data from meta -- "</span> +</div><div class="line">         <span class="string">"proceeding without"</span>, e);</div><div class="line">     <span class="keyword">this</span>.reader.timeRange = <span class="keyword">null</span>;</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">return</span> <span class="keyword">this</span>.reader;</div></pre></td></tr></table></figure>
-<p>判断的一个文件是否需要读取时，在伟大的 boolean org.apache.hadoop.hbase.regionserver.StoreFileScanner.shouldUseScanner(Scan scan, SortedSet<byte[]> columns, long oldestUnexpiredTS) 方法中的如下方法使用了bloomfilter。</byte[]></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//此处使用bloomfilter过滤。在此方法中会调用bloomFilter.contains，在此contains会先使用block index 判断。</span></div><div class="line">reader.passesBloomFilter(scan, columns)</div></pre></td></tr></table></figure>
-<p>里面会调用一个contains</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">   <span class="comment">//判断读取哪个block，rootBlockContaingKey里的blockKeys为chunk的个数。</span></div><div class="line"><span class="comment">//index是从bloommeta中读取，DataInput bloomMeta = reader.getGeneralBloomFilterMetadata(); 代码获取。</span></div><div class="line"><span class="keyword">int</span> block = index.rootBlockContainingKey(key, keyOffset, keyLength);</div><div class="line">   <span class="keyword">if</span> (block &lt; <span class="number">0</span>) &#123;</div><div class="line">     result = <span class="keyword">false</span>; <span class="comment">// This key is not in the file.</span></div><div class="line">   &#125; <span class="keyword">else</span> &#123;</div><div class="line">     HFileBlock bloomBlock;</div><div class="line">     <span class="keyword">try</span> &#123;</div><div class="line">       <span class="comment">// We cache the block and use a positional read.</span></div><div class="line">       <span class="comment">//读取那个chunk的bf</span></div><div class="line">       bloomBlock = reader.readBlock(index.getRootBlockOffset(block),</div><div class="line">           index.getRootBlockDataSize(block), <span class="keyword">true</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">true</span>,</div><div class="line">           BlockType.BLOOM_CHUNK);</div><div class="line">     &#125; <span class="keyword">catch</span> (IOException ex) &#123;</div><div class="line">       <span class="comment">// The Bloom filter is broken, turn it off.</span></div><div class="line">       <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(</div><div class="line">           <span class="string">"Failed to load Bloom block for key "</span></div><div class="line">               + Bytes.toStringBinary(key, keyOffset, keyLength), ex);</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     ByteBuffer bloomBuf = bloomBlock.getBufferReadOnly();</div><div class="line">     result = ByteBloomFilter.contains(key, keyOffset, keyLength,</div><div class="line">         bloomBuf.array(), bloomBuf.arrayOffset() + bloomBlock.headerSize(),</div><div class="line">         bloomBlock.getUncompressedSizeWithoutHeader(), hash, hashCount);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>在如下方法(感觉时seekTO时，用于scan时指定了开始的rowkey，这样解释就合理了。在reader.passesBloomFilter中有判断是否时scan)中使用block index过滤了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">BlockWithScanInfo org.apache.hadoop.hbase.io.hfile.HFileBlockIndex.BlockIndexReader.loadDataBlockWithScanInfo(<span class="keyword">byte</span>[] key, <span class="keyword">int</span> keyOffset, <span class="keyword">int</span> keyLength, HFileBlock currentBlock, <span class="keyword">boolean</span> cacheBlocks, <span class="keyword">boolean</span> pread, <span class="keyword">boolean</span> isCompaction) <span class="keyword">throws</span> IOException</div></pre></td></tr></table></figure>
-<p>CompoundBloomFilter构造方法中读取Block index的数据。 </p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjb0ka0yf0004gc9s8gkigs26" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-HBase-compaction" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/05/09/HBase-compaction/" class="article-date">
-  <time datetime="2017-05-09T15:44:59.000Z" itemprop="datePublished">2017-05-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/09/HBase-compaction/">HBase compaction</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="HBase-compaction"><a href="#HBase-compaction" class="headerlink" title="HBase compaction"></a>HBase compaction</h1><p>像hbase这种基于LSM的架构，compaction是其中很重要一个环节。</p>
-<h2 id="触发compaction"><a href="#触发compaction" class="headerlink" title="触发compaction"></a>触发compaction</h2><ol>
-<li><p>手工出发</p>
-</li>
-<li><p>chore线程</p>
-<ol>
-<li>CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」</li>
-</ol>
-</li>
-<li><p>flush触发</p>
-</li>
-</ol>
-<h2 id="执行compaction"><a href="#执行compaction" class="headerlink" title="执行compaction"></a>执行compaction</h2><p>​    此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。</p>
-<p>​    首先调用的是如下方法，生成CompactionContext构造CompactionRunner放入线程池中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> CompactionRequest <span class="title">requestCompactionInternal</span><span class="params">(<span class="keyword">final</span> HRegion r, <span class="keyword">final</span> Store s,</span></span></div><div class="line">      <span class="keyword">final</span> String why, <span class="keyword">int</span> priority, CompactionRequest request, <span class="keyword">boolean</span> selectNow, User user)</div></pre></td></tr></table></figure>
-<p>​    在里面调用</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">boolean</span> completed = region.compact(compaction, store, compactionThroughputController, user);</div></pre></td></tr></table></figure>
-<p>​    然后调用相应store的compact方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">store.compact(compaction, throughputController, user);</div></pre></td></tr></table></figure>
-<p>​    里面一个compact操作具体的步骤如下：</p>
-<p>​    1. 开始合并返回合并的结果。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List&lt;Path&gt; newFiles = compaction.compact(throughputController, user);</div></pre></td></tr></table></figure>
-<p>​    此方法中一个判断是否是major</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ScanType scanType = scannerFactory.getScanType(request);</div></pre></td></tr></table></figure>
-<p>​    此ScanType传递给了ScanQueryMatcher来做scan类型的判断。</p>
-<p>​    2. 结果写入对应的cf的目录中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sfs = moveCompatedFilesIntoPlace(cr, newFiles, user);</div></pre></td></tr></table></figure>
-<p>​    3. 将本次compaction写入HLOG中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">writeCompactionWalRecord(filesToCompact, sfs);</div></pre></td></tr></table></figure>
-<p>​    4. 更新StoreFileManager的storefiles，去除旧的文件，加入新的文件</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">replaceStoreFiles(filesToCompact, sfs);</div></pre></td></tr></table></figure>
-<p>​    5. 此时已经可以安心的文件读取了，最后一步骤就是删除旧的数据</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">completeCompaction(filesToCompact);</div></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cjb0ka0y60000gc9smxoh0coj" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
 
     </footer>
   </div>
@@ -623,7 +573,7 @@
 
 
   <nav id="page-nav">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">__('next') &raquo;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">__('next') &raquo;</a>
   </nav>
 </section>
         
@@ -636,7 +586,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
     </div>
   </div>
 
@@ -646,7 +596,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 13.33px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 16.67px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a>
+      <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 13.33px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 16.67px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a>
     </div>
   </div>
 
@@ -655,7 +605,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -668,23 +618,23 @@
       <ul>
         
           <li>
+            <a href="/2018/10/28/long-distance-running/">long-distance-running</a>
+          </li>
+        
+          <li>
+            <a href="/2018/07/01/vmware安装centos/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/04/paper-reading/">paper reading</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/22/docker-basics/">(no title)</a>
+          </li>
+        
+          <li>
             <a href="/2017/12/10/impression-after-reading-optiona-B/">Impression after reading &lt;optiona B&gt;</a>
-          </li>
-        
-          <li>
-            <a href="/2017/10/18/object-storage/">object storage</a>
-          </li>
-        
-          <li>
-            <a href="/2017/10/18/DFSOutputStream-analysis/">DFSOutputStream analysis</a>
-          </li>
-        
-          <li>
-            <a href="/2017/10/08/a-special-case-about-rwlock/">a special case about rwlock</a>
-          </li>
-        
-          <li>
-            <a href="/2017/10/08/national-day-holiday-in-2017/">national day holiday in 2017</a>
           </li>
         
       </ul>
@@ -699,7 +649,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 liu binbin<br>
+      &copy; 2018 liu binbin<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
