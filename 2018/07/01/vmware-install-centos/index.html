@@ -3,30 +3,29 @@
 <head>
   <meta charset="utf-8">
   
-  <title>a special case about rwlock | bean</title>
+  <title>bean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一个奇怪的锁卡住的case##遇到一个case
-一个线程长时间持有的rwlock的读锁，同时有另外的一个线程想要去获取写锁。在这种情况下，别的线程想要去获取读锁有可能回被卡住。
-看到栈就是一个线程获取了读锁，阻塞了别的获取别的线程获取读锁，这时候就尴尬了。
-这种情况当时是发生在那个获取读锁由于节点宕机，导致连接出现问题，而连接超时时间又设置了一个很长的值。造成了此悲剧。
-例子代码地址：https:">
+  <meta name="description" content="vmware安装centos此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。
+第0步 安装vmware和下载centos下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。
+第1步 创建cent">
 <meta property="og:type" content="article">
-<meta property="og:title" content="a special case about rwlock">
-<meta property="og:url" content="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/index.html">
+<meta property="og:title" content="bean">
+<meta property="og:url" content="http://yoursite.com/2018/07/01/vmware-install-centos/index.html">
 <meta property="og:site_name" content="bean">
-<meta property="og:description" content="一个奇怪的锁卡住的case##遇到一个case
-一个线程长时间持有的rwlock的读锁，同时有另外的一个线程想要去获取写锁。在这种情况下，别的线程想要去获取读锁有可能回被卡住。
-看到栈就是一个线程获取了读锁，阻塞了别的获取别的线程获取读锁，这时候就尴尬了。
-这种情况当时是发生在那个获取读锁由于节点宕机，导致连接出现问题，而连接超时时间又设置了一个很长的值。造成了此悲剧。
-例子代码地址：https:">
-<meta property="og:updated_time" content="2017-10-08T15:29:14.000Z">
+<meta property="og:description" content="vmware安装centos此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。
+第0步 安装vmware和下载centos下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。
+第1步 创建cent">
+<meta property="og:image" content="http://yoursite.com/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.54.00 PM.png">
+<meta property="og:image" content="http://yoursite.com/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.55.03 PM.png">
+<meta property="og:image" content="http://yoursite.com/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.55.53 PM.png">
+<meta property="og:image" content="http://yoursite.com/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.56.45 PM.png">
+<meta property="og:updated_time" content="2018-08-18T05:51:57.557Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="a special case about rwlock">
-<meta name="twitter:description" content="一个奇怪的锁卡住的case##遇到一个case
-一个线程长时间持有的rwlock的读锁，同时有另外的一个线程想要去获取写锁。在这种情况下，别的线程想要去获取读锁有可能回被卡住。
-看到栈就是一个线程获取了读锁，阻塞了别的获取别的线程获取读锁，这时候就尴尬了。
-这种情况当时是发生在那个获取读锁由于节点宕机，导致连接出现问题，而连接超时时间又设置了一个很长的值。造成了此悲剧。
-例子代码地址：https:">
+<meta name="twitter:title" content="bean">
+<meta name="twitter:description" content="vmware安装centos此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。
+第0步 安装vmware和下载centos下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。
+第1步 创建cent">
+<meta name="twitter:image" content="http://yoursite.com/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.54.00 PM.png">
   
     <link rel="alternate" href="/atom.xml" title="bean" type="application/atom+xml">
   
@@ -75,63 +74,62 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-a-special-case-about-rwlock" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-vmware-install-centos" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/10/08/a-special-case-about-rwlock/" class="article-date">
-  <time datetime="2017-10-08T12:31:28.000Z" itemprop="datePublished">2017-10-08</time>
+    <a href="/2018/07/01/vmware-install-centos/" class="article-date">
+  <time datetime="2018-07-01T11:43:12.859Z" itemprop="datePublished">2018-07-01</time>
 </a>
     
   </div>
   <div class="article-inner">
     
     
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      a special case about rwlock
-    </h1>
-  
-
-      </header>
-    
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="一个奇怪的锁卡住的case"><a href="#一个奇怪的锁卡住的case" class="headerlink" title="一个奇怪的锁卡住的case"></a>一个奇怪的锁卡住的case</h1><p>##遇到一个case</p>
-<p>一个线程长时间持有的rwlock的读锁，同时有另外的一个线程想要去获取写锁。在这种情况下，别的线程想要去获取读锁有可能回被卡住。</p>
-<p>看到栈就是一个线程获取了读锁，阻塞了别的获取别的线程获取读锁，这时候就尴尬了。</p>
-<p>这种情况当时是发生在那个获取读锁由于节点宕机，导致连接出现问题，而连接超时时间又设置了一个很长的值。造成了此悲剧。</p>
-<p>例子代码地址：<a href="https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock" target="_blank" rel="external">https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock</a></p>
-<p>原理猜测：理论上来说，对于的读写锁而言，读锁之间不应该相互阻塞。但是在一个情况防止饿死，将写锁的优先级提高到了读锁之前。这时候读锁就尴尬了。</p>
-<p>更加具体理解需要看源码，以后再分享。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">看看ReentrantReadWriteLock，注意构造函数里可以传一个布尔值。</div></pre></td></tr></table></figure>
+        <h1 id="vmware安装centos"><a href="#vmware安装centos" class="headerlink" title="vmware安装centos"></a>vmware安装centos</h1><p>此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。</p>
+<h2 id="第0步-安装vmware和下载centos"><a href="#第0步-安装vmware和下载centos" class="headerlink" title="第0步 安装vmware和下载centos"></a>第0步 安装vmware和下载centos</h2><p>下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。</p>
+<h2 id="第1步-创建centos虚拟机"><a href="#第1步-创建centos虚拟机" class="headerlink" title="第1步 创建centos虚拟机"></a>第1步 创建centos虚拟机</h2><p><img src="/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.54.00 PM.png" alt="Screen Shot 2018-07-01 at 7.54.00 PM"></p>
+<p>选择Create a custom virtual machine</p>
+<p><img src="/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.55.03 PM.png" alt="Screen Shot 2018-07-01 at 7.55.03 PM"></p>
+<p>选择对应的版本CentOS 64-bit</p>
+<p><img src="/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.55.53 PM.png" alt="Screen Shot 2018-07-01 at 7.55.53 PM"></p>
+<p>选择Create a new virtual disk</p>
+<p><img src="/Users/liubinbin/Desktop/Screen Shot 2018-07-01 at 7.56.45 PM.png" alt="Screen Shot 2018-07-01 at 7.56.45 PM"></p>
+<p>选择Customize Settings，然后选择Save.</p>
+<p>然后开始设置配置，主要如下：</p>
+<ul>
+<li>Processors &amp; Memory    (4core 8G)</li>
+<li>Hard Disk (80G)</li>
+<li>CD/DVD (IDE) (此处一定需要设置，将下载的iso加入配置中，并且需要连接DVD)</li>
+</ul>
+<p>然后开始安装，更改mini 安装模式，添加gnome桌面，然后进入正常的linux安装界面。之后一切就比较顺利。</p>
+<p>最后可能需要安装图形界面：<strong>yum groupinstall</strong> “GNOME Desktop”，重启进入root执行“init 5”</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjnswlcz40004up9suu1cs0ck" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/07/01/vmware-install-centos/" data-id="cjnswld020017up9self3w8a8" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
-
     </footer>
   </div>
   
     
 <nav id="article-nav">
   
-    <a href="/2017/10/18/DFSOutputStream-analysis/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/10/28/long-distance-running/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          DFSOutputStream analysis
+          long-distance-running
         
       </div>
     </a>
   
   
-    <a href="/2017/10/08/national-day-holiday-in-2017/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/03/04/paper-reading/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">national day holiday in 2017</div>
+      <div class="article-nav-title">paper reading</div>
     </a>
   
 </nav>
