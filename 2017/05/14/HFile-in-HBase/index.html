@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   
-  <title>HFile in HBase | bean</title>
+  <title>HFile in HBase | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="HFile的一些记录本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
 首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HFile in HBase">
 <meta property="og:url" content="http://yoursite.com/2017/05/14/HFile-in-HBase/index.html">
-<meta property="og:site_name" content="bean">
+<meta property="og:site_name" content="bin">
 <meta property="og:description" content="HFile的一些记录本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
 首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile">
 <meta property="og:updated_time" content="2017-06-05T14:34:49.000Z">
@@ -19,7 +19,7 @@
 <meta name="twitter:description" content="HFile的一些记录本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
 首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile">
   
-    <link rel="alternate" href="/atom.xml" title="bean" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -40,7 +40,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">bean</a>
+        <a href="/" id="logo">bin</a>
       </h1>
       
     </div>
@@ -144,7 +144,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjnswm0lz0004v69sj2nt5hdq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjnswqxmj0004wt9skhwae5to" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>

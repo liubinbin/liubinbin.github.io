@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>a special case about rwlock | bean</title>
+  <title>a special case about rwlock | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="一个奇怪的锁卡住的case##遇到一个case
 一个线程长时间持有的rwlock的读锁，同时有另外的一个线程想要去获取写锁。在这种情况下，别的线程想要去获取读锁有可能回被卡住。
@@ -13,7 +13,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="a special case about rwlock">
 <meta property="og:url" content="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/index.html">
-<meta property="og:site_name" content="bean">
+<meta property="og:site_name" content="bin">
 <meta property="og:description" content="一个奇怪的锁卡住的case##遇到一个case
 一个线程长时间持有的rwlock的读锁，同时有另外的一个线程想要去获取写锁。在这种情况下，别的线程想要去获取读锁有可能回被卡住。
 看到栈就是一个线程获取了读锁，阻塞了别的获取别的线程获取读锁，这时候就尴尬了。
@@ -28,7 +28,7 @@
 这种情况当时是发生在那个获取读锁由于节点宕机，导致连接出现问题，而连接超时时间又设置了一个很长的值。造成了此悲剧。
 例子代码地址：https:">
   
-    <link rel="alternate" href="/atom.xml" title="bean" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -49,7 +49,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">bean</a>
+        <a href="/" id="logo">bin</a>
       </h1>
       
     </div>
@@ -108,7 +108,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjnswm0m30008v69s6q7r5d0y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjnswqxmp000awt9s81nn2kz4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>

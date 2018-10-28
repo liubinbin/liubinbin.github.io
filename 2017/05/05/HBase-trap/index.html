@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   
-  <title>HBase trap | bean</title>
+  <title>HBase trap | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="HBase的一些坑
 mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HBase trap">
 <meta property="og:url" content="http://yoursite.com/2017/05/05/HBase-trap/index.html">
-<meta property="og:site_name" content="bean">
+<meta property="og:site_name" content="bin">
 <meta property="og:description" content="HBase的一些坑
 mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很">
 <meta property="og:updated_time" content="2017-06-05T14:36:33.000Z">
@@ -19,7 +19,7 @@ mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =
 <meta name="twitter:description" content="HBase的一些坑
 mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =&amp;gt; 想再测一次就删除了 =&amp;gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很">
   
-    <link rel="alternate" href="/atom.xml" title="bean" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -40,7 +40,7 @@ mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">bean</a>
+        <a href="/" id="logo">bin</a>
       </h1>
       
     </div>
@@ -98,7 +98,7 @@ mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts =
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cjnswm0lz0003v69s7cwlwsfh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cjnswqxm80000wt9s6d1a3846" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
