@@ -61,6 +61,53 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-import-HBase-into-eclipse" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/03/26/import-HBase-into-eclipse/" class="article-date">
+  <time datetime="2017-03-26T03:20:27.000Z" itemprop="datePublished">2017-03-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/26/import-HBase-into-eclipse/">import HBase into eclipse</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="将HBase导入到eclipse"><a href="#将HBase导入到eclipse" class="headerlink" title="将HBase导入到eclipse"></a>将HBase导入到eclipse</h1><p>最近想开始看hbase的源代码，所以想把eclipse导入到eclipse，方便跳转阅读代码。</p>
+<ul>
+<li>下载源代码</li>
+<li>执行mvn clean install -DskipTests和mvn eclipse:eclipse</li>
+<li>执行过程中会出现“错误: 读取/Users/xxx/.m2/repository/org/slf4j/slf4j-log4j12/1.6.4/slf4j-log4j12-1.6.4.jar时出错; zip file is empty”问题，只要把那个文件删除然后重新执行就可以了，不一会儿你就看到build sucess</li>
+<li>然后倒入到eclipse中，各种叹号和红叉，崩溃ing。</li>
+<li>进入方法发现直接说到了jar，没法查看；转到idea，看到idea直接倒入，并且原来的提示的jar包也可以查看代码。</li>
+<li>最后得出结论，何必用eclipse呢，直接用idea不久完了。<code>TODO eclipse导入的mvn问题</code></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/03/26/import-HBase-into-eclipse/" data-id="cjo1kgvjk000e639sn2w1uxif" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-first-weekend-in-Hangzhou" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/03/25/first-weekend-in-Hangzhou/" class="article-date">
@@ -97,7 +144,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/25/first-weekend-in-Hangzhou/" data-id="cjnswqxmu000ewt9sp7r7y39l" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/25/first-weekend-in-Hangzhou/" data-id="cjo1kgvjj000c639sxmh39n3e" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -145,7 +192,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/to-Hangzhou/" data-id="cjnswqxnj0017wt9sks5cqyi2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/to-Hangzhou/" data-id="cjo1kgvkk001e639s0rjteg94" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -208,7 +255,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cjnswqxnp001cwt9sw2cdk77d" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cjo1kgvko001i639saqqqxdws" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flume/">flume</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gc/">gc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
@@ -236,7 +283,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li></ul>
     </div>
   </div>
 
@@ -246,7 +293,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 13.33px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 16.67px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a>
+      <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 13.33px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 16.67px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 10px;">reading</a>
     </div>
   </div>
 
@@ -255,7 +302,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -266,6 +313,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/">impression-after-reading-new-programmer&#39;s-survival-manual</a>
+          </li>
         
           <li>
             <a href="/2018/10/28/long-distance-running/">long-distance-running</a>
@@ -281,10 +332,6 @@
         
           <li>
             <a href="/2018/02/22/docker-basics/">(no title)</a>
-          </li>
-        
-          <li>
-            <a href="/2017/12/10/impression-after-reading-optiona-B/">Impression after reading &lt;optiona B&gt;</a>
           </li>
         
       </ul>
