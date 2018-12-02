@@ -61,55 +61,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-a-special-case-about-rwlock" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/10/08/a-special-case-about-rwlock/" class="article-date">
-  <time datetime="2017-10-08T12:31:28.000Z" itemprop="datePublished">2017-10-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/10/08/a-special-case-about-rwlock/">一个奇怪的rwlock锁卡住的case</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>遇到一个case，有关于读写锁。原因路径如下：</p>
-<ol>
-<li>线上有一个datanode节点宕机，导致与此节点的连接出现问题。</li>
-<li>有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。</li>
-<li>由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。</li>
-<li>这时候出现了其他线程的读锁也无法获取到。</li>
-</ol>
-<p>从线程栈看，就是一个线程获取了读锁，阻塞了别的线程获取读锁和写锁。</p>
-<p>还原现场例子代码地址：<a href="https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock" target="_blank" rel="external">https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock</a></p>
-<p>原理猜测：理论上来说，对于的读写锁而言，读锁之间不应该相互阻塞。但是在一个情况防止饿死，将写锁的优先级提高到了读锁之前。这时候读锁就尴尬了。</p>
-<p>更加具体理解需要看源码，以后再分享。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">看看ReentrantReadWriteLock，注意构造函数里可以传一个布尔值。</div></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjp6llam10008319sdusa67wd" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-some-thoughts" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/08/25/some-thoughts/" class="article-date">
@@ -160,7 +111,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cjp6llamm000u319sxc7owzg9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cjp6lna4o000s3b9smtv7kz6s" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -237,7 +188,68 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/docker-basics/" data-id="cjp6llam2000a319sjy9rogza" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/08/25/docker-basics/" data-id="cjp6lna4300093b9sf8oigmg5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-vmware-install-centos" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/25/vmware-install-centos/" class="article-date">
+  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/25/vmware-install-centos/">vmware安装centos</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。</p>
+<h2 id="第0步-安装vmware和下载centos"><a href="#第0步-安装vmware和下载centos" class="headerlink" title="第0步 安装vmware和下载centos"></a>第0步 安装vmware和下载centos</h2><p>下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。</p>
+<h2 id="第1步-创建centos虚拟机"><a href="#第1步-创建centos虚拟机" class="headerlink" title="第1步 创建centos虚拟机"></a>第1步 创建centos虚拟机</h2><p><img src="step1.png" alt=""></p>
+<p>选择Create a custom virtual machine</p>
+<p><img src="step2.png" alt=""></p>
+<p>选择对应的版本CentOS 64-bit</p>
+<p><img src="step3.png" alt=""></p>
+<p>选择Create a new virtual disk</p>
+<p><img src="step4.png" alt=""></p>
+<p>选择Customize Settings，然后选择Save.</p>
+<p>然后开始设置配置，主要如下：</p>
+<ul>
+<li>Processors &amp; Memory    (4core 8G)</li>
+<li>Hard Disk (80G)</li>
+<li>CD/DVD (IDE) (此处一定需要设置，将下载的iso加入配置中，并且需要连接DVD)</li>
+</ul>
+<p>然后开始安装，更改mini 安装模式，添加gnome桌面，然后进入正常的linux安装界面。之后一切就比较顺利。</p>
+<p>最后可能需要安装图形界面：<strong>yum groupinstall</strong> “GNOME Desktop”，重启进入root执行“init 5”</p>
+<p>新版系统需要改变设置。</p>
+<p>Please check System Preferences ==&gt;Security&amp;Privacy==&gt;Privacy==&gt;Accessibility, make sure you have added Fusion into the list.</p>
+<p>键盘切换：</p>
+<p>cmd + G ： 切到虚拟机</p>
+<p>cmd + control：切到mac系统</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/08/25/vmware-install-centos/" data-id="cjp6lna4x00143b9sz4o0msbl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -279,7 +291,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjp6llamg000q319s0w2h6whl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjp6lna4j000q3b9sfx0ufi9x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -369,7 +381,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjp6llalw0004319sfk7is40w" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjp6lna3w00033b9sanq604q2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -440,7 +452,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cjp6llalp0001319seqt5ohm6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cjp6lna3r00013b9su4c5bgvu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -485,7 +497,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cjp6llalu0003319sep0ocsnl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cjp6lna3y00043b9s1lmmqeay" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -543,7 +555,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cjp6llalz0005319smp9u47j2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cjp6lna4200083b9sk2wcwi7d" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -672,7 +684,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cjp6llamx0016319spkqqjsmy" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cjp6lna4z00163b9sodssm4jx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -751,7 +763,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cjp6llamp000w319sj1aqex0t" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cjp6lna4s000w3b9saiibin4j" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -811,10 +823,6 @@
       <ul>
         
           <li>
-            <a href="/2018/12/02/vmware-install-centos/">vmware-install-centos</a>
-          </li>
-        
-          <li>
             <a href="/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/">《银行估值与价值管理》读后感</a>
           </li>
         
@@ -828,6 +836,10 @@
         
           <li>
             <a href="/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/">《程序员修炼之道》读后感</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/28/long-distance-running/">长跑</a>
           </li>
         
       </ul>
