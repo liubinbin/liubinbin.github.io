@@ -3,14 +3,36 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2017 | bin</title>
+  <title>在macbook的os上直接安装hadoop&amp;hbase | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="bin">
-<meta property="og:url" content="http://yoursite.com/archives/2017/index.html">
+  <meta name="description" content="今天决定抛弃vmare+centos虚拟机的形式安装hadoop&amp;amp;hbase了，开始直接在macbook的os上安装hadoop&amp;amp;hbase。理由：
+
+需要配资源，如果安装在os x上会更加直接全面地利用机器的资源。
+两个系统之间倒来倒去不是一件高效的事情。
+今天发现这台macbook的大部分使用场景都是和工作有关，那就不如直接使用macbook了。
+
+预备现在安装的是hbase，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在macbook的os上直接安装hadoop&hbase">
+<meta property="og:url" content="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/index.html">
 <meta property="og:site_name" content="bin">
+<meta property="og:description" content="今天决定抛弃vmare+centos虚拟机的形式安装hadoop&amp;amp;hbase了，开始直接在macbook的os上安装hadoop&amp;amp;hbase。理由：
+
+需要配资源，如果安装在os x上会更加直接全面地利用机器的资源。
+两个系统之间倒来倒去不是一件高效的事情。
+今天发现这台macbook的大部分使用场景都是和工作有关，那就不如直接使用macbook了。
+
+预备现在安装的是hbase，">
+<meta property="og:updated_time" content="2018-12-02T08:49:24.320Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="bin">
+<meta name="twitter:title" content="在macbook的os上直接安装hadoop&hbase">
+<meta name="twitter:description" content="今天决定抛弃vmare+centos虚拟机的形式安装hadoop&amp;amp;hbase了，开始直接在macbook的os上安装hadoop&amp;amp;hbase。理由：
+
+需要配资源，如果安装在os x上会更加直接全面地利用机器的资源。
+两个系统之间倒来倒去不是一件高效的事情。
+今天发现这台macbook的大部分使用场景都是和工作有关，那就不如直接使用macbook了。
+
+预备现在安装的是hbase，">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -59,215 +81,71 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/12/10/impression-after-reading-optiona-B/" class="archive-article-date">
-  <time datetime="2017-12-10T09:08:16.000Z" itemprop="datePublished">Dec 10</time>
+        <section id="main"><article id="post-install-hadoop-and-hbase-in-mac" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/02/install-hadoop-and-hbase-in-mac/" class="article-date">
+  <time datetime="2018-12-02T08:37:26.000Z" itemprop="datePublished">2018-12-02</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/12/10/impression-after-reading-optiona-B/">《另一种选择》读后感</a>
+    <h1 class="article-title" itemprop="name">
+      在macbook的os上直接安装hadoop&amp;hbase
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/10/18/object-storage/" class="archive-article-date">
-  <time datetime="2017-10-18T15:08:33.000Z" itemprop="datePublished">Oct 18</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/10/18/object-storage/">对象存储</a>
-    </h1>
-  
+        <p>今天决定抛弃vmare+centos虚拟机的形式安装hadoop&amp;hbase了，开始直接在macbook的os上安装hadoop&amp;hbase。理由：</p>
+<ol>
+<li>需要配资源，如果安装在os x上会更加直接全面地利用机器的资源。</li>
+<li>两个系统之间倒来倒去不是一件高效的事情。</li>
+<li>今天发现这台macbook的大部分使用场景都是和工作有关，那就不如直接使用macbook了。</li>
+</ol>
+<h2 id="预备"><a href="#预备" class="headerlink" title="预备"></a>预备</h2><p>现在安装的是hbase，提前需要做的就是：</p>
+<ul>
+<li><p>给macbook安装jdk</p>
+</li>
+<li><p>在Sharing里打开远程登录，使机器能免密执行ssh localhost。</p>
+</li>
+<li><p>下载zookeeper-3.4.12.tar.gz， hadoop-3.1.1.tar.gz和hbase-2.1.1-bin.tar.gz。</p>
+</li>
+</ul>
+<h2 id="zookeeper安装"><a href="#zookeeper安装" class="headerlink" title="zookeeper安装"></a>zookeeper安装</h2><p>##hdfs安装</p>
+<h2 id="hbase安装"><a href="#hbase安装" class="headerlink" title="hbase安装"></a>hbase安装</h2><p>##集成验证</p>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/10/18/DFSOutputStream-analysis/" class="archive-article-date">
-  <time datetime="2017-10-18T14:59:00.000Z" itemprop="datePublished">Oct 18</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/10/18/DFSOutputStream-analysis/">DFSOutputStream分析</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/10/08/a-special-case-about-rwlock/" class="archive-article-date">
-  <time datetime="2017-10-08T12:31:28.000Z" itemprop="datePublished">Oct 8</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="cjp6nach3000cbd9syfynooa4" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/10/08/a-special-case-about-rwlock/">一个奇怪的rwlock锁卡住的case</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/08/25/docker-basics/" class="archive-article-date">
-  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">Aug 25</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/08/25/docker-basics/">最近使用docker的一些小记录</a>
-    </h1>
-  
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zk/">zk</a></li></ul>
 
-    </header>
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">《银行估值与价值管理》读后感</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/08/25/vmware-install-centos/" class="archive-article-date">
-  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">Aug 25</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/08/25/vmware-install-centos/">vmware安装centos</a>
-    </h1>
-  
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/08/25/some-thoughts/" class="archive-article-date">
-  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">Aug 25</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/08/25/some-thoughts/">最近感想</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/05/30/rit-in-HBase/" class="archive-article-date">
-  <time datetime="2017-05-30T12:08:15.000Z" itemprop="datePublished">May 30</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/30/rit-in-HBase/">rit in HBase</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/05/14/HFile-in-HBase/" class="archive-article-date">
-  <time datetime="2017-05-14T02:01:39.000Z" itemprop="datePublished">May 14</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/14/HFile-in-HBase/">HFile解读</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/05/09/HBase-compaction/" class="archive-article-date">
-  <time datetime="2017-05-09T15:44:59.000Z" itemprop="datePublished">May 9</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/09/HBase-compaction/">HBase compaction</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
-    <span class="page-number current">1</span><a class="page-number" href="/archives/2017/page/2/">2</a><a class="extend next" rel="next" href="/archives/2017/page/2/">__('next') &raquo;</a>
-  </nav>
 </section>
         
           <aside id="sidebar">
