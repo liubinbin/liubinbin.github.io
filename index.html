@@ -98,13 +98,35 @@
 <li><p>下载zookeeper-3.4.12.tar.gz， hadoop-3.1.1.tar.gz和hbase-2.1.1-bin.tar.gz。</p>
 </li>
 </ul>
-<h2 id="zookeeper安装"><a href="#zookeeper安装" class="headerlink" title="zookeeper安装"></a>zookeeper安装</h2><p>##hdfs安装</p>
-<h2 id="hbase安装"><a href="#hbase安装" class="headerlink" title="hbase安装"></a>hbase安装</h2><p>##集成验证</p>
+<h2 id="zookeeper安装"><a href="#zookeeper安装" class="headerlink" title="zookeeper安装"></a>zookeeper安装</h2><p>将zoo_sample.cfg拷贝一份为zoo.cfg，就可以通过zkServer.sh的命令来启动。</p>
+<p>然后可以通过zkCli.sh来对zk服务进行访问。</p>
+<p>##hdfs安装</p>
+<ol>
+<li>修改core-site.xml，hdfs-site.xml文件。</li>
+<li>hadoop namenode -format。</li>
+<li>通过sbin/start-dfs.sh启动服务。</li>
+</ol>
+<h2 id="hbase安装"><a href="#hbase安装" class="headerlink" title="hbase安装"></a>hbase安装</h2><p>几个坑：</p>
+<ol>
+<li><p>htrace-core-3.1.0-incubating.jar需要自己下载，并且hadoop中htrace-core4-4.0.1-incubating.jar是不行的。有不兼容的情况。</p>
+</li>
+<li><p>需要自己在配置文件中注定hbase.master.ipc.address，否则在mac中会报Can’t assign requested address 无法启动rpc，但是没有日志显示这个配置是啥。</p>
+  <property><br>​    <name>hbase.master.ipc.address</name><br>​    <value>localhost</value><br>  </property>
+
+</li>
+</ol>
+<p>##集成验证</p>
+<p>在hbase shell中创建一个表，写入一条数据，检索。</p>
+<ol>
+<li>create ‘test’, ‘cf1’</li>
+<li>put ‘test’, ‘key1’, ‘cf1:col1’ , ‘value’</li>
+<li>scan ‘test’</li>
+</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="cjp6nach3000cbd9syfynooa4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="cjp6wbwq9000hxi9sn5cvvucz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zk/">zk</a></li></ul>
@@ -177,7 +199,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="cjp6nach4000ebd9s3rclri90" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="cjp6wbwq6000fxi9s0zc5oyip" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bank/">bank</a></li></ul>
@@ -215,7 +237,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/09/two-important-things-realized-recently/" data-id="cjp6nachn0011bd9sk020383d" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/11/09/two-important-things-realized-recently/" data-id="cjp6wbwqq0016xi9ss7n68zsl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -269,7 +291,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/09/impression-after-reading-tap-dancing-to-work/" data-id="cjp6nach5000gbd9s45yvofjx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/11/09/impression-after-reading-tap-dancing-to-work/" data-id="cjp6wbwqd000nxi9sy1stf04u" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reading/">reading</a></li></ul>
@@ -317,7 +339,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/" data-id="cjp6nach7000ibd9sub27fl6p" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/" data-id="cjp6wbwq2000axi9s2hqq7joz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reading/">reading</a></li></ul>
@@ -361,7 +383,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/28/long-distance-running/" data-id="cjp6nachb000mbd9swpsatjbo" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/28/long-distance-running/" data-id="cjp6wbwqf000pxi9s4yuskpud" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -403,7 +425,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/paper-reading/" data-id="cjp6nachf000qbd9svo7x2zw4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/03/04/paper-reading/" data-id="cjp6wbwqg000rxi9s56iytk2t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/paper/">paper</a></li></ul>
@@ -450,7 +472,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/12/10/impression-after-reading-optiona-B/" data-id="cjp6nacha000kbd9sznr2ysrs" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/12/10/impression-after-reading-optiona-B/" data-id="cjp6wbwqa000jxi9su1id71m7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life-read/">life,read</a></li></ul>
@@ -489,7 +511,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/object-storage/" data-id="cjp6nache000obd9shz6j84kn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/18/object-storage/" data-id="cjp6wbwqc000lxi9s6anle1lo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/minio-swift/">minio,swift</a></li></ul>
@@ -550,7 +572,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cjp6nacgt0004bd9s6tkitxpz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cjp6wbwpm0000xi9sr1f5kp9r" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>

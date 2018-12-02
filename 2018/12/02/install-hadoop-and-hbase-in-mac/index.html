@@ -23,7 +23,7 @@
 今天发现这台macbook的大部分使用场景都是和工作有关，那就不如直接使用macbook了。
 
 预备现在安装的是hbase，">
-<meta property="og:updated_time" content="2018-12-02T08:49:24.320Z">
+<meta property="og:updated_time" content="2018-12-02T13:02:16.159Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在macbook的os上直接安装hadoop&hbase">
 <meta name="twitter:description" content="今天决定抛弃vmare+centos虚拟机的形式安装hadoop&amp;amp;hbase了，开始直接在macbook的os上安装hadoop&amp;amp;hbase。理由：
@@ -118,13 +118,35 @@
 <li><p>下载zookeeper-3.4.12.tar.gz， hadoop-3.1.1.tar.gz和hbase-2.1.1-bin.tar.gz。</p>
 </li>
 </ul>
-<h2 id="zookeeper安装"><a href="#zookeeper安装" class="headerlink" title="zookeeper安装"></a>zookeeper安装</h2><p>##hdfs安装</p>
-<h2 id="hbase安装"><a href="#hbase安装" class="headerlink" title="hbase安装"></a>hbase安装</h2><p>##集成验证</p>
+<h2 id="zookeeper安装"><a href="#zookeeper安装" class="headerlink" title="zookeeper安装"></a>zookeeper安装</h2><p>将zoo_sample.cfg拷贝一份为zoo.cfg，就可以通过zkServer.sh的命令来启动。</p>
+<p>然后可以通过zkCli.sh来对zk服务进行访问。</p>
+<p>##hdfs安装</p>
+<ol>
+<li>修改core-site.xml，hdfs-site.xml文件。</li>
+<li>hadoop namenode -format。</li>
+<li>通过sbin/start-dfs.sh启动服务。</li>
+</ol>
+<h2 id="hbase安装"><a href="#hbase安装" class="headerlink" title="hbase安装"></a>hbase安装</h2><p>几个坑：</p>
+<ol>
+<li><p>htrace-core-3.1.0-incubating.jar需要自己下载，并且hadoop中htrace-core4-4.0.1-incubating.jar是不行的。有不兼容的情况。</p>
+</li>
+<li><p>需要自己在配置文件中注定hbase.master.ipc.address，否则在mac中会报Can’t assign requested address 无法启动rpc，但是没有日志显示这个配置是啥。</p>
+  <property><br>​    <name>hbase.master.ipc.address</name><br>​    <value>localhost</value><br>  </property>
+
+</li>
+</ol>
+<p>##集成验证</p>
+<p>在hbase shell中创建一个表，写入一条数据，检索。</p>
+<ol>
+<li>create ‘test’, ‘cf1’</li>
+<li>put ‘test’, ‘key1’, ‘cf1:col1’ , ‘value’</li>
+<li>scan ‘test’</li>
+</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="cjp6nach3000cbd9syfynooa4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="cjp6wbwq9000hxi9sn5cvvucz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zk/">zk</a></li></ul>
