@@ -3,33 +3,36 @@
 <head>
   <meta charset="utf-8">
   
-  <title>balance in hdfs | bin</title>
+  <title>hdfs balance的一些解读和问题记录 | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="hdfs中的balance的一些解读和问题记录balance过程的解读
+  <meta name="description" content="##balance过程的解读
+
 准备工作获取的namenode
 
 调用Balancer.run L1422，开始迭代一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）
 2.1 ReturnStatus r = b.run L1352
-​    2.1.1 initNode获取需要移动的字节数bytesLef">
+​    2.1.1 initNode获取需要移动的字节数bytesLeftToMove​">
 <meta property="og:type" content="article">
-<meta property="og:title" content="balance in hdfs">
+<meta property="og:title" content="hdfs balance的一些解读和问题记录">
 <meta property="og:url" content="http://yoursite.com/2017/04/26/balance-in-hdfs/index.html">
 <meta property="og:site_name" content="bin">
-<meta property="og:description" content="hdfs中的balance的一些解读和问题记录balance过程的解读
+<meta property="og:description" content="##balance过程的解读
+
 准备工作获取的namenode
 
 调用Balancer.run L1422，开始迭代一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）
 2.1 ReturnStatus r = b.run L1352
-​    2.1.1 initNode获取需要移动的字节数bytesLef">
-<meta property="og:updated_time" content="2017-06-05T14:39:42.000Z">
+​    2.1.1 initNode获取需要移动的字节数bytesLeftToMove​">
+<meta property="og:updated_time" content="2018-12-02T07:32:56.749Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="balance in hdfs">
-<meta name="twitter:description" content="hdfs中的balance的一些解读和问题记录balance过程的解读
+<meta name="twitter:title" content="hdfs balance的一些解读和问题记录">
+<meta name="twitter:description" content="##balance过程的解读
+
 准备工作获取的namenode
 
 调用Balancer.run L1422，开始迭代一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）
 2.1 ReturnStatus r = b.run L1352
-​    2.1.1 initNode获取需要移动的字节数bytesLef">
+​    2.1.1 initNode获取需要移动的字节数bytesLeftToMove​">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -92,7 +95,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      balance in hdfs
+      hdfs balance的一些解读和问题记录
     </h1>
   
 
@@ -100,7 +103,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="hdfs中的balance的一些解读和问题记录"><a href="#hdfs中的balance的一些解读和问题记录" class="headerlink" title="hdfs中的balance的一些解读和问题记录"></a>hdfs中的balance的一些解读和问题记录</h1><h2 id="balance过程的解读"><a href="#balance过程的解读" class="headerlink" title="balance过程的解读"></a>balance过程的解读</h2><ol>
+        <p>##balance过程的解读</p>
+<ol>
 <li><p>准备工作<br>获取的namenode</p>
 </li>
 <li><p>调用Balancer.run L1422，开始迭代<br>一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）</p>
@@ -123,7 +127,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cjp6kco6f0008039sarka91oi" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cjp6kwcte00090q9sqiskliim" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -138,7 +142,7 @@
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          HBase trap
+          HBase的一些坑
         
       </div>
     </a>
@@ -184,7 +188,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -205,15 +209,15 @@
           </li>
         
           <li>
-            <a href="/2018/11/09/impression-after-reading-tap-dancing-to-work/">impression-after-reading-tap-dancing-to-work</a>
+            <a href="/2018/11/09/impression-after-reading-tap-dancing-to-work/">《跳着踢踏舞去上班》读后感</a>
           </li>
         
           <li>
-            <a href="/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/">impression-after-reading-new-programmer&#39;s-survival-manual</a>
+            <a href="/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/">《程序员修炼之道》读后感</a>
           </li>
         
           <li>
-            <a href="/2018/10/28/long-distance-running/">long-distance-running</a>
+            <a href="/2018/10/28/long-distance-running/">长跑</a>
           </li>
         
       </ul>

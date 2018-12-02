@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>HFile in HBase | bin</title>
+  <title>HFile解读 | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="HFile的一些记录本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
-首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile">
+  <meta name="description" content="本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
+首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile的元数据。对于HFi">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HFile in HBase">
+<meta property="og:title" content="HFile解读">
 <meta property="og:url" content="http://yoursite.com/2017/05/14/HFile-in-HBase/index.html">
 <meta property="og:site_name" content="bin">
-<meta property="og:description" content="HFile的一些记录本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
-首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile">
-<meta property="og:updated_time" content="2017-06-05T14:34:49.000Z">
+<meta property="og:description" content="本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
+首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile的元数据。对于HFi">
+<meta property="og:updated_time" content="2018-12-02T07:37:53.793Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="HFile in HBase">
-<meta name="twitter:description" content="HFile的一些记录本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
-首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile">
+<meta name="twitter:title" content="HFile解读">
+<meta name="twitter:description" content="本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。
+首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile的元数据。对于HFi">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -80,7 +80,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      HFile in HBase
+      HFile解读
     </h1>
   
 
@@ -88,7 +88,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="HFile的一些记录"><a href="#HFile的一些记录" class="headerlink" title="HFile的一些记录"></a>HFile的一些记录</h1><p>本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。</p>
+        <p>本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。</p>
 <p>首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile的元数据。对于HFile，我个人觉得主要把握好几个问题。</p>
 <ol>
 <li>block的组织</li>
@@ -144,7 +144,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjp6kco6k000c039s4f1r3kv1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjp6kwctb00050q9s3ii49qyj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -155,11 +155,11 @@
     
 <nav id="article-nav">
   
-    <a href="/2017/05/21/anniverary-of-zju/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2017/05/30/rit-in-HBase/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          anniverary of zju
+          rit in HBase
         
       </div>
     </a>
@@ -205,7 +205,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -226,15 +226,15 @@
           </li>
         
           <li>
-            <a href="/2018/11/09/impression-after-reading-tap-dancing-to-work/">impression-after-reading-tap-dancing-to-work</a>
+            <a href="/2018/11/09/impression-after-reading-tap-dancing-to-work/">《跳着踢踏舞去上班》读后感</a>
           </li>
         
           <li>
-            <a href="/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/">impression-after-reading-new-programmer&#39;s-survival-manual</a>
+            <a href="/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/">《程序员修炼之道》读后感</a>
           </li>
         
           <li>
-            <a href="/2018/10/28/long-distance-running/">long-distance-running</a>
+            <a href="/2018/10/28/long-distance-running/">长跑</a>
           </li>
         
       </ul>

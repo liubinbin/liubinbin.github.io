@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>DFSOutputStream analysis | bin</title>
+  <title>DFSOutputStream分析 | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="private void waitAndQueueCurrentPacket()调用者：
 123private void flushOrSync(boolean isSync, EnumSet&amp;lt;SyncFlag&amp;gt; syncFlags)protected synchronized void writeChunk(byte[] b, int offset, int len, byte[]">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DFSOutputStream analysis">
+<meta property="og:title" content="DFSOutputStream分析">
 <meta property="og:url" content="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/index.html">
 <meta property="og:site_name" content="bin">
 <meta property="og:description" content="private void waitAndQueueCurrentPacket()调用者：
 123private void flushOrSync(boolean isSync, EnumSet&amp;lt;SyncFlag&amp;gt; syncFlags)protected synchronized void writeChunk(byte[] b, int offset, int len, byte[]">
-<meta property="og:updated_time" content="2017-10-18T15:07:15.000Z">
+<meta property="og:updated_time" content="2018-12-02T07:33:36.056Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DFSOutputStream analysis">
+<meta name="twitter:title" content="DFSOutputStream分析">
 <meta name="twitter:description" content="private void waitAndQueueCurrentPacket()调用者：
 123private void flushOrSync(boolean isSync, EnumSet&amp;lt;SyncFlag&amp;gt; syncFlags)protected synchronized void writeChunk(byte[] b, int offset, int len, byte[]">
   
@@ -80,7 +80,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      DFSOutputStream analysis
+      DFSOutputStream分析
     </h1>
   
 
@@ -100,11 +100,11 @@
 </ol>
 <p>其中一个处理时添加chunk到缓存中。一下具体处理为判断是否可以添加入发送给datanode的缓存中。lastQueuedSeqno保存了最后一个需要处理的序号。<br>/**</p>
 <ul>
-<li><p>如果没有足够空间话就等待，然后<br>*/<br>​</p>
+<li><p>如果没有足够空间话就等待，然后<br> */<br> ​</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">waitAndQueueCurrentPacket</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">  <span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line"> 	<span class="keyword">try</span> &#123;</div><div class="line"> 		<span class="comment">// If queue is full, then wait till we have enough space</span></div><div class="line"> 		<span class="keyword">while</span> (!closed &amp;&amp; dataQueue.size() + ackQueue.size()  &gt; MAX_PACKETS) &#123;</div><div class="line">   			<span class="keyword">try</span> &#123;</div><div class="line"> 				dataQueue.wait();</div><div class="line">      		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">      			Thread.currentThread().interrupt();</div><div class="line"> 				<span class="keyword">break</span>;</div><div class="line">        	&#125;</div><div class="line"> 	&#125;</div><div class="line"> 	checkClosed();</div><div class="line"> 	queueCurrentPacket();</div><div class="line"> 	&#125; <span class="keyword">catch</span> (ClosedChannelException e) &#123;</div><div class="line">	...</div><div class="line"> 	&#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>/**</p>
 </li>
-<li><p>添加dataQueue，设置lastQueuedSeqno<br>*/<br>​</p>
+<li><p>添加dataQueue，设置lastQueuedSeqno<br> */<br> ​</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">queueCurrentPacket</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">		<span class="keyword">if</span> (currentPacket == <span class="keyword">null</span>) <span class="keyword">return</span>;</div><div class="line">		dataQueue.addLast(currentPacket);</div><div class="line">		lastQueuedSeqno = currentPacket.seqno;  <span class="comment">//在waitForAckedSeqno方法使用，判断是否所有数据都被写入并接受到ack了。</span></div><div class="line">		<span class="keyword">if</span> (DFSClient.LOG.isDebugEnabled()) &#123;</div><div class="line">			DFSClient.LOG.debug(<span class="string">"Queued packet "</span> + currentPacket.seqno);</div><div class="line">		&#125;</div><div class="line">		currentPacket = <span class="keyword">null</span>;</div><div class="line">		dataQueue.notifyAll();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>​</p>
 </li>
@@ -115,7 +115,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cjp6kco650001039spa2u1zkh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cjp6kwcsx00000q9s604qfojg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -130,7 +130,7 @@
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          object storage
+          对象存储
         
       </div>
     </a>
@@ -176,7 +176,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -197,15 +197,15 @@
           </li>
         
           <li>
-            <a href="/2018/11/09/impression-after-reading-tap-dancing-to-work/">impression-after-reading-tap-dancing-to-work</a>
+            <a href="/2018/11/09/impression-after-reading-tap-dancing-to-work/">《跳着踢踏舞去上班》读后感</a>
           </li>
         
           <li>
-            <a href="/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/">impression-after-reading-new-programmer&#39;s-survival-manual</a>
+            <a href="/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/">《程序员修炼之道》读后感</a>
           </li>
         
           <li>
-            <a href="/2018/10/28/long-distance-running/">long-distance-running</a>
+            <a href="/2018/10/28/long-distance-running/">长跑</a>
           </li>
         
       </ul>
