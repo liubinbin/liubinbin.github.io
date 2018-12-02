@@ -3,30 +3,33 @@
 <head>
   <meta charset="utf-8">
   
-  <title>a special case about rwlock | bin</title>
+  <title>一个奇怪的rwlock锁卡住的case | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一个奇怪的锁卡住的case##遇到一个case
-一个线程长时间持有的rwlock的读锁，同时有另外的一个线程想要去获取写锁。在这种情况下，别的线程想要去获取读锁有可能回被卡住。
-看到栈就是一个线程获取了读锁，阻塞了别的获取别的线程获取读锁，这时候就尴尬了。
-这种情况当时是发生在那个获取读锁由于节点宕机，导致连接出现问题，而连接超时时间又设置了一个很长的值。造成了此悲剧。
-例子代码地址：https:">
+  <meta name="description" content="遇到一个case，有关于读写锁。原因路径如下：
+
+线上有一个datanode节点宕机，导致与此节点的连接出现问题。
+有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。
+由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。
+这时候出现了其他线程的读锁也无法获取到">
 <meta property="og:type" content="article">
-<meta property="og:title" content="a special case about rwlock">
+<meta property="og:title" content="一个奇怪的rwlock锁卡住的case">
 <meta property="og:url" content="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/index.html">
 <meta property="og:site_name" content="bin">
-<meta property="og:description" content="一个奇怪的锁卡住的case##遇到一个case
-一个线程长时间持有的rwlock的读锁，同时有另外的一个线程想要去获取写锁。在这种情况下，别的线程想要去获取读锁有可能回被卡住。
-看到栈就是一个线程获取了读锁，阻塞了别的获取别的线程获取读锁，这时候就尴尬了。
-这种情况当时是发生在那个获取读锁由于节点宕机，导致连接出现问题，而连接超时时间又设置了一个很长的值。造成了此悲剧。
-例子代码地址：https:">
-<meta property="og:updated_time" content="2017-10-08T15:29:14.000Z">
+<meta property="og:description" content="遇到一个case，有关于读写锁。原因路径如下：
+
+线上有一个datanode节点宕机，导致与此节点的连接出现问题。
+有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。
+由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。
+这时候出现了其他线程的读锁也无法获取到">
+<meta property="og:updated_time" content="2018-12-02T07:27:30.319Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="a special case about rwlock">
-<meta name="twitter:description" content="一个奇怪的锁卡住的case##遇到一个case
-一个线程长时间持有的rwlock的读锁，同时有另外的一个线程想要去获取写锁。在这种情况下，别的线程想要去获取读锁有可能回被卡住。
-看到栈就是一个线程获取了读锁，阻塞了别的获取别的线程获取读锁，这时候就尴尬了。
-这种情况当时是发生在那个获取读锁由于节点宕机，导致连接出现问题，而连接超时时间又设置了一个很长的值。造成了此悲剧。
-例子代码地址：https:">
+<meta name="twitter:title" content="一个奇怪的rwlock锁卡住的case">
+<meta name="twitter:description" content="遇到一个case，有关于读写锁。原因路径如下：
+
+线上有一个datanode节点宕机，导致与此节点的连接出现问题。
+有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。
+由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。
+这时候出现了其他线程的读锁也无法获取到">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -64,9 +67,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -89,7 +92,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      a special case about rwlock
+      一个奇怪的rwlock锁卡住的case
     </h1>
   
 
@@ -97,18 +100,22 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="一个奇怪的锁卡住的case"><a href="#一个奇怪的锁卡住的case" class="headerlink" title="一个奇怪的锁卡住的case"></a>一个奇怪的锁卡住的case</h1><p>##遇到一个case</p>
-<p>一个线程长时间持有的rwlock的读锁，同时有另外的一个线程想要去获取写锁。在这种情况下，别的线程想要去获取读锁有可能回被卡住。</p>
-<p>看到栈就是一个线程获取了读锁，阻塞了别的获取别的线程获取读锁，这时候就尴尬了。</p>
-<p>这种情况当时是发生在那个获取读锁由于节点宕机，导致连接出现问题，而连接超时时间又设置了一个很长的值。造成了此悲剧。</p>
-<p>例子代码地址：<a href="https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock" target="_blank" rel="external">https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock</a></p>
+        <p>遇到一个case，有关于读写锁。原因路径如下：</p>
+<ol>
+<li>线上有一个datanode节点宕机，导致与此节点的连接出现问题。</li>
+<li>有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。</li>
+<li>由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。</li>
+<li>这时候出现了其他线程的读锁也无法获取到。</li>
+</ol>
+<p>从线程栈看，就是一个线程获取了读锁，阻塞了别的线程获取读锁和写锁。</p>
+<p>还原现场例子代码地址：<a href="https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock" target="_blank" rel="external">https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock</a></p>
 <p>原理猜测：理论上来说，对于的读写锁而言，读锁之间不应该相互阻塞。但是在一个情况防止饿死，将写锁的优先级提高到了读锁之前。这时候读锁就尴尬了。</p>
 <p>更加具体理解需要看源码，以后再分享。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">看看ReentrantReadWriteLock，注意构造函数里可以传一个布尔值。</div></pre></td></tr></table></figure>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjp6jxovl0008zs9s8mq6requ" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjp6kco6c0004039s5mbwr8nf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
@@ -120,7 +127,7 @@
 <nav id="article-nav">
   
     <a href="/2017/10/18/DFSOutputStream-analysis/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
+      <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
           DFSOutputStream analysis
@@ -130,7 +137,7 @@
   
   
     <a href="/2017/10/08/national-day-holiday-in-2017/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">national day holiday in 2017</div>
     </a>
   
@@ -148,7 +155,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li></ul>
     </div>
@@ -158,7 +165,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
       <a href="/tags/bank/" style="font-size: 10px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a>
     </div>
@@ -177,7 +184,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
         
@@ -214,7 +221,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 liu binbin<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
