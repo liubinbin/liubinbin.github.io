@@ -61,6 +61,111 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-hbase-src-series" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/30/hbase-src-series/" class="article-date">
+  <time datetime="2018-12-30T15:47:20.000Z" itemprop="datePublished">2018-12-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/30/hbase-src-series/">hbase-src-series</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="HBase源码系列"><a href="#HBase源码系列" class="headerlink" title="HBase源码系列"></a>HBase源码系列</h1><p>在2018年即将结束之际，想开一个系列，名字为HBase源码系列。</p>
+<p>先说一下对HBase的感觉，首先，一个很重要的原因，我本人对数据非常感兴趣。其次，个人觉得HBase是个非常重要的项目，在接下来的几年也会保持下去。最后，HBase是个可以学习的不错项目，并且我有使用和维护经验。</p>
+<ol>
+<li>wal</li>
+<li>To be continued</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/30/hbase-src-series/" data-id="cjqb2rm86000azh9snn251g8c" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hbase-src-wal" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/30/hbase-src-wal/" class="article-date">
+  <time datetime="2018-12-30T15:45:33.000Z" itemprop="datePublished">2018-12-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/30/hbase-src-wal/">hbase-src-wal</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="HBase源码系列之wal"><a href="#HBase源码系列之wal" class="headerlink" title="HBase源码系列之wal"></a>HBase源码系列之wal</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div></pre></td><td class="code"><pre><div class="line">doMiniBatchMutate</div><div class="line">	sync(txid, durability);</div><div class="line">	</div><div class="line">  // Sync all known transactions</div><div class="line">  private void publishSyncThenBlockOnCompletion(TraceScope scope, boolean forceSync) throws IOException &#123;</div><div class="line">    SyncFuture syncFuture = publishSyncOnRingBuffer(forceSync);</div><div class="line">    blockOnSync(syncFuture);</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  </div><div class="line">  syncFuture.get(walSyncTimeoutNs);</div><div class="line">  </div><div class="line">  synchronized long get(long timeoutNs) throws InterruptedException,</div><div class="line">      ExecutionException, TimeoutIOException &#123;</div><div class="line">    final long done = System.nanoTime() + timeoutNs;</div><div class="line">    while (!isDone()) &#123;</div><div class="line">      wait(1000);</div><div class="line">      if (System.nanoTime() &gt;= done) &#123;</div><div class="line">        throw new TimeoutIOException(</div><div class="line">            &quot;Failed to get sync result after &quot; + TimeUnit.NANOSECONDS.toMillis(timeoutNs)</div><div class="line">                + &quot; ms for txid=&quot; + this.txid + &quot;, WAL system stuck?&quot;);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    if (this.throwable != null) &#123;</div><div class="line">      throw new ExecutionException(this.throwable);</div><div class="line">    &#125;</div><div class="line">    return this.doneTxid;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  synchronized boolean isDone() &#123;</div><div class="line">    return this.doneTxid != NOT_DONE;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  以上为的handler卡住的情况，需要如下done的去修改doneTxid</div><div class="line">  </div><div class="line">  protected SyncFuture publishSyncOnRingBuffer(long sequence, boolean forceSync) &#123;</div><div class="line">    // here we use ring buffer sequence as transaction id</div><div class="line">    SyncFuture syncFuture = getSyncFuture(sequence).setForceSync(forceSync);</div><div class="line">    try &#123;</div><div class="line">      RingBufferTruck truck = this.disruptor.getRingBuffer().get(sequence);</div><div class="line">      truck.load(syncFuture);</div><div class="line">    &#125; finally &#123;</div><div class="line">      this.disruptor.getRingBuffer().publish(sequence);</div><div class="line">    &#125;</div><div class="line">    return syncFuture;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">    synchronized boolean done(final long txid, final Throwable t) &#123;</div><div class="line">    if (isDone()) &#123;</div><div class="line">      return false;</div><div class="line">    &#125;</div><div class="line">    this.throwable = t;</div><div class="line">    if (txid &lt; this.txid) &#123;</div><div class="line">      // Something badly wrong.</div><div class="line">      if (throwable == null) &#123;</div><div class="line">        this.throwable =</div><div class="line">            new IllegalStateException(&quot;done txid=&quot; + txid + &quot;, my txid=&quot; + this.txid);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    // Mark done.</div><div class="line">    this.doneTxid = txid;</div><div class="line">    // Wake up waiting threads.</div><div class="line">    notify();</div><div class="line">    return true;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  </div><div class="line"> 调用的以上的done函数，需要。</div><div class="line">     private int releaseSyncFuture(final SyncFuture syncFuture, final long currentSequence,</div><div class="line">        final Throwable t) &#123;</div><div class="line">      if (!syncFuture.done(currentSequence, t)) &#123;</div><div class="line">        throw new IllegalStateException();</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      // This function releases one sync future only.</div><div class="line">      return 1;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    syncRunner中调用</div><div class="line">    while (true) &#123;排除一些多余向前进</div><div class="line">     writer.sync(useHsync);</div><div class="line">     syncCount += releaseSyncFuture(takeSyncFuture, currentHighestSyncedSequence, null);</div><div class="line">     </div><div class="line">    </div><div class="line">    ringbuffer的onEvent 里调用，append(entry);将entry加入append入writer里。然后将sequence的加入syncRunner中，如下函数</div><div class="line">    this.syncRunners[this.syncRunnerIndex].offer(sequence, this.syncFutures,</div><div class="line">              this.syncFuturesCount.get());</div><div class="line">              </div><div class="line">    多个syncfutures通过highestSyncedTxid同步已经写入txid。</div><div class="line">    </div><div class="line">    </div><div class="line">    this.syncFutures.take() 都会对应一次releaseSyncFuture。</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">if (truck.type() == RingBufferTruck.Type.SYNC) &#123;</div><div class="line">  this.syncFutures[this.syncFuturesCount.getAndIncrement()] = truck.unloadSync();</div><div class="line">  // Force flush of syncs if we are carrying a full complement of syncFutures.</div><div class="line">  if (this.syncFuturesCount.get() == this.syncFutures.length) &#123;</div><div class="line">    endOfBatch = true;</div><div class="line">  &#125;</div><div class="line">&#125; else if (truck.type() == RingBufferTruck.Type.APPEND) &#123;</div></pre></td></tr></table></figure>
+<p>ringbuffer传递内容包括的sync标志（主要用于传递SyncFuture）和数据。分开可以用于控制。</p>
+<p>主流程：</p>
+<ol>
+<li>handler将entry和txid写入disruptor，然后通过sync函数等待，通过一个threadlocal的设置了txid的SyncFuture，调用get方法阻塞。</li>
+<li>把SyncFuture和Sync标志写入到disruptor中。</li>
+<li>在disruptor的Handler的onEvent里：<ol>
+<li>将entry给append到writer里。</li>
+<li>设置SyncFuture，用于传递。</li>
+</ol>
+</li>
+<li>给syncRunners传递带txid的SyncFuture</li>
+<li>SyncRunner会在while里不停的跑，<ol>
+<li>releaseSyncFuture已经sync过的数据（可能在别的syncRunner）</li>
+<li>sync数据，然后releaseSyncFuture</li>
+</ol>
+</li>
+</ol>
+<p>此处需要一张图</p>
+<p>思考：syncRunner为多个，大概是为了隔离notifier和sync，两种操作不要在一起，最终可以减轻同步代价。有点像分段锁。</p>
+<p>亮点：</p>
+<p>1. </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/30/hbase-src-wal/" data-id="cjqb2rm8k000mzh9sntd0qy9p" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-hadoop-hbase-mvn-cmd" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/12/30/hadoop-hbase-mvn-cmd/" class="article-date">
@@ -95,7 +200,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="cjqb1yt5f000ixm9sdthe0dp3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="cjqb2rm8h000hzh9smjo4dv8s" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mvn/">mvn</a></li></ul>
@@ -147,7 +252,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/2018-year-end-summary/" data-id="cjqb1yt540008xm9sxnec0ikk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/2018-year-end-summary/" data-id="cjqb2rm7o0000zh9s6m28mvh2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/summary/">summary</a></li></ul>
@@ -191,7 +296,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/14/ability-in-profession/" data-id="cjqb1yt520005xm9syeuceo0g" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/14/ability-in-profession/" data-id="cjqb2rm820007zh9sddce3w2q" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ability/">ability</a></li></ul>
@@ -229,7 +334,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/02/paldb-analysis/" data-id="cjqb1yt5t000vxm9s90y70t62" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/02/paldb-analysis/" data-id="cjqb2rm8s0012zh9s0z25havb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src/">src</a></li></ul>
@@ -306,7 +411,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="cjqb1yt5o000rxm9skp3jayot" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="cjqb2rm8p000wzh9s82ldsfyr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zk/">zk</a></li></ul>
@@ -379,7 +484,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="cjqb1yt5d000gxm9sx8mjoeco" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="cjqb2rm8i000kzh9sk1vtst2b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bank/">bank</a></li></ul>
@@ -417,7 +522,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/09/two-important-things-realized-recently/" data-id="cjqb1yt6b001kxm9sf61z6a1e" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/11/09/two-important-things-realized-recently/" data-id="cjqb2rm90001azh9shuerby9l" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -471,102 +576,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/09/impression-after-reading-tap-dancing-to-work/" data-id="cjqb1yt5n000pxm9szeoic73m" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/11/09/impression-after-reading-tap-dancing-to-work/" data-id="cjqb2rm8o000uzh9sssrk29x6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reading/">reading</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-impression-after-reading-new-programmer-s-survival-manual" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/" class="article-date">
-  <time datetime="2018-11-03T02:48:55.000Z" itemprop="datePublished">2018-11-03</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/">《程序员修炼之道》读后感</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>此书总整体上来说是本值得读的书。</p>
-<p>此书分为编程生产，整理工具，自我管理，团队协作，走进公司，留意你的企业和改善七个章节。具体编码部分并不占本书最大篇幅，相反，本书用了很大篇幅写了程序员绝大部分时间不会注意的内容，比如怎么去解决人和人之间的问题，给人的性格分类等绝大部分程序员根本瞧不起的事情。</p>
-<p>离开学校四年，确实感觉代码只是我们工作的一小部分内容。我们需要去读很多软件工程，与人交流，其他行业的专业知识。这些才是我们区别单纯编码人员的重点。</p>
-<p>以下是一些读此书时书中觉得不错的语句，特此记录一下。</p>
-<ul>
-<li>当把观点从“它太烂了”转变成“要是。。。它岂不是很酷”的时候，你便从一种失败主义者的思维变成了一种创新性的思维方式。– 我们遇到觉得很烂的事情，去把它变酷绝对是件酷的事情。</li>
-<li>真正的艺术家能让产品上市。 – 所有我们很好的想法，说辞等都比不上一个产品。产品才是实际的，有说服力的。产品可能是个app，可能是段代码，可能是个硬件产品，也可能是实际的投资决策。</li>
-<li>一种是从市场获取信息（数据分析等）发现机会，另一种是一个想法去找市场。</li>
-</ul>
-<p>此书也许未来可以再翻看一次。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/" data-id="cjqb1yt5j000nxm9sq0byiv2j" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reading/">reading</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-long-distance-running" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/28/long-distance-running/" class="article-date">
-  <time datetime="2018-10-28T13:00:52.000Z" itemprop="datePublished">2018-10-28</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/28/long-distance-running/">长跑</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近两周跑了四次左右的八公里或十公里，需要记录一下感受。</p>
-<ul>
-<li>肯定是有助于减肥，而且随着最近跑量的增加，感觉在6分钟配速跑五公里也没这么累，跑八公里的时候也没以前觉得累，不是一直跑五公里，选几次跑到八公里和十公里是个好的选择。</li>
-<li>跑步过程中会有一些的不好的感受，比如孤独，疼痛。但是跑了几次之后，现在感觉长跑的过程和其他很多东西很像，比如解决一个问题，需要深入理解问题，中间可能会有烦躁，有迷惘，但是坚持到最后得到的满足感是足够强烈。比如买股票，最近证券市场行情不太好，能理性的看待目前的状态并且不随大众恐慌性的操作账户，确实内心会承受一些煎熬，这种煎熬相当的痛苦，不过现在的策略就是少去看股票账户，专注到工作就好了，心态就会好很多。</li>
-<li>很多大佬有长跑的习惯，我现在感觉到我们在面对困难时都需要承受一些的不好的感受，甚至到能让你放弃的境界。我们可能没办法一直让自己经历这种面对困难的痛苦，但是我们可以在习惯中加入长跑等运动，在此过程中让自己能比较频繁的面对这种痛苦的感受，也许在面对生活中真正的痛苦的时候会更加的淡定和从容。从这个角度看，长跑不是为加入习惯列表好的选项。</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/28/long-distance-running/" data-id="cjqb1yt5s000uxm9sd1euan8u" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
 
     </footer>
   </div>
@@ -623,6 +636,14 @@
       <ul>
         
           <li>
+            <a href="/2018/12/30/hbase-src-series/">hbase-src-series</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/30/hbase-src-wal/">hbase-src-wal</a>
+          </li>
+        
+          <li>
             <a href="/2018/12/30/hadoop-hbase-mvn-cmd/">hadoop-hbase-mvn-cmd</a>
           </li>
         
@@ -632,14 +653,6 @@
         
           <li>
             <a href="/2018/12/14/ability-in-profession/">ability-in-profession</a>
-          </li>
-        
-          <li>
-            <a href="/2018/12/02/paldb-analysis/">paldb解读</a>
-          </li>
-        
-          <li>
-            <a href="/2018/12/02/install-hadoop-and-hbase-in-mac/">在macbook的os上直接安装hadoop&amp;hbase</a>
           </li>
         
       </ul>
