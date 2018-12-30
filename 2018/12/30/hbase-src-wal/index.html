@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>hbase-src-wal | bin</title>
+  <title>HBase源码系列之wal | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="HBase源码系列之wal1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192doMiniBatchM">
+  <meta name="description" content="1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192doMiniBatchMutate	sync(tx">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hbase-src-wal">
+<meta property="og:title" content="HBase源码系列之wal">
 <meta property="og:url" content="http://yoursite.com/2018/12/30/hbase-src-wal/index.html">
 <meta property="og:site_name" content="bin">
-<meta property="og:description" content="HBase源码系列之wal1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192doMiniBatchM">
-<meta property="og:updated_time" content="2018-12-30T15:54:53.029Z">
+<meta property="og:description" content="1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192doMiniBatchMutate	sync(tx">
+<meta property="og:updated_time" content="2018-12-30T16:08:11.999Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="hbase-src-wal">
-<meta name="twitter:description" content="HBase源码系列之wal1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192doMiniBatchM">
+<meta name="twitter:title" content="HBase源码系列之wal">
+<meta name="twitter:description" content="1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192doMiniBatchMutate	sync(tx">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -52,9 +52,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -77,7 +77,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      hbase-src-wal
+      HBase源码系列之wal
     </h1>
   
 
@@ -85,7 +85,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="HBase源码系列之wal"><a href="#HBase源码系列之wal" class="headerlink" title="HBase源码系列之wal"></a>HBase源码系列之wal</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div></pre></td><td class="code"><pre><div class="line">doMiniBatchMutate</div><div class="line">	sync(txid, durability);</div><div class="line">	</div><div class="line">  // Sync all known transactions</div><div class="line">  private void publishSyncThenBlockOnCompletion(TraceScope scope, boolean forceSync) throws IOException &#123;</div><div class="line">    SyncFuture syncFuture = publishSyncOnRingBuffer(forceSync);</div><div class="line">    blockOnSync(syncFuture);</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  </div><div class="line">  syncFuture.get(walSyncTimeoutNs);</div><div class="line">  </div><div class="line">  synchronized long get(long timeoutNs) throws InterruptedException,</div><div class="line">      ExecutionException, TimeoutIOException &#123;</div><div class="line">    final long done = System.nanoTime() + timeoutNs;</div><div class="line">    while (!isDone()) &#123;</div><div class="line">      wait(1000);</div><div class="line">      if (System.nanoTime() &gt;= done) &#123;</div><div class="line">        throw new TimeoutIOException(</div><div class="line">            &quot;Failed to get sync result after &quot; + TimeUnit.NANOSECONDS.toMillis(timeoutNs)</div><div class="line">                + &quot; ms for txid=&quot; + this.txid + &quot;, WAL system stuck?&quot;);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    if (this.throwable != null) &#123;</div><div class="line">      throw new ExecutionException(this.throwable);</div><div class="line">    &#125;</div><div class="line">    return this.doneTxid;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  synchronized boolean isDone() &#123;</div><div class="line">    return this.doneTxid != NOT_DONE;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  以上为的handler卡住的情况，需要如下done的去修改doneTxid</div><div class="line">  </div><div class="line">  protected SyncFuture publishSyncOnRingBuffer(long sequence, boolean forceSync) &#123;</div><div class="line">    // here we use ring buffer sequence as transaction id</div><div class="line">    SyncFuture syncFuture = getSyncFuture(sequence).setForceSync(forceSync);</div><div class="line">    try &#123;</div><div class="line">      RingBufferTruck truck = this.disruptor.getRingBuffer().get(sequence);</div><div class="line">      truck.load(syncFuture);</div><div class="line">    &#125; finally &#123;</div><div class="line">      this.disruptor.getRingBuffer().publish(sequence);</div><div class="line">    &#125;</div><div class="line">    return syncFuture;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">    synchronized boolean done(final long txid, final Throwable t) &#123;</div><div class="line">    if (isDone()) &#123;</div><div class="line">      return false;</div><div class="line">    &#125;</div><div class="line">    this.throwable = t;</div><div class="line">    if (txid &lt; this.txid) &#123;</div><div class="line">      // Something badly wrong.</div><div class="line">      if (throwable == null) &#123;</div><div class="line">        this.throwable =</div><div class="line">            new IllegalStateException(&quot;done txid=&quot; + txid + &quot;, my txid=&quot; + this.txid);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    // Mark done.</div><div class="line">    this.doneTxid = txid;</div><div class="line">    // Wake up waiting threads.</div><div class="line">    notify();</div><div class="line">    return true;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  </div><div class="line"> 调用的以上的done函数，需要。</div><div class="line">     private int releaseSyncFuture(final SyncFuture syncFuture, final long currentSequence,</div><div class="line">        final Throwable t) &#123;</div><div class="line">      if (!syncFuture.done(currentSequence, t)) &#123;</div><div class="line">        throw new IllegalStateException();</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      // This function releases one sync future only.</div><div class="line">      return 1;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    syncRunner中调用</div><div class="line">    while (true) &#123;排除一些多余向前进</div><div class="line">     writer.sync(useHsync);</div><div class="line">     syncCount += releaseSyncFuture(takeSyncFuture, currentHighestSyncedSequence, null);</div><div class="line">     </div><div class="line">    </div><div class="line">    ringbuffer的onEvent 里调用，append(entry);将entry加入append入writer里。然后将sequence的加入syncRunner中，如下函数</div><div class="line">    this.syncRunners[this.syncRunnerIndex].offer(sequence, this.syncFutures,</div><div class="line">              this.syncFuturesCount.get());</div><div class="line">              </div><div class="line">    多个syncfutures通过highestSyncedTxid同步已经写入txid。</div><div class="line">    </div><div class="line">    </div><div class="line">    this.syncFutures.take() 都会对应一次releaseSyncFuture。</div></pre></td></tr></table></figure>
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div></pre></td><td class="code"><pre><div class="line">doMiniBatchMutate</div><div class="line">	sync(txid, durability);</div><div class="line">	</div><div class="line">  // Sync all known transactions</div><div class="line">  private void publishSyncThenBlockOnCompletion(TraceScope scope, boolean forceSync) throws IOException &#123;</div><div class="line">    SyncFuture syncFuture = publishSyncOnRingBuffer(forceSync);</div><div class="line">    blockOnSync(syncFuture);</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  </div><div class="line">  syncFuture.get(walSyncTimeoutNs);</div><div class="line">  </div><div class="line">  synchronized long get(long timeoutNs) throws InterruptedException,</div><div class="line">      ExecutionException, TimeoutIOException &#123;</div><div class="line">    final long done = System.nanoTime() + timeoutNs;</div><div class="line">    while (!isDone()) &#123;</div><div class="line">      wait(1000);</div><div class="line">      if (System.nanoTime() &gt;= done) &#123;</div><div class="line">        throw new TimeoutIOException(</div><div class="line">            &quot;Failed to get sync result after &quot; + TimeUnit.NANOSECONDS.toMillis(timeoutNs)</div><div class="line">                + &quot; ms for txid=&quot; + this.txid + &quot;, WAL system stuck?&quot;);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    if (this.throwable != null) &#123;</div><div class="line">      throw new ExecutionException(this.throwable);</div><div class="line">    &#125;</div><div class="line">    return this.doneTxid;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  synchronized boolean isDone() &#123;</div><div class="line">    return this.doneTxid != NOT_DONE;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  以上为的handler卡住的情况，需要如下done的去修改doneTxid</div><div class="line">  </div><div class="line">  protected SyncFuture publishSyncOnRingBuffer(long sequence, boolean forceSync) &#123;</div><div class="line">    // here we use ring buffer sequence as transaction id</div><div class="line">    SyncFuture syncFuture = getSyncFuture(sequence).setForceSync(forceSync);</div><div class="line">    try &#123;</div><div class="line">      RingBufferTruck truck = this.disruptor.getRingBuffer().get(sequence);</div><div class="line">      truck.load(syncFuture);</div><div class="line">    &#125; finally &#123;</div><div class="line">      this.disruptor.getRingBuffer().publish(sequence);</div><div class="line">    &#125;</div><div class="line">    return syncFuture;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">    synchronized boolean done(final long txid, final Throwable t) &#123;</div><div class="line">    if (isDone()) &#123;</div><div class="line">      return false;</div><div class="line">    &#125;</div><div class="line">    this.throwable = t;</div><div class="line">    if (txid &lt; this.txid) &#123;</div><div class="line">      // Something badly wrong.</div><div class="line">      if (throwable == null) &#123;</div><div class="line">        this.throwable =</div><div class="line">            new IllegalStateException(&quot;done txid=&quot; + txid + &quot;, my txid=&quot; + this.txid);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    // Mark done.</div><div class="line">    this.doneTxid = txid;</div><div class="line">    // Wake up waiting threads.</div><div class="line">    notify();</div><div class="line">    return true;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  </div><div class="line"> 调用的以上的done函数，需要。</div><div class="line">     private int releaseSyncFuture(final SyncFuture syncFuture, final long currentSequence,</div><div class="line">        final Throwable t) &#123;</div><div class="line">      if (!syncFuture.done(currentSequence, t)) &#123;</div><div class="line">        throw new IllegalStateException();</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      // This function releases one sync future only.</div><div class="line">      return 1;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    syncRunner中调用</div><div class="line">    while (true) &#123;排除一些多余向前进</div><div class="line">     writer.sync(useHsync);</div><div class="line">     syncCount += releaseSyncFuture(takeSyncFuture, currentHighestSyncedSequence, null);</div><div class="line">     </div><div class="line">    </div><div class="line">    ringbuffer的onEvent 里调用，append(entry);将entry加入append入writer里。然后将sequence的加入syncRunner中，如下函数</div><div class="line">    this.syncRunners[this.syncRunnerIndex].offer(sequence, this.syncFutures,</div><div class="line">              this.syncFuturesCount.get());</div><div class="line">              </div><div class="line">    多个syncfutures通过highestSyncedTxid同步已经写入txid。</div><div class="line">    </div><div class="line">    </div><div class="line">    this.syncFutures.take() 都会对应一次releaseSyncFuture。</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">if (truck.type() == RingBufferTruck.Type.SYNC) &#123;</div><div class="line">  this.syncFutures[this.syncFuturesCount.getAndIncrement()] = truck.unloadSync();</div><div class="line">  // Force flush of syncs if we are carrying a full complement of syncFutures.</div><div class="line">  if (this.syncFuturesCount.get() == this.syncFutures.length) &#123;</div><div class="line">    endOfBatch = true;</div><div class="line">  &#125;</div><div class="line">&#125; else if (truck.type() == RingBufferTruck.Type.APPEND) &#123;</div></pre></td></tr></table></figure>
 <p>ringbuffer传递内容包括的sync标志（主要用于传递SyncFuture）和数据。分开可以用于控制。</p>
 <p>主流程：</p>
@@ -112,7 +112,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hbase-src-wal/" data-id="cjqb35paj000m7w9s57q9ib9c" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/hbase-src-wal/" data-id="cjqb3amv8000k8b9slyinj3ej" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -124,7 +124,7 @@
 <nav id="article-nav">
   
     <a href="/2018/12/30/hbase-src-series/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
+      <strong class="article-nav-caption">Récent</strong>
       <div class="article-nav-title">
         
           HBase源码系列
@@ -134,7 +134,7 @@
   
   
     <a href="/2018/12/30/hadoop-hbase-mvn-cmd/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
+      <strong class="article-nav-caption">Ancien</strong>
       <div class="article-nav-title">hadoop-hbase-mvn-cmd</div>
     </a>
   
@@ -152,7 +152,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
     </div>
@@ -162,7 +162,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
       <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 12.5px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/src/" style="font-size: 10px;">src</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
     </div>
@@ -181,12 +181,12 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
         
           <li>
-            <a href="/2018/12/30/cmb-analysis/">cmb-analysis</a>
+            <a href="/2018/12/30/cmb-analysis/">招商银行分析</a>
           </li>
         
           <li>
@@ -194,7 +194,7 @@
           </li>
         
           <li>
-            <a href="/2018/12/30/hbase-src-wal/">hbase-src-wal</a>
+            <a href="/2018/12/30/hbase-src-wal/">HBase源码系列之wal</a>
           </li>
         
           <li>
@@ -202,7 +202,7 @@
           </li>
         
           <li>
-            <a href="/2018/12/30/2018-year-end-summary/">2018-year-end-summary</a>
+            <a href="/2018/12/30/2018-year-end-summary/">2018年终总结</a>
           </li>
         
       </ul>
@@ -218,7 +218,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 liu binbin<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
