@@ -61,6 +61,83 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-docker-basics" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/25/docker-basics/" class="article-date">
+  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/25/docker-basics/">最近使用docker的一些小记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>mysql出了需要grant之外，还要修改bind-address</p>
+<p>docker 基本命令</p>
+<p>docker 中container基于image制作，image类似一个模版，基于某个image制作的contaner都具有和image一样的内容</p>
+<p>我们可以根据REPOSITORY来判断这个镜像是来自哪个服务器，如果没有 / 则表示官方镜像，并且在search的时候会标有OFFICIAL，类似于ip:port/repos_name则表示的是私服。</p>
+<p>docker pull username/repository&lt;:tag_name&gt; 或者 docker pull repository，pull和push相对应。</p>
+<h4 id="5-2-运行出一个container放到后台运行"><a href="#5-2-运行出一个container放到后台运行" class="headerlink" title="5.2 运行出一个container放到后台运行"></a>5.2 运行出一个container放到后台运行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># docker run -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 2; done&quot;</div><div class="line">ae60c4b642058fefcc61ada85a610914bed9f5df0e2aa147100eab85cea785dc</div></pre></td></tr></table></figure>
+<p>它将直接把启动的container挂起放在后台运行（这才叫saas），并且会输出一个<code>CONTAINER ID</code>，通过<code>docker ps</code>可以看到这个容器的信息，可在container外面查看它的输出<code>docker logs ae60c4b64205</code>，也可以通过<code>docker attach ae60c4b64205</code>连接到这个正在运行的终端，此时在<code>Ctrl+C</code>退出container就消失了，按ctrl-p ctrl-q可以退出到宿主机，而保持container仍然在运行</p>
+<p>端口映射</p>
+<p>Docker中运行的程序的端口是不能直接访问的，需要映射到本地，通过-p参数实现，例如将6379端口映射到本机的6378端口</p>
+<p>容器日志</p>
+<p>查看当前容器的日志</p>
+<p><code>docker logs container-name/container-id</code></p>
+<p>我们可以查看之前redis镜像的容器</p>
+<p><code>docker logs test-redis</code></p>
+<p>可以看到redis启动的日志</p>
+<p>运行中的容器其实就是一个完备的Linux操作系统，我们可以登录访问当前容器，登录后可以在容器中进行常规的Linux操作。<br><code>docker exec -it container-id/container-name bash</code></p>
+<p>系统版本</p>
+<p>[root@bogon yum.repos.d]# uname -a<br>Linux bogon 2.6.32-642.el6.x86_64 #1 SMP Tue May 10 17:27:01 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux<br>[root@bogon yum.repos.d]# cat /etc/redhat-release<br>CentOS release 6.8 (Final)</p>
+<p>安装EPEL</p>
+<p>因为系统自带的repo中不带docker需要安装epel</p>
+<p>rpm -Uvh <a href="http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm" target="_blank" rel="external">http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm</a></p>
+<p>安装Docker</p>
+<p>yum install -y docker-io</p>
+<p>开机自启动与启动Docker</p>
+<p>[root@bogon yum.repos.d]# service docker start<br>Starting cgconfig service:                                 [  OK  ]<br>Starting docker:                                       [  OK  ]<br>[root@bogon yum.repos.d]# chkconfig docker on<br>[root@bogon yum.repos.d]# chkconfig docker –list<br>docker          0:off   1:off   2:on    3:on    4:on    5:on    6:off<br>[root@bogon yum.repos.d]# </p>
+<p>至此docker已经安装完成</p>
+<p>docker rm 删除container</p>
+<p>docker rmi 删除image</p>
+<p><a href="http://blog.csdn.net/permike/article/details/51879578" target="_blank" rel="external">http://blog.csdn.net/permike/article/details/51879578</a> 总结的非常好</p>
+<p>已完成<br>docker pull morrisjobke/docker-swift-onlyone<br>docker pull kahing/docker-swift<br>docker pull debian</p>
+<p>docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]</p>
+<p>启动container<br>  docker run -d -P -v /srv/node/sdb1/docker/:/swift/nodes -t bouncestorage/swift-aio<br>通过docker ps 获取端口<br>然后通过<a href="http://127.0.0.1" target="_blank" rel="external">http://127.0.0.1</a>:<port>/auth/v1.0 进行系统的操作和访问<br>具体的命令形式如下<br>  swift -A <a href="http://127.0.0.1:32770/auth/v1.0" target="_blank" rel="external">http://127.0.0.1:32770/auth/v1.0</a> -U test:tester -K testing</port></p>
+<p>swift-aio-docker</p>
+<p>docker run -it –rm debian bash<br>  -it: 这是两个参数，一个是 -i：交互式操作，一个是 -t 终端。<br>  –rm: 这个参数是说容器退出后随之将其删除</p>
+<p><code>bash</code>：放在镜像名后的是<strong>命令</strong>，这里我们希望有个交互式 Shell</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]</div></pre></td></tr></table></figure>
+<p>Docker Registry 地址[:端口号] 默认docker hub</p>
+<p>仓库名为<code>&lt;用户名&gt;/&lt;软件名&gt;</code> ，默认为 <code>library</code></p>
+<p>latest为默认标签<br>​    </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/08/25/docker-basics/" data-id="cjqb33fyq000h7j9s0lhwhuw6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-rit-in-HBase" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/05/30/rit-in-HBase/" class="article-date">
@@ -91,7 +168,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjqb2rm93001fzh9s9sdec7kg" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjqb33fz900197j9sdv361mtg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -181,7 +258,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjqb2rm800005zh9s19mx9lax" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjqb33fyg00057j9s5feiros0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -252,7 +329,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cjqb2rm7z0004zh9sv69iz8nl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/09/HBase-compaction/" data-id="cjqb33fyd00047j9sawcwigzq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -297,7 +374,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cjqb2rm7s0001zh9sk87rp0nx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cjqb33fyb00037j9suhplrmtu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -355,7 +432,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cjqb2rm8d000czh9sxhng6fgj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cjqb33fyn000c7j9spsz77553" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -484,7 +561,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cjqb2rm98001mzh9suxf7g6ix" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/what-region-will-do-when-receive-a-get/" data-id="cjqb33fzk001q7j9srgzfx3d5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -563,7 +640,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cjqb2rm8w0016zh9sqnnrjcc0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/12/something-about-memstore-in-HBase/" data-id="cjqb33fzc001g7j9saogkihqo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -625,7 +702,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cjqb2rm91001dzh9s9x2rff1t" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/09/some-points-about-MVCC-in-HBase/" data-id="cjqb33fza001b7j9si9motwul" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -673,7 +750,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/20/to-Hangzhou/" data-id="cjqb2rm94001izh9s4b1ihpot" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/03/20/to-Hangzhou/" data-id="cjqb33fze001j7j9svx3f6k77" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -685,73 +762,10 @@
 
 
   
-    <article id="post-writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" class="article-date">
-  <time datetime="2017-03-08T05:23:28.000Z" itemprop="datePublished">2017-03-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/">写RCFile不停报的ArrayIndexOutOfBoundsException错误</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <pre><code>场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
-最近在一个试运行集群中经常发生数据无法入库情况，然后看了一下系统日志，发现日志在不停的抛出如下异常。
-</code></pre><h2 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h2><p>登录及其的查看异常（不停歇的报此错）如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">java.lang.ArrayIndexOutOfBoundsException: <span class="number">7107</span></div><div class="line">   at org.apache.hadoop.fs.FSOutputSummer.write(FSOutputSummer.java:<span class="number">76</span>)</div><div class="line">   at org.apache.hadoop.fs.FSDataOutputStream$PositionCache.write(FSDataOutputStream.java:<span class="number">50</span>)</div><div class="line">   at java.io.DataOutputStream.writeInt(DataOutputStream.java:<span class="number">197</span>)</div></pre></td></tr></table></figure>
-<p>首先，我看到此日志，我内心第一反应，这错真是奇葩，没想到定位和解决这个问题用了好几天。</p>
-<h2 id="步骤2"><a href="#步骤2" class="headerlink" title="步骤2"></a>步骤2</h2><p>看到此异常后，我第一反应是得先找到第一个报错的地方并且查看的此报错的原因。然后我就开始看此处涉及到hdfs的代码，想看看为什么会报错。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sync</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">	<span class="keyword">if</span> (sync != <span class="keyword">null</span> &amp;&amp; lastSyncPos != out.getPos()) &#123;</div><div class="line">		out.writeInt(SYNC_ESCAPE); <span class="comment">// mark the start of the sync</span></div><div class="line">		out.write(sync); <span class="comment">// write sync</span></div><div class="line">		lastSyncPos = out.getPos(); <span class="comment">// update lastSyncPos</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>RCFile.java中如上代码，程序在out.writeInt就开始报错了，lastSyncPos无法的更新。但是在上层使用如下代码的判断的调用sync。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkAndWriteSync</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">	<span class="keyword">if</span> (sync != <span class="keyword">null</span> &amp;&amp; out.getPos() &gt;= lastSyncPos + SYNC_INTERVAL) &#123;</div><div class="line">		sync();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>好吧，这writeInt报错了，对于这个我真是醉了。</p>
-<h2 id="步骤3"><a href="#步骤3" class="headerlink" title="步骤3"></a>步骤3</h2><p>发现了此处无法理解的地方后，我将重点转向了第一个报错的地方。因为他是不确定时间报错，我就开始启动程序后，时常的查看日志，终于在之后的某个早上，我在查看日志时，我发现了第一个报错的地方。然后在那上面看到了如下异常。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">java.io.IOException: All datanodes ...:<span class="number">50010</span> are bad. Aborting...</div><div class="line">    at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:<span class="number">1147</span>)</div><div class="line">    at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:<span class="number">945</span>)</div><div class="line">    at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:<span class="number">496</span>)</div></pre></td></tr></table></figure>
-<p>然后在日志中找第一个报次错的地方，还发现了其他的报错</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[ShortCircuitCache_SlotReleaser] (org.apache.hadoop.hdfs.shortcircuit.ShortCircuitCache$SlotReleaser.run:<span class="number">215</span>)  - ShortCircuitCache(<span class="number">0x3fbdc007</span>): failed to release <span class="keyword">short</span>-<span class="function">circuit shared memory slot <span class="title">Slot</span><span class="params">(slotIdx=<span class="number">1</span>, shm=DfsClientShm(<span class="number">7</span>bf35643718a2bf0a9d85884afb8f4f8)</span>) by sending ReleaseShortCircuitAccessRequestProto to /var/run/hdfs-sockets/dn.  Closing shared memory segment.</span></div><div class="line"></div><div class="line">java.net.ConnectException: <span class="title">connect</span><span class="params">(<span class="number">2</span>)</span> error: Connection refused when trying to connect to '/var/run/hdfs-sockets/dn'</div><div class="line"></div><div class="line">29 七月 2016 10:14:17,390 WARN  [ShortCircuitCache_SlotReleaser] <span class="params">(org.apache.hadoop.hdfs.shortcircuit.DfsClientShmManager$EndpointShmManager.shutdown:<span class="number">380</span>)</span>  - <span class="title">EndpointShmManager</span><span class="params">(<span class="number">10.139</span><span class="number">.90</span><span class="number">.136</span>:<span class="number">50010</span>, parent=ShortCircuitShmManager(<span class="number">5</span>c89577b)</span>): error shutting down shm: got IOException calling <span class="title">shutdown</span><span class="params">(SHUT_RDWR)</span></div><div class="line"></div><div class="line">java.nio.channels.ClosedChannelException</div></pre></td></tr></table></figure>
-<h2 id="步骤4"><a href="#步骤4" class="headerlink" title="步骤4"></a>步骤4</h2><p>看到这些日志后，我感觉在10:14一定发生了什么，于是我开始寻找datanode中相关时间点日志STARTUP_MSG: Starting DataNode这种datanode启动信息，我内心一万只草泥马飘过。<br>在此日志的上面我看到了诸如的的日志。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="number">2016</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">10</span>:<span class="number">14</span>:<span class="number">12</span>,<span class="number">374</span> INFO org.apache.hadoop.util.JvmPauseMonitor: <span class="function">Detected pause in JVM or host <span class="title">machine</span> <span class="params">(eg GC)</span>: pause of approximately 4519ms</span></div><div class="line">No GCs detected</div></pre></td></tr></table></figure>
-<p>然后就是</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="number">2016</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">10</span>:<span class="number">14</span>:<span class="number">36</span>,<span class="number">720</span> INFO org.apache.hadoop.hdfs.server.datanode.DataNode: STARTUP_MSG:</div></pre></td></tr></table></figure>
-<p>中间隔了三十秒。<br>从这种情况看感觉应该是datanode进程死了，然后又重启了。</p>
-<h2 id="步骤5"><a href="#步骤5" class="headerlink" title="步骤5"></a>步骤5</h2><p>然后我就开始全力找为什么此datanode会挂。列出几点信息，这些信息是感觉有点头疼。</p>
-<ol>
-<li>supervisord.log的日志中有2016-07-29 10:14:16,820 INFO exited: 411-hdfs-DATANODE (terminated by SIGKILL; not expected)此时间正好在10:14:12到10:14:36之间。</li>
-<li>之前无聊时看过datanode虚拟机参数，记得有这么个参数。-XX:OnOutOfMemoryError=/usr/lib64/cmf/service/common/killparent.sh<br>我开始怀疑是不是我这个参数给datanode进程发了kill信号，然后又重新启动。在/var/log/messages中也没发现oom的异常。<h2 id="步骤6"><a href="#步骤6" class="headerlink" title="步骤6"></a>步骤6</h2>开始看killparent.sh脚本，发现在调用此脚本时会将一个字符串写入一个文件，但是我在系统中没有发现这个文件，然后我就有点懵逼了。然后我在此脚本中加了一行我自己的代码，等再看看会不会再出现这种情况。<h2 id="步骤7"><a href="#步骤7" class="headerlink" title="步骤7"></a>步骤7</h2>跟了一个周末后，发现killparent.sh的脚本没有调用。然后开始在晚上搜索，看了一些hdfs源码，可以确定的是flume的hdfs客户端和datanode之间的连接断了，然后导致datanode报超时错误，最后在flume中报读取流出错。<h2 id="步骤8"><a href="#步骤8" class="headerlink" title="步骤8"></a>步骤8</h2>然后开始了两天完全懵逼的时光，在网上看到说可能ulimit对进程的限制，然后就开始在的集群中查看lsof中flume和datanode的链接使用数量。监控了一晚上什么收获都没有，然后就放弃了。<h2 id="步骤9"><a href="#步骤9" class="headerlink" title="步骤9"></a>步骤9</h2>然后开始猜测是不是flume进程的某些原因，因为我在成个几次重启的过程中没有重启过datanode，而只重启了flume，但是重启了之后集群就可以开始加载了。然后又开始做尝试，同时看到看tailf过滤datanode日志中的error和warn信息和flume的出错日志。不停等，终于等到了出错，发现只有datanode报连接异常的时候才会导致flume出错，这时候就断定是flume和datanode之间的连接，突然想到可能是gc，想到之前的看过datanode没有full gc，那就可能是flume，看了flumegc日志，尼玛在出错时间点之前还真有一次400多秒的gc。我内心是崩溃的。<h2 id="步骤10"><a href="#步骤10" class="headerlink" title="步骤10"></a>步骤10</h2>明天开始尝试将timeout时间再延长，将超时时间设置为3600，跑了周末两天都没什么问题。<h2 id="暂时告一段落"><a href="#暂时告一段落" class="headerlink" title="暂时告一段落"></a>暂时告一段落</h2></li>
-</ol>
-<p>因为接下来要做的是调整gc参数。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="cjqb2rm9a001pzh9sx7y2o1vu" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flume/">flume</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gc/">gc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rcfile/">rcfile</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
 
 
   <nav id="page-nav">
-    <a class="extend prev" rel="prev" href="/page/2/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/page/2/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">__('next') &raquo;</a>
   </nav>
 </section>
         
@@ -774,7 +788,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 10px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/src/" style="font-size: 10px;">src</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
+      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 12.5px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/src/" style="font-size: 10px;">src</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
     </div>
   </div>
 
@@ -796,6 +810,10 @@
       <ul>
         
           <li>
+            <a href="/2018/12/30/cmb-analysis/">cmb-analysis</a>
+          </li>
+        
+          <li>
             <a href="/2018/12/30/hbase-src-series/">hbase-src-series</a>
           </li>
         
@@ -809,10 +827,6 @@
         
           <li>
             <a href="/2018/12/30/2018-year-end-summary/">2018-year-end-summary</a>
-          </li>
-        
-          <li>
-            <a href="/2018/12/14/ability-in-profession/">ability-in-profession</a>
           </li>
         
       </ul>
