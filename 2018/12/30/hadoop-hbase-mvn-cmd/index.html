@@ -3,14 +3,33 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Архив: 2017 | bin</title>
+  <title>hadoop-hbase-mvn-cmd | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="bin">
-<meta property="og:url" content="http://yoursite.com/archives/2017/page/2/index.html">
+  <meta name="description" content="#hbase 编译 
+命令：mvn clean package -Pdist,native, -DskipTests -Dtar
+hbase编译打包好像没有遇到什么问题，很顺利。
+#hadoop 编译
+命令：mvn clean package -DskipTests -Pdist,native -Dtar 
+hadoop编译打包时还是遇到了些问题，主要是类似OPENSSL和findbugs等，看以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hadoop-hbase-mvn-cmd">
+<meta property="og:url" content="http://yoursite.com/2018/12/30/hadoop-hbase-mvn-cmd/index.html">
 <meta property="og:site_name" content="bin">
+<meta property="og:description" content="#hbase 编译 
+命令：mvn clean package -Pdist,native, -DskipTests -Dtar
+hbase编译打包好像没有遇到什么问题，很顺利。
+#hadoop 编译
+命令：mvn clean package -DskipTests -Pdist,native -Dtar 
+hadoop编译打包时还是遇到了些问题，主要是类似OPENSSL和findbugs等，看以">
+<meta property="og:updated_time" content="2018-12-30T14:52:06.667Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="bin">
+<meta name="twitter:title" content="hadoop-hbase-mvn-cmd">
+<meta name="twitter:description" content="#hbase 编译 
+命令：mvn clean package -Pdist,native, -DskipTests -Dtar
+hbase编译打包好像没有遇到什么问题，很顺利。
+#hadoop 编译
+命令：mvn clean package -DskipTests -Pdist,native -Dtar 
+hadoop编译打包时还是遇到了些问题，主要是类似OPENSSL和findbugs等，看以">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -59,158 +78,62 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/05/05/HBase-trap/" class="archive-article-date">
-  <time datetime="2017-05-05T14:29:12.000Z" itemprop="datePublished">May 5</time>
+        <section id="main"><article id="post-hadoop-hbase-mvn-cmd" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/30/hadoop-hbase-mvn-cmd/" class="article-date">
+  <time datetime="2018-12-30T14:49:06.000Z" itemprop="datePublished">2018-12-30</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/05/HBase-trap/">HBase的一些坑</a>
+    <h1 class="article-title" itemprop="name">
+      hadoop-hbase-mvn-cmd
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/04/26/balance-in-hdfs/" class="archive-article-date">
-  <time datetime="2017-04-26T15:33:10.000Z" itemprop="datePublished">Apr 26</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/26/balance-in-hdfs/">hdfs balance的一些解读和问题记录</a>
-    </h1>
-  
+        <p>#hbase 编译 </p>
+<p>命令：mvn clean package -Pdist,native, -DskipTests -Dtar</p>
+<p>hbase编译打包好像没有遇到什么问题，很顺利。</p>
+<p>#hadoop 编译</p>
+<p>命令：mvn clean package -DskipTests -Pdist,native -Dtar </p>
+<p>hadoop编译打包时还是遇到了些问题，主要是类似OPENSSL和findbugs等，看以下两个链接应该基本就能解决了。</p>
+<p><a href="http://bigdatadecode.club/mac%E4%B8%8B%E7%BC%96%E8%AF%91Hadoop.html" target="_blank" rel="external">http://bigdatadecode.club/mac%E4%B8%8B%E7%BC%96%E8%AF%91Hadoop.html</a></p>
+<p><a href="https://stackoverflow.com/questions/36818957/mac-hadoop-2-7-failed-to-execute-goal-org-apache-maven-pluginsmaven-antrun" target="_blank" rel="external">https://stackoverflow.com/questions/36818957/mac-hadoop-2-7-failed-to-execute-goal-org-apache-maven-pluginsmaven-antrun</a></p>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/04/25/what-region-will-do-when-receive-a-get/" class="archive-article-date">
-  <time datetime="2017-04-25T14:40:14.000Z" itemprop="datePublished">Apr 25</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/25/what-region-will-do-when-receive-a-get/">Region收到get请求后的操作</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/04/12/something-about-memstore-in-HBase/" class="archive-article-date">
-  <time datetime="2017-04-11T16:01:56.000Z" itemprop="datePublished">Apr 12</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="cjqb0lfdr000fo79sjjijnm6e" class="article-share-link">Поделиться</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/12/something-about-memstore-in-HBase/">memstore</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/04/09/some-points-about-MVCC-in-HBase/" class="archive-article-date">
-  <time datetime="2017-04-09T15:55:35.000Z" itemprop="datePublished">Apr 9</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/09/some-points-about-MVCC-in-HBase/">hbase中的MVCC解读</a>
-    </h1>
-  
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mvn/">mvn</a></li></ul>
 
-    </header>
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/12/30/2018-year-end-summary/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Предыдущий</strong>
+      <div class="article-nav-title">2018-year-end-summary</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/03/20/to-Hangzhou/" class="archive-article-date">
-  <time datetime="2017-03-20T14:01:37.000Z" itemprop="datePublished">Mar 20</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/20/to-Hangzhou/">去杭州</a>
-    </h1>
-  
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" class="archive-article-date">
-  <time datetime="2017-03-08T05:23:28.000Z" itemprop="datePublished">Mar 8</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/">写RCFile不停报的ArrayIndexOutOfBoundsException错误</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
-    <a class="extend prev" rel="prev" href="/archives/2017/">&laquo; __('prev')</a><a class="page-number" href="/archives/2017/">1</a><span class="page-number current">2</span>
-  </nav>
 </section>
         
           <aside id="sidebar">
