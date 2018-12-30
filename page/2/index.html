@@ -91,7 +91,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/paper-reading/" data-id="cjqb0qoqt000woz9socbuhwnl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/03/04/paper-reading/" data-id="cjqb1yt5u000yxm9s4jcqiqlq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/paper/">paper</a></li></ul>
@@ -138,7 +138,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/12/10/impression-after-reading-optiona-B/" data-id="cjqb0qoql000loz9suml95qpz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/12/10/impression-after-reading-optiona-B/" data-id="cjqb1yt5h000lxm9s6ff8s8aj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life-read/">life,read</a></li></ul>
@@ -177,7 +177,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/object-storage/" data-id="cjqb0qoqs000toz9sqsevoyi4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/18/object-storage/" data-id="cjqb1yt5r000sxm9syjx4q9ur" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/minio-swift/">minio,swift</a></li></ul>
@@ -238,7 +238,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cjqb0qopw0001oz9soh9ua8df" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cjqb1yt4q0000xm9s99j6el4b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -287,72 +287,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjqb0qoq50005oz9sj13dp11e" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjqb1yt510004xm9s0f0plcoz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-vmware-install-centos" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/08/25/vmware-install-centos/" class="article-date">
-  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/08/25/vmware-install-centos/">vmware安装centos</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。</p>
-<h2 id="第0步-安装vmware和下载centos"><a href="#第0步-安装vmware和下载centos" class="headerlink" title="第0步 安装vmware和下载centos"></a>第0步 安装vmware和下载centos</h2><p>下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。</p>
-<h2 id="第1步-创建centos虚拟机"><a href="#第1步-创建centos虚拟机" class="headerlink" title="第1步 创建centos虚拟机"></a>第1步 创建centos虚拟机</h2><p><img src="step1.png" alt=""></p>
-<p>选择Create a custom virtual machine</p>
-<p><img src="step2.png" alt=""></p>
-<p>选择对应的版本CentOS 64-bit</p>
-<p><img src="step3.png" alt=""></p>
-<p>选择Create a new virtual disk</p>
-<p><img src="step4.png" alt=""></p>
-<p>选择Customize Settings，然后选择Save.</p>
-<p>然后开始设置配置，主要如下：</p>
-<ul>
-<li>Processors &amp; Memory    (4core 8G)</li>
-<li>Hard Disk (80G)</li>
-<li>CD/DVD (IDE) (此处一定需要设置，将下载的iso加入配置中，并且需要连接DVD)</li>
-</ul>
-<p>然后开始安装，更改mini 安装模式，添加gnome桌面，然后进入正常的linux安装界面。之后一切就比较顺利。</p>
-<p>最后可能需要安装图形界面：<strong>yum groupinstall</strong> “GNOME Desktop”，重启进入root执行“init 5”</p>
-<p>##注意事项</p>
-<p>###新版系统需要改变设置</p>
-<p>Please check System Preferences ==&gt;Security&amp;Privacy==&gt;Privacy==&gt;Accessibility, make sure you have added Fusion into the list.</p>
-<p>###键盘切换快捷键：</p>
-<p>cmd + G ： 切到虚拟机</p>
-<p>cmd + control：切到mac系统</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/vmware-install-centos/" data-id="cjqb0qor7001doz9s7y4eynmy" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
 
     </footer>
   </div>
@@ -411,7 +349,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cjqb0qoqx0013oz9ss0uqsxnn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cjqb1yt5z0015xm9sw3zwms2e" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -488,7 +426,69 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/docker-basics/" data-id="cjqb0qoqe000coz9sefznxymy" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/08/25/docker-basics/" data-id="cjqb1yt5b000dxm9sltu8e152" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-vmware-install-centos" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/25/vmware-install-centos/" class="article-date">
+  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/25/vmware-install-centos/">vmware安装centos</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。</p>
+<h2 id="第0步-安装vmware和下载centos"><a href="#第0步-安装vmware和下载centos" class="headerlink" title="第0步 安装vmware和下载centos"></a>第0步 安装vmware和下载centos</h2><p>下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。</p>
+<h2 id="第1步-创建centos虚拟机"><a href="#第1步-创建centos虚拟机" class="headerlink" title="第1步 创建centos虚拟机"></a>第1步 创建centos虚拟机</h2><p><img src="step1.png" alt=""></p>
+<p>选择Create a custom virtual machine</p>
+<p><img src="step2.png" alt=""></p>
+<p>选择对应的版本CentOS 64-bit</p>
+<p><img src="step3.png" alt=""></p>
+<p>选择Create a new virtual disk</p>
+<p><img src="step4.png" alt=""></p>
+<p>选择Customize Settings，然后选择Save.</p>
+<p>然后开始设置配置，主要如下：</p>
+<ul>
+<li>Processors &amp; Memory    (4core 8G)</li>
+<li>Hard Disk (80G)</li>
+<li>CD/DVD (IDE) (此处一定需要设置，将下载的iso加入配置中，并且需要连接DVD)</li>
+</ul>
+<p>然后开始安装，更改mini 安装模式，添加gnome桌面，然后进入正常的linux安装界面。之后一切就比较顺利。</p>
+<p>最后可能需要安装图形界面：<strong>yum groupinstall</strong> “GNOME Desktop”，重启进入root执行“init 5”</p>
+<p>##注意事项</p>
+<p>###新版系统需要改变设置</p>
+<p>Please check System Preferences ==&gt;Security&amp;Privacy==&gt;Privacy==&gt;Accessibility, make sure you have added Fusion into the list.</p>
+<p>###键盘切换快捷键：</p>
+<p>cmd + G ： 切到虚拟机</p>
+<p>cmd + control：切到mac系统</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/08/25/vmware-install-centos/" data-id="cjqb1yt65001dxm9s107azkk2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -530,7 +530,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjqb0qoqu000zoz9s3r7zxl9x" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjqb1yt5w0010xm9sanr8sr7k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -620,7 +620,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjqb0qoq60006oz9sr1mmc2lr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/HFile-in-HBase/" data-id="cjqb1yt560009xm9sakjthaii" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -648,7 +648,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
     </div>
   </div>
 
@@ -658,7 +658,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 10px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/src/" style="font-size: 10px;">src</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
+      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 10px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/src/" style="font-size: 10px;">src</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
     </div>
   </div>
 
