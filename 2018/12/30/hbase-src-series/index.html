@@ -9,7 +9,12 @@
 先说一下对HBase的感觉，首先，一个很重要的原因，我本人对数据非常感兴趣。其次，个人觉得HBase是个非常重要的项目，在接下来的几年也会保持下去。最后，HBase是个可以学习的不错项目，里面很多的设计和特性值得学习，并且我有使用和维护经验。
 
 wal
-To be continued">
+hfile
+compaction
+get
+memstore
+mvcc
+To b">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HBase源码系列">
 <meta property="og:url" content="http://yoursite.com/2018/12/30/hbase-src-series/index.html">
@@ -18,15 +23,25 @@ To be continued">
 先说一下对HBase的感觉，首先，一个很重要的原因，我本人对数据非常感兴趣。其次，个人觉得HBase是个非常重要的项目，在接下来的几年也会保持下去。最后，HBase是个可以学习的不错项目，里面很多的设计和特性值得学习，并且我有使用和维护经验。
 
 wal
-To be continued">
-<meta property="og:updated_time" content="2018-12-30T16:07:49.470Z">
+hfile
+compaction
+get
+memstore
+mvcc
+To b">
+<meta property="og:updated_time" content="2018-12-31T13:22:15.481Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HBase源码系列">
 <meta name="twitter:description" content="在2018年即将结束之际，想开一个系列，名字为HBase源码系列。
 先说一下对HBase的感觉，首先，一个很重要的原因，我本人对数据非常感兴趣。其次，个人觉得HBase是个非常重要的项目，在接下来的几年也会保持下去。最后，HBase是个可以学习的不错项目，里面很多的设计和特性值得学习，并且我有使用和维护经验。
 
 wal
-To be continued">
+hfile
+compaction
+get
+memstore
+mvcc
+To b">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -66,7 +81,7 @@ To be continued">
         
           <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -101,13 +116,18 @@ To be continued">
 <p>先说一下对HBase的感觉，首先，一个很重要的原因，我本人对数据非常感兴趣。其次，个人觉得HBase是个非常重要的项目，在接下来的几年也会保持下去。最后，HBase是个可以学习的不错项目，里面很多的设计和特性值得学习，并且我有使用和维护经验。</p>
 <ol>
 <li><a href="http://liubinbin.cn/2018/12/30/hbase-src-wal/" target="_blank" rel="external">wal</a></li>
+<li><a href="http://liubinbin.cn/2017/05/14/hbase-src-hfile/" target="_blank" rel="external">hfile</a></li>
+<li><a href="http://liubinbin.cn/2017/05/09/hbase-src-compaction/" target="_blank" rel="external">compaction</a></li>
+<li><a href="http://liubinbin.cn/2017/04/25/hbase-src-get-in-server/" target="_blank" rel="external">get</a></li>
+<li><a href="http://liubinbin.cn/2017/04/12/hbase-src-memstore/" target="_blank" rel="external">memstore</a></li>
+<li><a href="http://liubinbin.cn/2017/04/09/hbase-src-mvcc/" target="_blank" rel="external">mvcc</a></li>
 <li>To be continued</li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hbase-src-series/" data-id="cjqcclyga000s729sralbyswl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/hbase-src-series/" data-id="cjqccslg4000h7t9sh1d7z15p" class="article-share-link">Delen</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -119,7 +139,7 @@ To be continued">
 <nav id="article-nav">
   
     <a href="/2018/12/30/cmb-analysis/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
+      <strong class="article-nav-caption">Nieuwer</strong>
       <div class="article-nav-title">
         
           招商银行分析
@@ -129,7 +149,7 @@ To be continued">
   
   
     <a href="/2018/12/30/hbase-src-wal/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
+      <strong class="article-nav-caption">Ouder</strong>
       <div class="article-nav-title">HBase源码系列之wal</div>
     </a>
   
@@ -147,7 +167,7 @@ To be continued">
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Labels</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
     </div>
@@ -166,7 +186,7 @@ To be continued">
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
+    <h3 class="widget-title">Archieven</h3>
     <div class="widget">
       <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
@@ -176,7 +196,7 @@ To be continued">
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Recente berichten</h3>
     <div class="widget">
       <ul>
         
