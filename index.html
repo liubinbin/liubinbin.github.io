@@ -87,7 +87,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/01/01/ConcurrentSkipListMap-analysis/" data-id="cjqdux7m500000a9s84j1mx0m" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/01/01/ConcurrentSkipListMap-analysis/" data-id="cjqdv08vt0000139s8xjiwx4k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src/">src</a></li></ul>
@@ -126,7 +126,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/cmb-analysis/" data-id="cjqdux7mq000e0a9s7ph1q673" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/cmb-analysis/" data-id="cjqdv08wd000b139soq9sid67" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bank/">bank</a></li></ul>
@@ -175,7 +175,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hbase-src-series/" data-id="cjqdux7n2000x0a9sjfr8eh8v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/hbase-src-series/" data-id="cjqdv08wm000j139sm64heffn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -209,11 +209,11 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>#简介</p>
+        <p>##简介</p>
 <p>wal在hbase中是为了持久化memstore中未flush到hfile的数据，以防rs宕机或异常退出导致数据的丢失。</p>
 <p>wal实现的一头是多个handler线程处理put请求，另一头是针对hdfs写这种费时间的操作。并且需要实现两件事情：一是在写hdfs时不能出现混乱，二是写完hdfs之后需要有个机制通知到在等待hdfs写返回的处理写请求的线程。</p>
 <p>wal用了一个ringbuffer，ringbuffer传递内容包括的sync标志（主要用于传递SyncFuture）和数据。分开可以用于控制。</p>
-<p>#主流程</p>
+<p>##主流程</p>
 <ol>
 <li>handler将entry和txid写入disruptor，然后通过sync函数等待，通过一个threadlocal的设置了txid的SyncFuture，调用get方法阻塞。</li>
 <li>把SyncFuture和Sync标志写入到disruptor中。</li>
@@ -229,9 +229,9 @@
 </ol>
 </li>
 </ol>
-<p>#三个主要线程</p>
+<p>##三个主要线程</p>
 <p>整个写wal流程设计到如下三个线程。</p>
-<p>##handler线程</p>
+<p>###handler线程</p>
 <p>handler通过netty接受来自客户端或thriftserver的写请求。</p>
 <p>在private void doMiniBatchMutate(BatchOperation&lt;?&gt; batchOp) throws IOException 总在执行写wal，写memstore，更改mvcc版本等操作。本篇文章主要集中于写wal（否则就跑题了）,主要在如下方法中。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">writeEntry = doWALAppend(walEdit, batchOp.durability, batchOp.getClusterIds(), now,</div><div class="line">             nonceKey.getNonceGroup(), nonceKey.getNonce(), batchOp.getOrigLogSeqNum());</div></pre></td></tr></table></figure>
@@ -247,7 +247,8 @@
 <p>从上面的代码可以看到handler线程如果想要退出需要isDone方法返回false或者时间超过timeoutNs。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">isDone</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.doneTxid != NOT_DONE;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>handler线程部分到此我们只需要记住doneTxid的修改决定handler线程退出。</p>
-<h1 id="onEvent"><a href="#onEvent" class="headerlink" title="onEvent"></a>onEvent</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (truck.type() == RingBufferTruck.Type.SYNC) &#123;</div><div class="line">        <span class="comment">// 给syncFutures其中一个设置。</span></div><div class="line">        <span class="keyword">this</span>.syncFutures[<span class="keyword">this</span>.syncFuturesCount.getAndIncrement()] = truck.unloadSync();</div><div class="line">        <span class="comment">// Force flush of syncs if we are carrying a full complement of syncFutures.</span></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.syncFuturesCount.get() == <span class="keyword">this</span>.syncFutures.length) &#123;</div><div class="line">          endOfBatch = <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (truck.type() == RingBufferTruck.Type.APPEND) &#123;</div><div class="line">        FSWALEntry entry = truck.unloadAppend();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">	...</div><div class="line">          append(entry);</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">          ....</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">      &#125;</div></pre></td></tr></table></figure>
+<p>###onEvent</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (truck.type() == RingBufferTruck.Type.SYNC) &#123;</div><div class="line">        <span class="comment">// 给syncFutures其中一个设置。</span></div><div class="line">        <span class="keyword">this</span>.syncFutures[<span class="keyword">this</span>.syncFuturesCount.getAndIncrement()] = truck.unloadSync();</div><div class="line">        <span class="comment">// Force flush of syncs if we are carrying a full complement of syncFutures.</span></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.syncFuturesCount.get() == <span class="keyword">this</span>.syncFutures.length) &#123;</div><div class="line">          endOfBatch = <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (truck.type() == RingBufferTruck.Type.APPEND) &#123;</div><div class="line">        FSWALEntry entry = truck.unloadAppend();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">	...</div><div class="line">          append(entry);</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">          ....</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">      &#125;</div></pre></td></tr></table></figure>
 <p>在onEvent里获取到的数据分为两种：</p>
 <ol>
 <li>SYNC，在syncFutures设置handler线程传递过来的syncFuture。</li>
@@ -256,19 +257,20 @@
 <p>我们需要注意这里的endOfBatch，通过一个ringbuffer其实让我们更容易去控制batch，将难度从多个线程移到了一个线程里。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (!endOfBatch || <span class="keyword">this</span>.syncFuturesCount.get() &lt;= <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">this</span>.syncRunnerIndex = (<span class="keyword">this</span>.syncRunnerIndex + <span class="number">1</span>) % <span class="keyword">this</span>.syncRunners.length;</div><div class="line">      <span class="keyword">try</span> &#123;</div><div class="line">        <span class="comment">// 给syncRunners其中一个设置，在offer方法内，将下标小于syncFuturesCount的所有syncFutures传递给其中一个的SyncRunners。</span></div><div class="line">        <span class="comment">// 下标小于syncFuturesCount的所有syncFutures都传递过去其实就代表了一个batch，这个逻辑可以通过endOfBatch捋出来。 *** 此处很重要 ***</span></div><div class="line">        <span class="keyword">this</span>.syncRunners[<span class="keyword">this</span>.syncRunnerIndex].offer(sequence, <span class="keyword">this</span>.syncFutures,</div><div class="line">          <span class="keyword">this</span>.syncFuturesCount.get());</div><div class="line">      &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">        <span class="comment">// Should NEVER get here.</span></div><div class="line">        requestLogRoll();</div><div class="line">        <span class="keyword">this</span>.exception = <span class="keyword">new</span> DamagedWALException(<span class="string">"Failed offering sync"</span>, e);</div><div class="line">      &#125;</div><div class="line">....</div><div class="line">      <span class="keyword">this</span>.syncFuturesCount.set(<span class="number">0</span>);</div></pre></td></tr></table></figure>
 <p>这里通过轮询的方式向syncRunners传递syncFutures。</p>
-<h2 id="syncRunner"><a href="#syncRunner" class="headerlink" title="syncRunner"></a>syncRunner</h2><p>syncRunner是一些线程，总共syncRunnerCount个，此线程是一个while不停的执行。多个线程通过highestSyncedTxid来沟通到什么地步了。</p>
+<p>###syncRunner</p>
+<p>syncRunner是一些线程，总共syncRunnerCount个，此线程是一个while不停的执行。多个线程通过highestSyncedTxid来沟通到什么地步了。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line">   <span class="keyword">while</span> (!isInterrupted()) &#123;</div><div class="line">     <span class="keyword">int</span> syncCount = <span class="number">0</span>;</div><div class="line"></div><div class="line">     <span class="keyword">try</span> &#123;</div><div class="line">       <span class="comment">// 获取需要执行sync的场景</span></div><div class="line">       <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">         takeSyncFuture = <span class="keyword">null</span>;</div><div class="line">         <span class="comment">// We have to process what we 'take' from the queue</span></div><div class="line">         takeSyncFuture = <span class="keyword">this</span>.syncFutures.take();</div><div class="line">         currentSequence = <span class="keyword">this</span>.sequence;</div><div class="line">         <span class="keyword">long</span> syncFutureSequence = takeSyncFuture.getTxid();</div><div class="line">         <span class="keyword">if</span> (syncFutureSequence &gt; currentSequence) &#123;</div><div class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"currentSequence="</span> + currentSequence</div><div class="line">               + <span class="string">", syncFutureSequence="</span> + syncFutureSequence);</div><div class="line">         &#125;</div><div class="line">         <span class="comment">// See if we can process any syncfutures BEFORE we go sync.</span></div><div class="line">         <span class="comment">// 掠过一些已经sync过的sequence，可能在别syncRunner已经执行过了，或当时多加的部分。</span></div><div class="line">         <span class="keyword">long</span> currentHighestSyncedSequence = highestSyncedTxid.get();</div><div class="line">         <span class="keyword">if</span> (currentSequence &lt; currentHighestSyncedSequence) &#123;</div><div class="line">           syncCount += releaseSyncFuture(takeSyncFuture, currentHighestSyncedSequence, <span class="keyword">null</span>);</div><div class="line">           <span class="comment">// Done with the 'take'. Go around again and do a new 'take'.</span></div><div class="line">           <span class="keyword">continue</span>;</div><div class="line">         &#125;</div><div class="line">         <span class="keyword">break</span>;</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">try</span> &#123;</div><div class="line">         <span class="comment">// 执行sync</span></div><div class="line">         writer.sync(useHsync);</div><div class="line">         <span class="comment">// 更新highestSyncedTxid，此处记录了目前sync的最高Sequence。</span></div><div class="line">         currentSequence = updateHighestSyncedSequence(currentSequence);</div><div class="line">       &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">...</div><div class="line">       &#125; <span class="keyword">finally</span> &#123;</div><div class="line">         <span class="comment">// First release what we 'took' from the queue.</span></div><div class="line">         <span class="comment">// release目前取到的SyncFuture。</span></div><div class="line">         syncCount += releaseSyncFuture(takeSyncFuture, currentSequence, lastException);</div><div class="line">         <span class="comment">// Can we release other syncs?</span></div><div class="line">         <span class="comment">// release所有目前小于当前sequence的SyncFuture。这步感觉好像是没有必要的。</span></div><div class="line">         syncCount += releaseSyncFutures(currentSequence, lastException);</div><div class="line">         <span class="keyword">if</span> (lastException != <span class="keyword">null</span>) &#123;</div><div class="line">           requestLogRoll();</div><div class="line">         &#125; <span class="keyword">else</span> &#123;</div><div class="line">           checkLogRoll();</div><div class="line">         &#125;</div><div class="line">       &#125;</div><div class="line">       postSync(System.nanoTime() - start, syncCount);</div><div class="line">     &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">       ...</div><div class="line">     &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
 <p>调用完releaseSyncFuture之后，handler阻塞住的的get方式才能顺利进行下去。</p>
 <p>此处需要一张图</p>
 <p><img src="hbase-wal.png" alt=""></p>
 <p>思考：syncRunner为多个，大概是为了隔离notifier和sync，两种操作不要在一起，最终可以减轻同步代价。</p>
-<p>#简单版代码实现</p>
+<p>##简单版代码实现</p>
 <p>见地址 <a href="https://github.com/liubinbin/pan/tree/master/src/main/java/cn/liubinbin/pan/experiment/log/v3" target="_blank" rel="external">https://github.com/liubinbin/pan/tree/master/src/main/java/cn/liubinbin/pan/experiment/log/v3</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hbase-src-wal/" data-id="cjqdux7mz000s0a9sjmo2djw9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/hbase-src-wal/" data-id="cjqdv08wy000v139so7mh1ns9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -314,7 +316,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="cjqdux7mo000c0a9srxgn22em" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="cjqdv08wg000d139sftzwxmnr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mvn/">mvn</a></li></ul>
@@ -366,7 +368,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/2018-year-end-summary/" data-id="cjqdux7m900010a9su4ou3x8l" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/2018-year-end-summary/" data-id="cjqdv08w20003139srhanj7pm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/summary/">summary</a></li></ul>
@@ -410,7 +412,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/14/ability-in-profession/" data-id="cjqdux7mi00080a9sns9jf5om" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/14/ability-in-profession/" data-id="cjqdv08wb0009139sa5g70qrt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ability/">ability</a></li></ul>
@@ -493,7 +495,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/02/paldb-analysis/" data-id="cjqdux7oc001v0a9s8id1s8i4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/02/paldb-analysis/" data-id="cjqdv08xz001t139s226ihsyd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/paldb/">paldb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src/">src</a></li></ul>
@@ -570,7 +572,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="cjqdux7o4001o0a9s3qbzy3d1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="cjqdv08xa0012139stlubh75d" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zk/">zk</a></li></ul>
@@ -643,7 +645,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="cjqdux7n1000v0a9s4sz6llul" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="cjqdv08x0000x139s5agde730" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bank/">bank</a></li></ul>
