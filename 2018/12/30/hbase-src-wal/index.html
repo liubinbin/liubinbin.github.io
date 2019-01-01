@@ -16,7 +16,7 @@ wal用了一个ringbuffer，ring">
 wal实现的一头是多个handler线程处理put请求，另一头是针对hdfs写这种费时间的操作。并且需要实现两件事情：一是在写hdfs时不能出现混乱，二是写完hdfs之后需要有个机制通知到在等待hdfs写返回的处理写请求的线程。
 wal用了一个ringbuffer，ring">
 <meta property="og:image" content="http://yoursite.com/hbase-wal.png">
-<meta property="og:updated_time" content="2019-01-01T14:42:12.820Z">
+<meta property="og:updated_time" content="2019-01-01T14:43:27.506Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HBase源码系列之wal">
 <meta name="twitter:description" content="简介wal在hbase中是为了持久化memstore中未flush到hfile的数据，以防rs宕机或异常退出导致数据的丢失。
@@ -142,13 +142,12 @@ wal用了一个ringbuffer，ring">
 <p>此处需要一张图</p>
 <p><img src="hbase-wal.png" alt=""></p>
 <p>思考：syncRunner为多个，大概是为了隔离notifier和sync，两种操作不要在一起，最终可以减轻同步代价。</p>
-<p>##简单版代码实现</p>
-<p>见地址 <a href="https://github.com/liubinbin/pan/tree/master/src/main/java/cn/liubinbin/pan/experiment/log/v3" target="_blank" rel="external">https://github.com/liubinbin/pan/tree/master/src/main/java/cn/liubinbin/pan/experiment/log/v3</a></p>
+<h2 id="简单版代码实现"><a href="#简单版代码实现" class="headerlink" title="简单版代码实现"></a>简单版代码实现</h2><p>见地址 <a href="https://github.com/liubinbin/pan/tree/master/src/main/java/cn/liubinbin/pan/experiment/log/v3" target="_blank" rel="external">https://github.com/liubinbin/pan/tree/master/src/main/java/cn/liubinbin/pan/experiment/log/v3</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hbase-src-wal/" data-id="cjqdv39ng001b1h9s346b48lb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/hbase-src-wal/" data-id="cjqdv4tf1000q1v9slo11p36x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
