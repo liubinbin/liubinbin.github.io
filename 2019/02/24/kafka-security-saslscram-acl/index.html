@@ -5,19 +5,25 @@
   
   <title>kafka-security-saslscram-acl | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="kafka安全内容主要是分为认证和权限。
-介绍sasl/scramacl">
+  <meta name="description" content="#介绍
+kafka安全主题的内容主要是分为认证和权限。
+认证为了证明你是alice，而权限是决定了你能做什么事情，比如能不能些topic，能不能读topic等之类的事情。
+在 http://kafka.apache.org/documentation/#security 里介绍了好多种类型。如果我们想要在线上开启认证和权限，我们需要考虑好多东西。比如能否动态增加权限，客户端接入操作是否足够简单等等">
 <meta property="og:type" content="article">
 <meta property="og:title" content="kafka-security-saslscram-acl">
 <meta property="og:url" content="http://yoursite.com/2019/02/24/kafka-security-saslscram-acl/index.html">
 <meta property="og:site_name" content="bin">
-<meta property="og:description" content="kafka安全内容主要是分为认证和权限。
-介绍sasl/scramacl">
-<meta property="og:updated_time" content="2019-02-24T07:30:05.050Z">
+<meta property="og:description" content="#介绍
+kafka安全主题的内容主要是分为认证和权限。
+认证为了证明你是alice，而权限是决定了你能做什么事情，比如能不能些topic，能不能读topic等之类的事情。
+在 http://kafka.apache.org/documentation/#security 里介绍了好多种类型。如果我们想要在线上开启认证和权限，我们需要考虑好多东西。比如能否动态增加权限，客户端接入操作是否足够简单等等">
+<meta property="og:updated_time" content="2019-02-24T07:58:57.819Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="kafka-security-saslscram-acl">
-<meta name="twitter:description" content="kafka安全内容主要是分为认证和权限。
-介绍sasl/scramacl">
+<meta name="twitter:description" content="#介绍
+kafka安全主题的内容主要是分为认证和权限。
+认证为了证明你是alice，而权限是决定了你能做什么事情，比如能不能些topic，能不能读topic等之类的事情。
+在 http://kafka.apache.org/documentation/#security 里介绍了好多种类型。如果我们想要在线上开启认证和权限，我们需要考虑好多东西。比如能否动态增加权限，客户端接入操作是否足够简单等等">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -88,12 +94,56 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>kafka安全内容主要是分为认证和权限。</p>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><h1 id="sasl-scram"><a href="#sasl-scram" class="headerlink" title="sasl/scram"></a>sasl/scram</h1><h1 id="acl"><a href="#acl" class="headerlink" title="acl"></a>acl</h1>
+        <p>#介绍</p>
+<p>kafka安全主题的内容主要是分为认证和权限。</p>
+<p>认证为了证明你是alice，而权限是决定了你能做什么事情，比如能不能些topic，能不能读topic等之类的事情。</p>
+<p>在 <a href="http://kafka.apache.org/documentation/#security" target="_blank" rel="external">http://kafka.apache.org/documentation/#security</a> 里介绍了好多种类型。如果我们想要在线上开启认证和权限，我们需要考虑好多东西。比如能否动态增加权限，客户端接入操作是否足够简单等等。基于各种讨论后，我们目前决定使用sasl/scram + acl的方式。</p>
+<p>此文章主要分为两块：一个是配置，另一个是操作命令。</p>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>##说明</p>
+<p>在broker和zookeeper之间的认证不支持org.apache.kafka.common.security.scram.ScramLoginModule，所以引入org.apache.zookeeper.server.auth.DigestLoginModule。详见如下链接：</p>
+<p><a href="https://cwiki.apache.org/confluence/display/ZOOKEEPER/Client-Server+mutual+authentication" target="_blank" rel="external">https://cwiki.apache.org/confluence/display/ZOOKEEPER/Client-Server+mutual+authentication</a></p>
+<p>##broker</p>
+<h4 id="server-properties"><a href="#server-properties" class="headerlink" title="server.properties"></a>server.properties</h4><p>listeners=SASL_PLAINTEXT://bin:9092</p>
+<p>########### SASL/SCRAM ##### ############################<br>security.inter.broker.protocol=SASL_PLAINTEXT<br>sasl.mechanism.inter.broker.protocol=SCRAM-SHA-256<br>sasl.enabled.mechanisms=SCRAM-SHA-256</p>
+<p>########### ACL ##### ############################<br>authorizer.class.name=kafka.security.auth.SimpleAclAuthorizer<br>allow.everyone.if.no.acl.found=true<br>super.users=User:Admin</p>
+<h4 id="kafka-server-jaas-conf"><a href="#kafka-server-jaas-conf" class="headerlink" title="kafka_server_jaas.conf"></a>kafka_server_jaas.conf</h4><p>新增jaas文件，内容如下：</p>
+<p>KafkaServer {<br>    org.apache.kafka.common.security.scram.ScramLoginModule required<br>    username=”admin”<br>    password=”admin-secret”;<br>};</p>
+<p>Client {<br>    org.apache.zookeeper.server.auth.DigestLoginModule required<br>    username=”admin”<br>    password=”admin-secret”;<br>};</p>
+<p>此配置通过在kafka-server-start.sh中添加如下命令，将jaas文件加入broker的jvm中。</p>
+<p>export KAFKA_OPTS=”-Djava.security.auth.login.config=$KAFKA_HOME/config/kafka_server_jaas.conf”</p>
+<p>##zookeeper</p>
+<p>####kafka_zk_jaas.conf</p>
+<p>新增jaas文件，内容如下：</p>
+<p>Server {<br>    org.apache.zookeeper.server.auth.DigestLoginModule required<br>    user_admin=”admin-secret”;<br>};</p>
+<p>需要和kafka_server_jaas.conf里Client对应。</p>
+<p>此配置通过在zookeeper-server-start.sh中添加如下命令，将jaas文件加入zk的jvm中。</p>
+<p>export KAFKA_OPTS=”-Djava.security.auth.login.config=$KAFKA_HOME/config/kafka_zk_jaas.conf”</p>
+<h2 id="client"><a href="#client" class="headerlink" title="client"></a>client</h2><p>####kafka_client_jaas.conf</p>
+<p>新增jaas文件，内容如下：</p>
+<p>KafkaClient {<br>    org.apache.kafka.common.security.scram.ScramLoginModule required<br>    username=”alice”<br>    password=”alice-secret”;<br>};</p>
+<p>此配置通过在kafka-console-consumer.sh和kafka-console-producer.sh中添加如下命令，将jaas文件加入zk的jvm中。</p>
+<p>export KAFKA_OPTS=”-Djava.security.auth.login.config=/Users/liubinbin/Documents/install/kafka_2.12-2.1.0/config/kafka_client_jaas.conf”</p>
+<h4 id="saslscram-producer-properties"><a href="#saslscram-producer-properties" class="headerlink" title="saslscram-producer.properties"></a>saslscram-producer.properties</h4><p>添加如下配置：</p>
+<p>security.protocol=SASL_PLAINTEXT<br>sasl.mechanism=SCRAM-SHA-256</p>
+<h4 id="saslscram-consumer-properties"><a href="#saslscram-consumer-properties" class="headerlink" title="saslscram-consumer.properties"></a>saslscram-consumer.properties</h4><p>添加如下配置：</p>
+<p>security.protocol=SASL_PLAINTEXT<br>sasl.mechanism=SCRAM-SHA-256</p>
+<h1 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h1><h2 id="认证"><a href="#认证" class="headerlink" title="认证"></a>认证</h2><p>####添加用户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">bin/kafka-configs.sh --zookeeper localhost:2181 --alter --add-config &apos;SCRAM-SHA-256=[iterations=8192,password=alice-secret],SCRAM-SHA-512=[password=alice-secret]&apos; --entity-type users --entity-name alice</div><div class="line"></div><div class="line">bin/kafka-configs.sh --zookeeper localhost:2181 --alter --add-config &apos;SCRAM-SHA-256=[password=admin-secret],SCRAM-SHA-512=[password=admin-secret]&apos; --entity-type users --entity-name admin</div></pre></td></tr></table></figure>
+<h4 id="列出用户"><a href="#列出用户" class="headerlink" title="列出用户"></a>列出用户</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kafka-configs.sh --zookeeper localhost:2181 --describe --entity-type users</div></pre></td></tr></table></figure>
+<h4 id="查看用户"><a href="#查看用户" class="headerlink" title="查看用户"></a>查看用户</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kafka-configs.sh --zookeeper localhost:2181 --describe --entity-type users --entity-name alice</div></pre></td></tr></table></figure>
+<p>####删除用户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kafka-configs.sh --zookeeper localhost:2181 --alter --delete-config &apos;SCRAM-SHA-512&apos; --entity-type users --entity-name alice</div></pre></td></tr></table></figure>
+<h2 id="权限"><a href="#权限" class="headerlink" title="权限"></a>权限</h2><p>####增加权限</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:alice --operation Read --operation Write --topic liubb</div></pre></td></tr></table></figure>
+<h4 id="列出权限"><a href="#列出权限" class="headerlink" title="列出权限"></a>列出权限</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --list --topic liubb</div></pre></td></tr></table></figure>
+<h4 id="删除权限"><a href="#删除权限" class="headerlink" title="删除权限"></a>删除权限</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --remove --allow-principal User:alice --operation Read --operation Write --topic liubb</div></pre></td></tr></table></figure>
+<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><h4 id="生产者"><a href="#生产者" class="headerlink" title="生产者"></a>生产者</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kafka-console-producer.sh --broker-list localhost:9092  --topic liubb --producer.config config/saslscram-producer.properties</div></pre></td></tr></table></figure>
+<h4 id="消费者"><a href="#消费者" class="headerlink" title="消费者"></a>消费者</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic liubb --consumer.config config/saslscram-consumer.properties</div></pre></td></tr></table></figure>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/02/24/kafka-security-saslscram-acl/" data-id="cjsilfqw60012609sj1flghsp" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/02/24/kafka-security-saslscram-acl/" data-id="cjsimgprv00135j9sv8ku926f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/">kafka</a></li></ul>

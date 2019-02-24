@@ -98,10 +98,72 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjsilfqvl0007609s69hnf1mm" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjsimgpr700075j9sadwa68xp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-vmware-install-centos" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/25/vmware-install-centos/" class="article-date">
+  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/25/vmware-install-centos/">vmware安装centos</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。</p>
+<h2 id="第0步-安装vmware和下载centos"><a href="#第0步-安装vmware和下载centos" class="headerlink" title="第0步 安装vmware和下载centos"></a>第0步 安装vmware和下载centos</h2><p>下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。</p>
+<h2 id="第1步-创建centos虚拟机"><a href="#第1步-创建centos虚拟机" class="headerlink" title="第1步 创建centos虚拟机"></a>第1步 创建centos虚拟机</h2><p><img src="step1.png" alt=""></p>
+<p>选择Create a custom virtual machine</p>
+<p><img src="step2.png" alt=""></p>
+<p>选择对应的版本CentOS 64-bit</p>
+<p><img src="step3.png" alt=""></p>
+<p>选择Create a new virtual disk</p>
+<p><img src="step4.png" alt=""></p>
+<p>选择Customize Settings，然后选择Save.</p>
+<p>然后开始设置配置，主要如下：</p>
+<ul>
+<li>Processors &amp; Memory    (4core 8G)</li>
+<li>Hard Disk (80G)</li>
+<li>CD/DVD (IDE) (此处一定需要设置，将下载的iso加入配置中，并且需要连接DVD)</li>
+</ul>
+<p>然后开始安装，更改mini 安装模式，添加gnome桌面，然后进入正常的linux安装界面。之后一切就比较顺利。</p>
+<p>最后可能需要安装图形界面：<strong>yum groupinstall</strong> “GNOME Desktop”，重启进入root执行“init 5”</p>
+<p>##注意事项</p>
+<p>###新版系统需要改变设置</p>
+<p>Please check System Preferences ==&gt;Security&amp;Privacy==&gt;Privacy==&gt;Accessibility, make sure you have added Fusion into the list.</p>
+<p>###键盘切换快捷键：</p>
+<p>cmd + G ： 切到虚拟机</p>
+<p>cmd + control：切到mac系统</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/08/25/vmware-install-centos/" data-id="cjsimgpsn001v5j9smias9jo3" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
 
     </footer>
   </div>
@@ -175,69 +237,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/docker-basics/" data-id="cjsilfqvt000f609sao3z480s" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-vmware-install-centos" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/08/25/vmware-install-centos/" class="article-date">
-  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/08/25/vmware-install-centos/">vmware安装centos</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。</p>
-<h2 id="第0步-安装vmware和下载centos"><a href="#第0步-安装vmware和下载centos" class="headerlink" title="第0步 安装vmware和下载centos"></a>第0步 安装vmware和下载centos</h2><p>下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。</p>
-<h2 id="第1步-创建centos虚拟机"><a href="#第1步-创建centos虚拟机" class="headerlink" title="第1步 创建centos虚拟机"></a>第1步 创建centos虚拟机</h2><p><img src="step1.png" alt=""></p>
-<p>选择Create a custom virtual machine</p>
-<p><img src="step2.png" alt=""></p>
-<p>选择对应的版本CentOS 64-bit</p>
-<p><img src="step3.png" alt=""></p>
-<p>选择Create a new virtual disk</p>
-<p><img src="step4.png" alt=""></p>
-<p>选择Customize Settings，然后选择Save.</p>
-<p>然后开始设置配置，主要如下：</p>
-<ul>
-<li>Processors &amp; Memory    (4core 8G)</li>
-<li>Hard Disk (80G)</li>
-<li>CD/DVD (IDE) (此处一定需要设置，将下载的iso加入配置中，并且需要连接DVD)</li>
-</ul>
-<p>然后开始安装，更改mini 安装模式，添加gnome桌面，然后进入正常的linux安装界面。之后一切就比较顺利。</p>
-<p>最后可能需要安装图形界面：<strong>yum groupinstall</strong> “GNOME Desktop”，重启进入root执行“init 5”</p>
-<p>##注意事项</p>
-<p>###新版系统需要改变设置</p>
-<p>Please check System Preferences ==&gt;Security&amp;Privacy==&gt;Privacy==&gt;Accessibility, make sure you have added Fusion into the list.</p>
-<p>###键盘切换快捷键：</p>
-<p>cmd + G ： 切到虚拟机</p>
-<p>cmd + control：切到mac系统</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/vmware-install-centos/" data-id="cjsilfqws001y609s46byupoa" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/08/25/docker-basics/" data-id="cjsimgpre000c5j9sqdhk5kw7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -299,7 +299,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cjsilfqwj001l609s8u6s71ie" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cjsimgpsk001n5j9sdbxc09ar" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -341,7 +341,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjsilfqwi001k609s3mktbbcf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjsimgpsj001l5j9suf3wfeq9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -431,7 +431,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/hbase-src-hfile/" data-id="cjsilfqw3000v609sl31qandq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/14/hbase-src-hfile/" data-id="cjsimgpro000r5j9sion1989v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -502,7 +502,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/hbase-src-compaction/" data-id="cjsilfqvs000c609sdoghd6ar" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/09/hbase-src-compaction/" data-id="cjsimgprf000f5j9svpotaboc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -547,7 +547,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cjsilfqvj0004609sk5yef25o" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cjsimgpr200035j9sq66pww85" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -605,7 +605,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cjsilfqvm0008609sxyxb5k1c" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cjsimgpr800085j9skf846uv9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -734,7 +734,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/hbase-src-get-in-server/" data-id="cjsilfqvx000k609ssk8z4goa" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/04/25/hbase-src-get-in-server/" data-id="cjsimgprk000k5j9sqlj9n7kc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
