@@ -15,7 +15,7 @@
 <meta property="og:description" content="1. 介绍kafka安全主题的内容主要是分为认证和权限。
 认证为了证明你是alice，而权限是决定了你能做什么事情，比如能不能些topic，能不能读topic等之类的事情。
 在 http://kafka.apache.org/documentation/#security 里介绍了好多种类型。如果我们想要在线上开启认证和权限，我们需要考虑好多东西。比如能否动态增加权限，客户端接入操作是否足够简单等">
-<meta property="og:updated_time" content="2019-02-24T08:16:07.345Z">
+<meta property="og:updated_time" content="2019-02-24T08:29:30.289Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="kafka-security-saslscram-acl">
 <meta name="twitter:description" content="1. 介绍kafka安全主题的内容主要是分为认证和权限。
@@ -60,7 +60,7 @@
         
           <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -114,6 +114,9 @@
 <p>需要和kafka_server_jaas.conf里Client对应。</p>
 <p>此配置通过在zookeeper-server-start.sh中添加如下命令，将jaas文件加入zk的jvm中。</p>
 <p>export KAFKA_OPTS=”-Djava.security.auth.login.config=$KAFKA_HOME/config/kafka_zk_jaas.conf”</p>
+<h3 id="2-3-2-zoo-cfg"><a href="#2-3-2-zoo-cfg" class="headerlink" title="2.3.2 zoo.cfg"></a>2.3.2 zoo.cfg</h3><p>添加如下配置：</p>
+<p>authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider</p>
+<p>requireClientAuthScheme=sasl</p>
 <h2 id="2-4-client"><a href="#2-4-client" class="headerlink" title="2.4 client"></a>2.4 client</h2><h3 id="2-4-1-kafka-client-jaas-conf"><a href="#2-4-1-kafka-client-jaas-conf" class="headerlink" title="2.4.1 kafka_client_jaas.conf"></a>2.4.1 kafka_client_jaas.conf</h3><p>新增jaas文件，内容如下：</p>
 <p>KafkaClient {<br>    org.apache.kafka.common.security.scram.ScramLoginModule required<br>    username=”alice”<br>    password=”alice-secret”;<br>};</p>
 <p>此配置通过在kafka-console-consumer.sh和kafka-console-producer.sh中添加如下命令，将jaas文件加入zk的jvm中。</p>
@@ -135,7 +138,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/02/24/kafka-security-saslscram-acl/" data-id="cjsin2oty001axa9sdreef06t" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/02/24/kafka-security-saslscram-acl/" data-id="cjsink3cg0017b49s4urlnutc" class="article-share-link">Delen</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/">kafka</a></li></ul>
@@ -148,7 +151,7 @@
   
   
     <a href="/2019/02/24/kafka-series/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
+      <strong class="article-nav-caption">Ouder</strong>
       <div class="article-nav-title">kafka-series</div>
     </a>
   
@@ -166,7 +169,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Labels</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
     </div>
@@ -185,7 +188,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
+    <h3 class="widget-title">Archieven</h3>
     <div class="widget">
       <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
@@ -195,7 +198,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Recente berichten</h3>
     <div class="widget">
       <ul>
         
