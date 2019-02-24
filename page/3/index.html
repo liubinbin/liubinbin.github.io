@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -60,6 +60,55 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-a-special-case-about-rwlock" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/08/a-special-case-about-rwlock/" class="article-date">
+  <time datetime="2017-10-08T12:31:28.000Z" itemprop="datePublished">2017-10-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/08/a-special-case-about-rwlock/">一个奇怪的rwlock锁卡住的case</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>遇到一个case，有关于读写锁。原因路径如下：</p>
+<ol>
+<li>线上有一个datanode节点宕机，导致与此节点的连接出现问题。</li>
+<li>有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。</li>
+<li>由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。</li>
+<li>这时候出现了其他线程的读锁也无法获取到。</li>
+</ol>
+<p>从线程栈看，就是一个线程获取了读锁，阻塞了别的线程获取读锁和写锁。</p>
+<p>还原现场例子代码地址：<a href="https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock" target="_blank" rel="external">https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock</a></p>
+<p>原理猜测：理论上来说，对于的读写锁而言，读锁之间不应该相互阻塞。但是在一个情况防止饿死，将写锁的优先级提高到了读锁之前。这时候读锁就尴尬了。</p>
+<p>更加具体理解需要看源码，以后再分享。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">看看ReentrantReadWriteLock，注意构造函数里可以传一个布尔值。</div></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjsil9rzu00070y9sxbrdtttz" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-vmware-install-centos" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -111,7 +160,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/vmware-install-centos/" data-id="cjqgjhe9d001lhi9sh7rg4obr" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/08/25/vmware-install-centos/" data-id="cjsil9s10001u0y9sna94alxt" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -173,7 +222,84 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cjqgjhe95001ghi9scitnitc3" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/08/25/some-thoughts/" data-id="cjsil9s0y001p0y9syxd6jqzx" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-docker-basics" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/25/docker-basics/" class="article-date">
+  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/25/docker-basics/">最近使用docker的一些小记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>mysql出了需要grant之外，还要修改bind-address</p>
+<p>docker 基本命令</p>
+<p>docker 中container基于image制作，image类似一个模版，基于某个image制作的contaner都具有和image一样的内容</p>
+<p>我们可以根据REPOSITORY来判断这个镜像是来自哪个服务器，如果没有 / 则表示官方镜像，并且在search的时候会标有OFFICIAL，类似于ip:port/repos_name则表示的是私服。</p>
+<p>docker pull username/repository&lt;:tag_name&gt; 或者 docker pull repository，pull和push相对应。</p>
+<h4 id="5-2-运行出一个container放到后台运行"><a href="#5-2-运行出一个container放到后台运行" class="headerlink" title="5.2 运行出一个container放到后台运行"></a>5.2 运行出一个container放到后台运行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># docker run -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 2; done&quot;</div><div class="line">ae60c4b642058fefcc61ada85a610914bed9f5df0e2aa147100eab85cea785dc</div></pre></td></tr></table></figure>
+<p>它将直接把启动的container挂起放在后台运行（这才叫saas），并且会输出一个<code>CONTAINER ID</code>，通过<code>docker ps</code>可以看到这个容器的信息，可在container外面查看它的输出<code>docker logs ae60c4b64205</code>，也可以通过<code>docker attach ae60c4b64205</code>连接到这个正在运行的终端，此时在<code>Ctrl+C</code>退出container就消失了，按ctrl-p ctrl-q可以退出到宿主机，而保持container仍然在运行</p>
+<p>端口映射</p>
+<p>Docker中运行的程序的端口是不能直接访问的，需要映射到本地，通过-p参数实现，例如将6379端口映射到本机的6378端口</p>
+<p>容器日志</p>
+<p>查看当前容器的日志</p>
+<p><code>docker logs container-name/container-id</code></p>
+<p>我们可以查看之前redis镜像的容器</p>
+<p><code>docker logs test-redis</code></p>
+<p>可以看到redis启动的日志</p>
+<p>运行中的容器其实就是一个完备的Linux操作系统，我们可以登录访问当前容器，登录后可以在容器中进行常规的Linux操作。<br><code>docker exec -it container-id/container-name bash</code></p>
+<p>系统版本</p>
+<p>[root@bogon yum.repos.d]# uname -a<br>Linux bogon 2.6.32-642.el6.x86_64 #1 SMP Tue May 10 17:27:01 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux<br>[root@bogon yum.repos.d]# cat /etc/redhat-release<br>CentOS release 6.8 (Final)</p>
+<p>安装EPEL</p>
+<p>因为系统自带的repo中不带docker需要安装epel</p>
+<p>rpm -Uvh <a href="http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm" target="_blank" rel="external">http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm</a></p>
+<p>安装Docker</p>
+<p>yum install -y docker-io</p>
+<p>开机自启动与启动Docker</p>
+<p>[root@bogon yum.repos.d]# service docker start<br>Starting cgconfig service:                                 [  OK  ]<br>Starting docker:                                       [  OK  ]<br>[root@bogon yum.repos.d]# chkconfig docker on<br>[root@bogon yum.repos.d]# chkconfig docker –list<br>docker          0:off   1:off   2:on    3:on    4:on    5:on    6:off<br>[root@bogon yum.repos.d]# </p>
+<p>至此docker已经安装完成</p>
+<p>docker rm 删除container</p>
+<p>docker rmi 删除image</p>
+<p><a href="http://blog.csdn.net/permike/article/details/51879578" target="_blank" rel="external">http://blog.csdn.net/permike/article/details/51879578</a> 总结的非常好</p>
+<p>已完成<br>docker pull morrisjobke/docker-swift-onlyone<br>docker pull kahing/docker-swift<br>docker pull debian</p>
+<p>docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]</p>
+<p>启动container<br>  docker run -d -P -v /srv/node/sdb1/docker/:/swift/nodes -t bouncestorage/swift-aio<br>通过docker ps 获取端口<br>然后通过<a href="http://127.0.0.1" target="_blank" rel="external">http://127.0.0.1</a>:<port>/auth/v1.0 进行系统的操作和访问<br>具体的命令形式如下<br>  swift -A <a href="http://127.0.0.1:32770/auth/v1.0" target="_blank" rel="external">http://127.0.0.1:32770/auth/v1.0</a> -U test:tester -K testing</port></p>
+<p>swift-aio-docker</p>
+<p>docker run -it –rm debian bash<br>  -it: 这是两个参数，一个是 -i：交互式操作，一个是 -t 终端。<br>  –rm: 这个参数是说容器退出后随之将其删除</p>
+<p><code>bash</code>：放在镜像名后的是<strong>命令</strong>，这里我们希望有个交互式 Shell</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]</div></pre></td></tr></table></figure>
+<p>Docker Registry 地址[:端口号] 默认docker hub</p>
+<p>仓库名为<code>&lt;用户名&gt;/&lt;软件名&gt;</code> ，默认为 <code>library</code></p>
+<p>latest为默认标签<br>​    </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/08/25/docker-basics/" data-id="cjsil9s00000a0y9sqyic26ey" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -215,7 +341,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjqgjhe93001ehi9s3hwbh0i3" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/05/30/rit-in-HBase/" data-id="cjsil9s0q001h0y9sp3fsmb3l" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -305,7 +431,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/14/hbase-src-hfile/" data-id="cjqgjhe8g000lhi9su4kr1dkz" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/05/14/hbase-src-hfile/" data-id="cjsil9s0c000n0y9sfmln58lw" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -376,7 +502,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/09/hbase-src-compaction/" data-id="cjqgjhe89000ehi9s8gl1g7jo" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/05/09/hbase-src-compaction/" data-id="cjsil9s07000h0y9str5on1ef" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -421,7 +547,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cjqgjhe88000chi9sxsmyor3e" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/05/05/HBase-trap/" data-id="cjsil9rzq00040y9sm1jvzmbw" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -479,7 +605,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cjqgjhe830008hi9svw7fp81z" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/04/26/balance-in-hdfs/" data-id="cjsil9rzv00080y9ss4z4jra3" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
@@ -608,148 +734,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/25/hbase-src-get-in-server/" data-id="cjqgjhe8d000hhi9stsn27q1n" class="article-share-link">Delen</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-hbase-src-memstore" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/04/12/hbase-src-memstore/" class="article-date">
-  <time datetime="2017-04-11T16:01:56.000Z" itemprop="datePublished">2017-04-12</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/12/hbase-src-memstore/">HBase源码系列之memstore</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="主要结构"><a href="#主要结构" class="headerlink" title="主要结构"></a>主要结构</h2><p>​    主要结构包括「kvset，snapshot」，先说snapshot，主要适用于生成HFile时临时存放的kvset的一个快照。更改的snaphost一定条件判断可以生成HFile时调用</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, <span class="keyword">long</span> myseqid, MonitoredTask status)</div></pre></td></tr></table></figure>
-<p>此方法两种情况会调用</p>
-<p>​    一个是关闭时。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">HRegion.doClose(<span class="keyword">boolean</span> abort, MonitoredTask status)</div></pre></td></tr></table></figure>
-<p>​    另一个时需要flush时。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, <span class="keyword">long</span> myseqid, MonitoredTask status)</div></pre></td></tr></table></figure>
-<h2 id="flush过程"><a href="#flush过程" class="headerlink" title="flush过程"></a>flush过程</h2><ol>
-<li>准备工作</li>
-<li>获取HRegion.updatesLock的写锁</li>
-<li>获取mvcc事务，并努力前提读点</li>
-<li>调用prepare（）<ol>
-<li>将snapshot设置为的kvset，并重新生成一个kvset，用于写入。</li>
-</ol>
-</li>
-<li>释放写锁</li>
-<li>同步wal日志</li>
-<li>等到mvcc结束</li>
-<li>flushcache()</li>
-<li>commit()<ol>
-<li>才更新构造scanner使用的org.apache.hadoop.hbase.regionserver.DefaultStoreFileManager.storefiles</li>
-</ol>
-</li>
-</ol>
-<h2 id="疑问与解释"><a href="#疑问与解释" class="headerlink" title="疑问与解释"></a>疑问与解释</h2><h3 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h3><p>最开始，我感觉逻辑有问题，可能会导致在某个时间点（flush）时，读取不到已经写入的数据。</p>
-<h3 id="回答："><a href="#回答：" class="headerlink" title="回答："></a>回答：</h3><p>有三个方面：</p>
-<ol>
-<li><p>读取数据时会读取snapshot的数据。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> KeyValue <span class="title">next</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="keyword">if</span> (theNext == <span class="keyword">null</span>) &#123;</div><div class="line">      <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">final</span> KeyValue ret = theNext;</div><div class="line"></div><div class="line">  <span class="comment">// Advance one of the iterators</span></div><div class="line">  <span class="keyword">if</span> (theNext == kvsetNextRow) &#123;</div><div class="line">    kvsetNextRow = getNext(kvsetIt);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    snapshotNextRow = getNext(snapshotIt);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Calculate the next value</span></div><div class="line">  theNext = getLowest(kvsetNextRow, snapshotNextRow);</div><div class="line"></div><div class="line">  <span class="comment">//long readpoint = ReadWriteConsistencyControl.getThreadReadPoint();</span></div><div class="line">  <span class="comment">//DebugPrint.println(" MS@" + hashCode() + " next: " + theNext + " next_next: " +</span></div><div class="line">  <span class="comment">//    getLowest() + " threadpoint=" + readpoint);</span></div><div class="line">  <span class="keyword">return</span> ret;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>清除snapshot和更新文件时在一个锁内。</p>
-<p>insertNewFiles方法将刷写成的HFile加入Store的fileManger里storefiles里，此结构用语构造storefilescanner。</p>
-<p>clearSnapshot方法将snapshot设置为一个新的空的结构。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.lock.writeLock().lock();</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      <span class="keyword">this</span>.storeEngine.getStoreFileManager().insertNewFiles(sfs);</div><div class="line">      <span class="keyword">this</span>.memstore.clearSnapshot(set);</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">      <span class="comment">// We need the lock, as long as we are updating the storeFiles</span></div><div class="line">      <span class="comment">// or changing the memstore. Let us release it before calling</span></div><div class="line">      <span class="comment">// notifyChangeReadersObservers. See HBASE-4485 for a possible</span></div><div class="line">      <span class="comment">// deadlock scenario that could have happened if continue to hold</span></div><div class="line">      <span class="comment">// the lock.</span></div><div class="line">      <span class="keyword">this</span>.lock.writeLock().unlock();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>第三个方面，注意到第一个方面读取时或去的scanner方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> List&lt;KeyValueScanner&gt; <span class="title">getScanners</span><span class="params">(<span class="keyword">boolean</span> cacheBlocks, <span class="keyword">boolean</span> isGet,</span></span></div><div class="line">     <span class="keyword">boolean</span> usePread, <span class="keyword">boolean</span> isCompaction, ScanQueryMatcher matcher, <span class="keyword">byte</span>[] startRow,</div><div class="line">     <span class="keyword">byte</span>[] stopRow, <span class="keyword">long</span> readPt) <span class="keyword">throws</span> IOException &#123;</div><div class="line">   Collection&lt;StoreFile&gt; storeFilesToScan;</div><div class="line">   List&lt;KeyValueScanner&gt; memStoreScanners;</div><div class="line">   <span class="keyword">this</span>.lock.readLock().lock();</div><div class="line">   <span class="keyword">try</span> &#123;</div><div class="line">     storeFilesToScan =</div><div class="line">         <span class="keyword">this</span>.storeEngine.getStoreFileManager().getFilesForScanOrGet(isGet, startRow, stopRow);</div><div class="line">     memStoreScanners = <span class="keyword">this</span>.memstore.getScanners(readPt);</div><div class="line">   &#125; <span class="keyword">finally</span> &#123;</div><div class="line">     <span class="keyword">this</span>.lock.readLock().unlock();</div><div class="line">   &#125;</div><div class="line">  ....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>snapshot里的数据要么被getScanner引用到要么清空并生成新文件，而且两者互斥（使用的是同一个锁）。这样就可以保证数据能被读取到了。</p>
-<p>​</p>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/12/hbase-src-memstore/" data-id="cjqgjhe8j000qhi9st745dasb" class="article-share-link">Delen</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-hbase-src-mvcc" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/04/09/hbase-src-mvcc/" class="article-date">
-  <time datetime="2017-04-09T15:55:35.000Z" itemprop="datePublished">2017-04-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/09/hbase-src-mvcc/">HBase源码系列之MVCC</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h2><p>​    KeyValue类中有long mvcc的变量，感觉此处可以跟踪。</p>
-<p>​    MultiVersionConsistencyControl在一个Region有一个。</p>
-<p>​    MultiVersionConsistencyControl{</p>
-<p>​        memstoreRead：能够读取的序列号。</p>
-<p>​        memstoreWrite：写操作的序列号。</p>
-<p>​        writeQueue：写操作队列}</p>
-<h2 id="问题点"><a href="#问题点" class="headerlink" title="问题点"></a>问题点</h2><p>就是需要去回答的问题，这些问题十分有助于思考这个大问题</p>
-<ol>
-<li><p>读取是版本的选择</p>
-<p>在org.apache.hadoop.hbase.regionserver.MemStore.MemStoreScanner.getNext(Iterator<keyvalue> it)  L777中判断了曲出来的KeyValue是否到了可以读的范围（v.getMvccVersion() &lt;= this.readPoint）。否则掠过</keyvalue></p>
-<p>在构造scanner时会将readpoint传入到scanner，说明能读到的版本在构造开始就定好了。</p>
-</li>
-<li><p>写的时候的版本</p>
-<p>w = mvcc.beginMemstoreInsert();</p>
-<p>​    申请一个写操作的序列号，使用的变量是memstoreWrite</p>
-<p>mvcc.completeMemstoreInsert(w);</p>
-<p>​    标记操作结束，尽量更新memstoreRead，并且通知readWriters（在compaction和flush时会用到，因为这时需要将那时的版本都等待写完才能操作）。</p>
-<p>​    等待到此操作完成</p>
-</li>
-<li><p>回滚memstore的时候版本的控制</p>
-<p>回滚操作时找kv有版本比较MemStore.java L334。并且会滚后再执行mvcc.completeMemstoreInsert(w);</p>
-</li>
-</ol>
-<p>ps：long org.apache.hadoop.hbase.regionserver.HRegion.getReadpoint(IsolationLevel isolationLevel) L1115用了一个隔离级别。之后写一篇隔离级别的小文，加深理解。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/04/09/hbase-src-mvcc/" data-id="cjqgjhe8i000nhi9s1qzavq7m" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/04/25/hbase-src-get-in-server/" data-id="cjsil9s0a000k0y9s27r1b478" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -775,9 +760,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Labels</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
     </div>
   </div>
 
@@ -785,18 +770,18 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 12.5px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/src/" style="font-size: 12.5px;">src</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
+      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 12.5px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/src/" style="font-size: 12.5px;">src</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
     </div>
   </div>
 
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archieven</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -804,9 +789,17 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recente berichten</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/02/24/kafka-security-saslscram-acl/">kafka-security-saslscram-acl</a>
+          </li>
+        
+          <li>
+            <a href="/2019/02/24/kafka-series/">kafka-series</a>
+          </li>
         
           <li>
             <a href="/2019/01/01/ConcurrentSkipListMap-analysis/">ConcurrentSkipListMap-analysis</a>
@@ -818,14 +811,6 @@
         
           <li>
             <a href="/2018/12/30/hbase-src-series/">HBase源码系列</a>
-          </li>
-        
-          <li>
-            <a href="/2018/12/30/hbase-src-wal/">HBase源码系列之wal</a>
-          </li>
-        
-          <li>
-            <a href="/2018/12/30/hadoop-hbase-mvn-cmd/">hadoop&amp;hbase编译打包</a>
           </li>
         
       </ul>
@@ -841,7 +826,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2019 liu binbin<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

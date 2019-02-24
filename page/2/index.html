@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -60,6 +60,156 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-install-hadoop-and-hbase-in-mac" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/02/install-hadoop-and-hbase-in-mac/" class="article-date">
+  <time datetime="2018-12-02T08:37:26.000Z" itemprop="datePublished">2018-12-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/02/install-hadoop-and-hbase-in-mac/">在macbook的os上直接安装hadoop&amp;hbase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天决定抛弃vmare+centos虚拟机的形式安装hadoop&amp;hbase了，开始直接在macbook的os上安装hadoop&amp;hbase。理由：</p>
+<ol>
+<li>需要配资源，如果安装在os x上会更加直接全面地利用机器的资源。</li>
+<li>两个系统之间倒来倒去不是一件高效的事情。</li>
+<li>今天发现这台macbook的大部分使用场景都是和工作有关，那就不如直接使用macbook了。</li>
+</ol>
+<h2 id="预备"><a href="#预备" class="headerlink" title="预备"></a>预备</h2><p>现在安装的是hbase，提前需要做的就是：</p>
+<ul>
+<li><p>给macbook安装jdk</p>
+</li>
+<li><p>在Sharing里打开远程登录，使机器能免密执行ssh localhost。</p>
+</li>
+<li><p>下载zookeeper-3.4.12.tar.gz， hadoop-3.1.1.tar.gz和hbase-2.1.1-bin.tar.gz。</p>
+</li>
+</ul>
+<h2 id="zookeeper安装"><a href="#zookeeper安装" class="headerlink" title="zookeeper安装"></a>zookeeper安装</h2><p>将zoo_sample.cfg拷贝一份为zoo.cfg，就可以通过zkServer.sh的命令来启动。</p>
+<p>然后可以通过zkCli.sh来对zk服务进行访问。</p>
+<p>##hdfs安装</p>
+<ol>
+<li>修改core-site.xml，hdfs-site.xml文件。</li>
+<li>hadoop namenode -format。</li>
+<li>通过sbin/start-dfs.sh启动服务。</li>
+</ol>
+<h2 id="hbase安装"><a href="#hbase安装" class="headerlink" title="hbase安装"></a>hbase安装</h2><p>几个坑：</p>
+<ol>
+<li><p>htrace-core-3.1.0-incubating.jar需要自己下载，并且hadoop中htrace-core4-4.0.1-incubating.jar是不行的。有不兼容的情况。</p>
+</li>
+<li><p>需要自己在配置文件中注定hbase.master.ipc.address，否则在mac中会报Can’t assign requested address 无法启动rpc，但是没有日志显示这个配置是啥。</p>
+  <property><br>​    <name>hbase.master.ipc.address</name><br>​    <value>localhost</value><br>  </property>
+
+</li>
+</ol>
+<p>##集成验证</p>
+<p>在hbase shell中创建一个表，写入一条数据，检索。</p>
+<ol>
+<li>create ‘test’, ‘cf1’</li>
+<li>put ‘test’, ‘key1’, ‘cf1:col1’ , ‘value’</li>
+<li>scan ‘test’</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="cjsil9s0l00170y9sminpuycl" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zk/">zk</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-impression-after-reading-bank-valuation-and-value-based-mangement" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" class="article-date">
+  <time datetime="2018-12-02T06:55:54.000Z" itemprop="datePublished">2018-12-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/">《银行估值与价值管理》读后感</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这是一本关于银行的书，书名为《银行估值与价值管理 - 存贷款定价，绩效评估与风险管理》，作者为杰恩•德米内。总体上来说，这书比较难读，而且可能由于翻译或门槛太高，阅读起来感觉有些累，但是值得读，因为从中可以感觉到作者在银行的业务和管理方面有很深的造诣。</p>
+<p>本书分为如下四个部分。</p>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>讲述了最基本的各种利率有关的现值的计算；一些基本的统计学知识；银行的意义及两张表的简化形式。这部分内容比较基础。</p>
+<h2 id="银行价值"><a href="#银行价值" class="headerlink" title="银行价值"></a>银行价值</h2><p>介绍了几种估值方式：1. 市值倍数（市盈率，市净率）。2. 未来股利折现法。 3. 未来经济利润折现法。4. 价值驱动因子法。作者提的这个的第四种方法其中很有用。因为第四种可以归结到一些重要数据，我们在估值时可以从几个重要数据去判断。第三种从某种程度上来说也是一个可行的办法，不过得是那种利润增长比较稳健并且管理很稳健的银行。</p>
+<p>在价值驱动因子法中，作者做了如下公式：</p>
+<p>​    贷款业务的银行价值 = 清算价值 + 存款特许权价值 + 贷款特许权价值 + 营业费用现值 + 固定资产（不太考虑） + 税收罚金 。</p>
+<p>从上述公式中我们可以看到几个非常重要的变量，<strong>净利差，营业费用支出比例</strong>。</p>
+<p><strong>中间业务</strong>估值两种方法：1. 现金流方法。 2. 基于资产价值的方法。中间业务比较抽象，不好评价。</p>
+<h2 id="价值管理"><a href="#价值管理" class="headerlink" title="价值管理"></a>价值管理</h2><p>作者讲到了怎么在内部去评价员工，这从某种程度上来说也是一种怎么去让一家银行更加稳健运行的方向。</p>
+<ul>
+<li>讨论了资金转移定价来评估存贷款的盈利能力，包括基础法和高级法。</li>
+<li>讨论了存款定价。</li>
+<li>还讨论了有关巴塞尔协议的部分内容。</li>
+<li>以及非常重要的违约损失率和不良贷款率，这些也是从巴塞尔协议引出来。</li>
+</ul>
+<p>对于外部人士来说，感觉不需要过多的考虑细节，抓住主要矛盾，关注银行的<strong>不良贷款率和一些资本充足率</strong>等事项就可以了。最后讲了一个资产证券化的主题。</p>
+<p>##风险管理</p>
+<p>这章是最让我感觉神奇的地方，里面讲到了各种怎么操作风险的手段。</p>
+<ul>
+<li>在银行账户利率风险章节中提到了在线收益和在险经济价值两个概念。</li>
+<li>交易账户的在险价值。</li>
+<li>其他的讨论到的风险还包括流动性风险，信用风险，边际风险贡献等。</li>
+<li>包括了一些分散风险的方式，包括远期，互换等。</li>
+<li>最后还说了操作风险。</li>
+</ul>
+<p>这部分给我的感觉是知道了一些概念，能大概去判断一些事情对银行可能影响。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>从这篇文章来看的加粗字体的文字来看，对于一个外部人士看银行，主要有如下几个重要变量。</p>
+<ol>
+<li>规模，净利差</li>
+<li>营业费用支出比例</li>
+<li>中间业务</li>
+<li>不良贷款率</li>
+<li>资本充足率等监管项目</li>
+</ol>
+<p>后续如果有时间，可以讨论一下招商银行等我国优秀重要的银行。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="cjsil9s0f000v0y9sioccwp6v" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bank/">bank</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-two-important-things-realized-recently" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -87,7 +237,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/09/two-important-things-realized-recently/" data-id="cjqgjhe9c001ihi9s18btantx" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2018/11/09/two-important-things-realized-recently/" data-id="cjsil9s0z001s0y9si26n4r0j" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -141,7 +291,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/09/impression-after-reading-tap-dancing-to-work/" data-id="cjqgjhe8w0017hi9sx451kgzw" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2018/11/09/impression-after-reading-tap-dancing-to-work/" data-id="cjsil9s0j00120y9snhbnp1fv" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reading/">reading</a></li></ul>
@@ -189,7 +339,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/" data-id="cjqgjhe8p000yhi9s0uym3nq5" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/" data-id="cjsil9s0l00150y9smh14itni" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reading/">reading</a></li></ul>
@@ -233,7 +383,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/28/long-distance-running/" data-id="cjqgjhe8u0015hi9s3ky10c5a" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2018/10/28/long-distance-running/" data-id="cjsil9s0o001d0y9swdy19hb0" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -275,7 +425,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/paper-reading/" data-id="cjqgjhe90001bhi9sigfxb50a" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2018/03/04/paper-reading/" data-id="cjsil9s0s001j0y9s0oh975cb" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/paper/">paper</a></li></ul>
@@ -322,7 +472,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/12/10/impression-after-reading-optiona-B/" data-id="cjqgjhe8q0010hi9stbkyy9zi" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/12/10/impression-after-reading-optiona-B/" data-id="cjsil9s0i00100y9sdkcgvr2o" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life-read/">life,read</a></li></ul>
@@ -361,7 +511,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/object-storage/" data-id="cjqgjhe8z0019hi9sswk2lkyq" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/10/18/object-storage/" data-id="cjsil9s0p001f0y9siw86wiiz" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/minio-swift/">minio,swift</a></li></ul>
@@ -422,136 +572,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cjqgjhe7q0000hi9s7i51q4a0" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="cjsil9rzq00030y9sumecvkhz" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-a-special-case-about-rwlock" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/10/08/a-special-case-about-rwlock/" class="article-date">
-  <time datetime="2017-10-08T12:31:28.000Z" itemprop="datePublished">2017-10-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/10/08/a-special-case-about-rwlock/">一个奇怪的rwlock锁卡住的case</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>遇到一个case，有关于读写锁。原因路径如下：</p>
-<ol>
-<li>线上有一个datanode节点宕机，导致与此节点的连接出现问题。</li>
-<li>有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。</li>
-<li>由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。</li>
-<li>这时候出现了其他线程的读锁也无法获取到。</li>
-</ol>
-<p>从线程栈看，就是一个线程获取了读锁，阻塞了别的线程获取读锁和写锁。</p>
-<p>还原现场例子代码地址：<a href="https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock" target="_blank" rel="external">https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock</a></p>
-<p>原理猜测：理论上来说，对于的读写锁而言，读锁之间不应该相互阻塞。但是在一个情况防止饿死，将写锁的优先级提高到了读锁之前。这时候读锁就尴尬了。</p>
-<p>更加具体理解需要看源码，以后再分享。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">看看ReentrantReadWriteLock，注意构造函数里可以传一个布尔值。</div></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjqgjhe800004hi9s1nvy838m" class="article-share-link">Delen</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-docker-basics" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/08/25/docker-basics/" class="article-date">
-  <time datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/08/25/docker-basics/">最近使用docker的一些小记录</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>mysql出了需要grant之外，还要修改bind-address</p>
-<p>docker 基本命令</p>
-<p>docker 中container基于image制作，image类似一个模版，基于某个image制作的contaner都具有和image一样的内容</p>
-<p>我们可以根据REPOSITORY来判断这个镜像是来自哪个服务器，如果没有 / 则表示官方镜像，并且在search的时候会标有OFFICIAL，类似于ip:port/repos_name则表示的是私服。</p>
-<p>docker pull username/repository&lt;:tag_name&gt; 或者 docker pull repository，pull和push相对应。</p>
-<h4 id="5-2-运行出一个container放到后台运行"><a href="#5-2-运行出一个container放到后台运行" class="headerlink" title="5.2 运行出一个container放到后台运行"></a>5.2 运行出一个container放到后台运行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># docker run -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 2; done&quot;</div><div class="line">ae60c4b642058fefcc61ada85a610914bed9f5df0e2aa147100eab85cea785dc</div></pre></td></tr></table></figure>
-<p>它将直接把启动的container挂起放在后台运行（这才叫saas），并且会输出一个<code>CONTAINER ID</code>，通过<code>docker ps</code>可以看到这个容器的信息，可在container外面查看它的输出<code>docker logs ae60c4b64205</code>，也可以通过<code>docker attach ae60c4b64205</code>连接到这个正在运行的终端，此时在<code>Ctrl+C</code>退出container就消失了，按ctrl-p ctrl-q可以退出到宿主机，而保持container仍然在运行</p>
-<p>端口映射</p>
-<p>Docker中运行的程序的端口是不能直接访问的，需要映射到本地，通过-p参数实现，例如将6379端口映射到本机的6378端口</p>
-<p>容器日志</p>
-<p>查看当前容器的日志</p>
-<p><code>docker logs container-name/container-id</code></p>
-<p>我们可以查看之前redis镜像的容器</p>
-<p><code>docker logs test-redis</code></p>
-<p>可以看到redis启动的日志</p>
-<p>运行中的容器其实就是一个完备的Linux操作系统，我们可以登录访问当前容器，登录后可以在容器中进行常规的Linux操作。<br><code>docker exec -it container-id/container-name bash</code></p>
-<p>系统版本</p>
-<p>[root@bogon yum.repos.d]# uname -a<br>Linux bogon 2.6.32-642.el6.x86_64 #1 SMP Tue May 10 17:27:01 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux<br>[root@bogon yum.repos.d]# cat /etc/redhat-release<br>CentOS release 6.8 (Final)</p>
-<p>安装EPEL</p>
-<p>因为系统自带的repo中不带docker需要安装epel</p>
-<p>rpm -Uvh <a href="http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm" target="_blank" rel="external">http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm</a></p>
-<p>安装Docker</p>
-<p>yum install -y docker-io</p>
-<p>开机自启动与启动Docker</p>
-<p>[root@bogon yum.repos.d]# service docker start<br>Starting cgconfig service:                                 [  OK  ]<br>Starting docker:                                       [  OK  ]<br>[root@bogon yum.repos.d]# chkconfig docker on<br>[root@bogon yum.repos.d]# chkconfig docker –list<br>docker          0:off   1:off   2:on    3:on    4:on    5:on    6:off<br>[root@bogon yum.repos.d]# </p>
-<p>至此docker已经安装完成</p>
-<p>docker rm 删除container</p>
-<p>docker rmi 删除image</p>
-<p><a href="http://blog.csdn.net/permike/article/details/51879578" target="_blank" rel="external">http://blog.csdn.net/permike/article/details/51879578</a> 总结的非常好</p>
-<p>已完成<br>docker pull morrisjobke/docker-swift-onlyone<br>docker pull kahing/docker-swift<br>docker pull debian</p>
-<p>docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]</p>
-<p>启动container<br>  docker run -d -P -v /srv/node/sdb1/docker/:/swift/nodes -t bouncestorage/swift-aio<br>通过docker ps 获取端口<br>然后通过<a href="http://127.0.0.1" target="_blank" rel="external">http://127.0.0.1</a>:<port>/auth/v1.0 进行系统的操作和访问<br>具体的命令形式如下<br>  swift -A <a href="http://127.0.0.1:32770/auth/v1.0" target="_blank" rel="external">http://127.0.0.1:32770/auth/v1.0</a> -U test:tester -K testing</port></p>
-<p>swift-aio-docker</p>
-<p>docker run -it –rm debian bash<br>  -it: 这是两个参数，一个是 -i：交互式操作，一个是 -t 终端。<br>  –rm: 这个参数是说容器退出后随之将其删除</p>
-<p><code>bash</code>：放在镜像名后的是<strong>命令</strong>，这里我们希望有个交互式 Shell</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]</div></pre></td></tr></table></figure>
-<p>Docker Registry 地址[:端口号] 默认docker hub</p>
-<p>仓库名为<code>&lt;用户名&gt;/&lt;软件名&gt;</code> ，默认为 <code>library</code></p>
-<p>latest为默认标签<br>​    </p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/08/25/docker-basics/" data-id="cjqgjhe8f000jhi9sann77too" class="article-share-link">Delen</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
 
     </footer>
   </div>
@@ -574,9 +598,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Labels</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
     </div>
   </div>
 
@@ -584,18 +608,18 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 12.5px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/src/" style="font-size: 12.5px;">src</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
+      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 12.5px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/src/" style="font-size: 12.5px;">src</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
     </div>
   </div>
 
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archieven</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -603,9 +627,17 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recente berichten</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/02/24/kafka-security-saslscram-acl/">kafka-security-saslscram-acl</a>
+          </li>
+        
+          <li>
+            <a href="/2019/02/24/kafka-series/">kafka-series</a>
+          </li>
         
           <li>
             <a href="/2019/01/01/ConcurrentSkipListMap-analysis/">ConcurrentSkipListMap-analysis</a>
@@ -617,14 +649,6 @@
         
           <li>
             <a href="/2018/12/30/hbase-src-series/">HBase源码系列</a>
-          </li>
-        
-          <li>
-            <a href="/2018/12/30/hbase-src-wal/">HBase源码系列之wal</a>
-          </li>
-        
-          <li>
-            <a href="/2018/12/30/hadoop-hbase-mvn-cmd/">hadoop&amp;hbase编译打包</a>
           </li>
         
       </ul>
@@ -640,7 +664,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2019 liu binbin<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
