@@ -9,8 +9,8 @@
 
 线上有一个datanode节点宕机，导致与此节点的连接出现问题。
 有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。
-由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。
-这时候出现了其他线程的读锁也无法获取到">
+由于内部某些机制另一个线程需要写锁，同时此锁的读锁会不停有人由于请求需要拿到和释放。
+这时候出现了其他线程">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一个奇怪的rwlock锁卡住的case">
 <meta property="og:url" content="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/index.html">
@@ -19,17 +19,17 @@
 
 线上有一个datanode节点宕机，导致与此节点的连接出现问题。
 有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。
-由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。
-这时候出现了其他线程的读锁也无法获取到">
-<meta property="og:updated_time" content="2018-12-02T07:27:30.319Z">
+由于内部某些机制另一个线程需要写锁，同时此锁的读锁会不停有人由于请求需要拿到和释放。
+这时候出现了其他线程">
+<meta property="og:updated_time" content="2019-07-22T16:23:30.042Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个奇怪的rwlock锁卡住的case">
 <meta name="twitter:description" content="遇到一个case，有关于读写锁。原因路径如下：
 
 线上有一个datanode节点宕机，导致与此节点的连接出现问题。
 有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。
-由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。
-这时候出现了其他线程的读锁也无法获取到">
+由于内部某些机制另一个线程需要写锁，同时此锁的读锁会不停有人由于请求需要拿到和释放。
+这时候出现了其他线程">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -104,18 +104,23 @@
 <ol>
 <li>线上有一个datanode节点宕机，导致与此节点的连接出现问题。</li>
 <li>有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。</li>
-<li>由于某些机制另一个线程需要写锁，同时此锁的读锁会不停有人需要拿到。</li>
+<li>由于内部某些机制另一个线程需要写锁，同时此锁的读锁会不停有人由于请求需要拿到和释放。</li>
 <li>这时候出现了其他线程的读锁也无法获取到。</li>
 </ol>
 <p>从线程栈看，就是一个线程获取了读锁，阻塞了别的线程获取读锁和写锁。</p>
 <p>还原现场例子代码地址：<a href="https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock" target="_blank" rel="external">https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock</a></p>
-<p>原理猜测：理论上来说，对于的读写锁而言，读锁之间不应该相互阻塞。但是在一个情况防止饿死，将写锁的优先级提高到了读锁之前。这时候读锁就尴尬了。</p>
-<p>更加具体理解需要看源码，以后再分享。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">看看ReentrantReadWriteLock，注意构造函数里可以传一个布尔值。</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">看看ReentrantReadWriteLock，注意构造函数里可以传一个布尔值，区分公平锁和非公平锁。</div></pre></td></tr></table></figure>
+<p>NonfairSync和FairSync分别是两种实现，其中都实现了readerShouldBlock方法。这问题分两种情况：</p>
+<ol>
+<li>公平锁：这种情况下对AQS的请求是需要安装时间顺序，如果新来的读请求在写请求之后就需要等待。</li>
+<li>非公平锁：为了防止写请求饥饿，读请求会先判断等待队列头是否是写请求，所以在这种情况下，写请求会隔离读锁和读锁。</li>
+</ol>
+<p>此问题最后解决办法是让那个出问题的读锁尽快的释放，不要一直占着读锁就可以把影响降低。</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjyekzdmz0004q79syw0yfng7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="cjyelnomy0003uf9s9pmnpykp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
@@ -136,9 +141,9 @@
     </a>
   
   
-    <a href="/2017/08/25/docker-basics/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2017/08/25/some-thoughts/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">最近使用docker的一些小记录</div>
+      <div class="article-nav-title">最近感想</div>
     </a>
   
 </nav>
