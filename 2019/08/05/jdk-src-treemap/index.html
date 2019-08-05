@@ -6,33 +6,30 @@
   <title>jdk-src-treemap | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="wiki: https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91
-##基本结构
-static final class Entry&amp;lt;K, V&amp;gt; implements Map.Entry&amp;lt;K, V&amp;gt; {
+基本结构static final class Entry&amp;lt;K, V&amp;gt; implements Map.Entry&amp;lt;K, V&amp;gt; {
     K key;
     V value;
     Entry&amp;lt;K, V&amp;gt; left;
-    E">
+    Entr">
 <meta property="og:type" content="article">
 <meta property="og:title" content="jdk-src-treemap">
 <meta property="og:url" content="http://yoursite.com/2019/08/05/jdk-src-treemap/index.html">
 <meta property="og:site_name" content="bin">
 <meta property="og:description" content="wiki: https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91
-##基本结构
-static final class Entry&amp;lt;K, V&amp;gt; implements Map.Entry&amp;lt;K, V&amp;gt; {
+基本结构static final class Entry&amp;lt;K, V&amp;gt; implements Map.Entry&amp;lt;K, V&amp;gt; {
     K key;
     V value;
     Entry&amp;lt;K, V&amp;gt; left;
-    E">
-<meta property="og:updated_time" content="2019-08-05T15:57:18.725Z">
+    Entr">
+<meta property="og:updated_time" content="2019-08-05T16:00:17.679Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jdk-src-treemap">
 <meta name="twitter:description" content="wiki: https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91
-##基本结构
-static final class Entry&amp;lt;K, V&amp;gt; implements Map.Entry&amp;lt;K, V&amp;gt; {
+基本结构static final class Entry&amp;lt;K, V&amp;gt; implements Map.Entry&amp;lt;K, V&amp;gt; {
     K key;
     V value;
     Entry&amp;lt;K, V&amp;gt; left;
-    E">
+    Entr">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -104,8 +101,7 @@ static final class Entry&amp;lt;K, V&amp;gt; implements Map.Entry&amp;lt;K, V&am
     <div class="article-entry" itemprop="articleBody">
       
         <p>wiki: <a href="https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91" target="_blank" rel="external">https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91</a></p>
-<p>##基本结构</p>
-<pre><code>static final class Entry&lt;K, V&gt; implements Map.Entry&lt;K, V&gt; {
+<h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h2><pre><code>static final class Entry&lt;K, V&gt; implements Map.Entry&lt;K, V&gt; {
     K key;
     V value;
     Entry&lt;K, V&gt; left;
@@ -116,12 +112,10 @@ static final class Entry&amp;lt;K, V&amp;gt; implements Map.Entry&amp;lt;K, V&am
 }
 </code></pre><p>Entry 成员变量有 key，value，左子节点，右子节点和颜色（默认为黑色）。</p>
 <h2 id="查看源码小窍门"><a href="#查看源码小窍门" class="headerlink" title="查看源码小窍门"></a>查看源码小窍门</h2><p>由于 TreeMap 的代码比较干净和独立，我从源码包 src.zip 中拷贝出 TreeMap.java 重命名加入自己的工程内。就你可以对源码直接编辑了。</p>
-<p>##核心思想</p>
-<ul>
+<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><ul>
 <li>把红节点往上推或者往另一个子树推。</li>
 </ul>
-<p>##写入数据</p>
-<p>public V put(K key, V value) ：</p>
+<h2 id="写入数据"><a href="#写入数据" class="headerlink" title="写入数据"></a>写入数据</h2><p>public V put(K key, V value) ：</p>
 <ol>
 <li><p>如果 root 为空，则先设置 root。</p>
 </li>
@@ -148,7 +142,7 @@ static final class Entry&amp;lt;K, V&amp;gt; implements Map.Entry&amp;lt;K, V&am
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/08/05/jdk-src-treemap/" data-id="cjyykvwct001d2n9sqcxd3v2v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/08/05/jdk-src-treemap/" data-id="cjyykzno500153n9sddzdhb03" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src-treemap/">src, treemap</a></li></ul>

@@ -84,8 +84,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>wiki: <a href="https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91" target="_blank" rel="external">https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91</a></p>
-<p>##基本结构</p>
-<pre><code>static final class Entry&lt;K, V&gt; implements Map.Entry&lt;K, V&gt; {
+<h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h2><pre><code>static final class Entry&lt;K, V&gt; implements Map.Entry&lt;K, V&gt; {
     K key;
     V value;
     Entry&lt;K, V&gt; left;
@@ -96,12 +95,10 @@
 }
 </code></pre><p>Entry 成员变量有 key，value，左子节点，右子节点和颜色（默认为黑色）。</p>
 <h2 id="查看源码小窍门"><a href="#查看源码小窍门" class="headerlink" title="查看源码小窍门"></a>查看源码小窍门</h2><p>由于 TreeMap 的代码比较干净和独立，我从源码包 src.zip 中拷贝出 TreeMap.java 重命名加入自己的工程内。就你可以对源码直接编辑了。</p>
-<p>##核心思想</p>
-<ul>
+<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><ul>
 <li>把红节点往上推或者往另一个子树推。</li>
 </ul>
-<p>##写入数据</p>
-<p>public V put(K key, V value) ：</p>
+<h2 id="写入数据"><a href="#写入数据" class="headerlink" title="写入数据"></a>写入数据</h2><p>public V put(K key, V value) ：</p>
 <ol>
 <li><p>如果 root 为空，则先设置 root。</p>
 </li>
@@ -128,7 +125,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/08/05/jdk-src-treemap/" data-id="cjyykvwct001d2n9sqcxd3v2v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/08/05/jdk-src-treemap/" data-id="cjyykzno500153n9sddzdhb03" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src-treemap/">src, treemap</a></li></ul>
@@ -174,7 +171,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="cjyykvwcy001o2n9s8k1rtguk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="cjyykznoj001m3n9sdi1yap1y" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -255,7 +252,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/02/24/kafka-security-saslscram-acl/" data-id="cjyykvwcs001b2n9s7scjnkge" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/02/24/kafka-security-saslscram-acl/" data-id="cjyykzno700183n9supne4j4e" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/">kafka</a></li></ul>
@@ -297,7 +294,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/02/24/kafka-series/" data-id="cjyykvwcu001h2n9s72vekbm9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/02/24/kafka-series/" data-id="cjyykzno9001b3n9stydrnckv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/">kafka</a></li></ul>
@@ -335,7 +332,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/01/01/ConcurrentSkipListMap-analysis/" data-id="cjyykvwbt00012n9s1wtws3qf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/01/01/ConcurrentSkipListMap-analysis/" data-id="cjyykznn900033n9sl6dnbojv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src/">src</a></li></ul>
@@ -374,7 +371,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/cmb-analysis/" data-id="cjyykvwc7000a2n9s2zziyh7l" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/cmb-analysis/" data-id="cjyykznnk000a3n9sno7th4g2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bank/">bank</a></li></ul>
@@ -423,7 +420,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hbase-src-series/" data-id="cjyykvwcj000t2n9shkato3t0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/hbase-src-series/" data-id="cjyykznnv000q3n9shmfjclyg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -511,7 +508,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hbase-src-wal/" data-id="cjyykvwcr00182n9scl52v39p" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/hbase-src-wal/" data-id="cjyykznny000w3n9sx7399lm7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
@@ -557,7 +554,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="cjyykvwc8000c2n9sq9n6zsk5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="cjyykznnm000c3n9sk3mladas" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mvn/">mvn</a></li></ul>
@@ -609,7 +606,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/2018-year-end-summary/" data-id="cjyykvwbp00002n9sjk1ncezr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/30/2018-year-end-summary/" data-id="cjyykznn100003n9sha77qpqt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/summary/">summary</a></li></ul>
