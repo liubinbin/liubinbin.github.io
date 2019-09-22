@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -60,6 +60,117 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-just-pick-the-first-one-from-todolist-and-finish-that" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/" class="article-date">
+  <time datetime="2019-09-22T12:53:33.000Z" itemprop="datePublished">2019-09-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/">just-pick-the-first-one-from-todolist-and-finish-that</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一件件的完成手头上的事"><a href="#一件件的完成手头上的事" class="headerlink" title="一件件的完成手头上的事"></a>一件件的完成手头上的事</h2><p>最近确实有些忙，渐渐的发现一个不然自己显得慌忙的方式：一件件的完成手头上的事。这话咋看起来是觉得比较莫名其妙。</p>
+<p>这几天偶然看到好几年前自己的QQ签名，“当你犹豫不决，不知道应该先做好什么事情的时候，就静下心来，去做手头最近的事情。犹豫和切换事最浪费时间的事情”。</p>
+<p>所以，最近开始疯狂的依赖便签，工作时间只从便签的第一个开始做，当然有时候会改变便签内事情的顺序。如果在做这件事的过程中，又插入一个件事，那就把它插入到便签里，这时候可能会考虑一下它到底在哪个顺位上。这么做了之后，发现两个效果：</p>
+<ol>
+<li>不会出现该干什么事情好的时候，应该任何时候就去做第一件事情就可以了。</li>
+<li>单把项从便签中删除时，会有比较高的成就感，会更有动力去做下一件事情。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/" data-id="ck0uzr4e7001hha9sk4qypr9m" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-timezone-in-spring-mybatis-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/09/22/timezone-in-spring-mybatis-mysql/" class="article-date">
+  <time datetime="2019-09-22T12:07:10.000Z" itemprop="datePublished">2019-09-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/22/timezone-in-spring-mybatis-mysql/">timezone-in-spring-mybatis-mysql</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="spring，mybatis-和-mysql-里的时区问题"><a href="#spring，mybatis-和-mysql-里的时区问题" class="headerlink" title="spring，mybatis 和 mysql 里的时区问题"></a>spring，mybatis 和 mysql 里的时区问题</h1><h2 id="大概路径"><a href="#大概路径" class="headerlink" title="大概路径"></a>大概路径</h2><p>客户端发起请求</p>
+<ol>
+<li>前端请求</li>
+<li>spring 服务端</li>
+<li>mybatis 访问</li>
+<li>mysql 数据</li>
+<li>spring 服务端</li>
+<li>前端显示</li>
+</ol>
+<h2 id="mysql"><a href="#mysql" class="headerlink" title="mysql"></a>mysql</h2><p>通过命令 show variables like “%time_zone%”;  可以获取 mysql 的时区。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mysql&gt; show databases;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| test               |</div><div class="line">+--------------------+</div><div class="line">2 rows in set (0.00 sec)</div></pre></td></tr></table></figure>
+<h2 id="mybatis"><a href="#mybatis" class="headerlink" title="mybatis"></a>mybatis</h2><p>在 spring.datasource.url 参数中需要制定 serverTimezone 和数据库应该对应起来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">serverTimezone=GMT%2b8</div></pre></td></tr></table></figure>
+<h2 id="spring"><a href="#spring" class="headerlink" title="spring"></a>spring</h2><p>可以通过如下代码获取时区</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">TimeZone.getDefault()</div></pre></td></tr></table></figure>
+<p>如果数据为 Date 类型我们可以在服务打印对应的数据来查看数据是否是对的（当然需要考虑时区）。</p>
+<p>在对外显示时，我们需要 spring.jackson.time-zone 参数。比如我们如下制定东八区的话就可以看到Date类型被显示成 2019-09-23T00:32:12.000+0800。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">spring.jackson.time-zone=GMT+8</div></pre></td></tr></table></figure>
+<h2 id="序列化和反序列化"><a href="#序列化和反序列化" class="headerlink" title="序列化和反序列化"></a>序列化和反序列化</h2><p>###反序列化</p>
+<p>如果在 query （ 前端传给服务端 ）中，默认格式是奇葩的 yyyy-MM-dd’T’HH:mm:ss.SSSZ 格式。一般情况我们会使用到 yyyy-MM-dd HH:mm:ss ，这时候我们需要自定义反序列化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@JsonDeserialize</span>(using = CustomJsonDateDeserializer.class)</div><div class="line"><span class="keyword">private</span> Date operateStartDate;</div></pre></td></tr></table></figure>
+<p>反序列化类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomJsonDateDeserializer</span> <span class="keyword">extends</span> <span class="title">JsonDeserializer</span>&lt;<span class="title">Date</span>&gt; </span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Date <span class="title">deserialize</span><span class="params">(JsonParser jp, DeserializationContext ctxt)</span> <span class="keyword">throws</span> IOException, JsonProcessingException </span>&#123;</div><div class="line">        SimpleDateFormat format = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</div><div class="line">        String date = jp.getText();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">return</span> format.parse(date);</div><div class="line">        &#125; <span class="keyword">catch</span> (ParseException e1) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><p>如果在 dto （服务器端传给前端）中，默认的格式是奇葩的 2019-09-22T16:32:28.000+0800。一般情况下我们会使用到 yyyy-MM-dd HH:mm:ss ，这时候我们需要自定义序列化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@JsonSerialize</span>(using = CustomJsonDateSerializer.class)</div><div class="line"><span class="keyword">private</span> Date create_time;</div></pre></td></tr></table></figure>
+<p>序列化类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomJsonDateSerializer</span> <span class="keyword">extends</span> <span class="title">JsonSerializer</span>&lt;<span class="title">Date</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(Date date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)</span> <span class="keyword">throws</span> IOException, JsonProcessingException </span>&#123;</div><div class="line">        SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            String dateString = dateFormat.format(date);</div><div class="line">            jsonGenerator.writeString(dateString);</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="多时区"><a href="#多时区" class="headerlink" title="多时区"></a>多时区</h2><p>如果是多时区，应该使用 UTC 进行存储，然后在显示的地方（前端）转换到各种地方对应的时区。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/09/22/timezone-in-spring-mybatis-mysql/" data-id="ck0uzr4eu0027ha9sgz91p4ro" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-some-thoughts-about-recent-internal-job-transfer" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -99,7 +210,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/09/01/some-thoughts-about-recent-internal-job-transfer/" data-id="ck00qv49i001obn9srh31kfmp" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2019/09/01/some-thoughts-about-recent-internal-job-transfer/" data-id="ck0uzr4en001vha9sh75p91d8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/job/">job</a></li></ul>
@@ -175,7 +286,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/08/05/jdk-src-treemap/" data-id="ck00qv492001abn9shibzg1m1" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2019/08/05/jdk-src-treemap/" data-id="ck0uzr4e3001bha9s3njf2y5b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src-treemap/">src, treemap</a></li></ul>
@@ -220,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="ck00qv49n001tbn9sgzyp8v7z" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="ck0uzr4ek001qha9sf8cr2vrw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -301,7 +412,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/02/24/kafka-security-saslscram-acl/" data-id="ck00qv493001cbn9sk2363cml" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2019/02/24/kafka-security-saslscram-acl/" data-id="ck0uzr4e5001dha9sr1bla7od" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/">kafka</a></li></ul>
@@ -343,7 +454,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/02/24/kafka-series/" data-id="ck00qv494001dbn9swtgxbnpt" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2019/02/24/kafka-series/" data-id="ck0uzr4e6001fha9srf8lsqwd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/">kafka</a></li></ul>
@@ -381,7 +492,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/01/01/ConcurrentSkipListMap-analysis/" data-id="ck00qv4810001bn9sktfx05pj" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2019/01/01/ConcurrentSkipListMap-analysis/" data-id="ck0uzr4d10001ha9sz6o4ed2p" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src/">src</a></li></ul>
@@ -420,7 +531,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/cmb-analysis/" data-id="ck00qv48d0008bn9sa58ipted" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2018/12/30/cmb-analysis/" data-id="ck0uzr4dc0008ha9s1aqkkw78" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bank/">bank</a></li></ul>
@@ -469,144 +580,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hbase-src-series/" data-id="ck00qv48t000sbn9sw8oxbacf" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2018/12/30/hbase-src-series/" data-id="ck0uzr4ds000tha9s6acfqmjq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-hbase-src-wal" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/12/30/hbase-src-wal/" class="article-date">
-  <time datetime="2018-12-30T15:45:33.000Z" itemprop="datePublished">2018-12-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/30/hbase-src-wal/">HBase源码系列之wal</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>wal在hbase中是为了持久化memstore中未flush到hfile的数据，以防rs宕机或异常退出导致数据的丢失。</p>
-<p>wal实现的一头是多个handler线程处理put请求，另一头是针对hdfs写这种费时间的操作。并且需要实现两件事情：一是在写hdfs时不能出现混乱，二是写完hdfs之后需要有个机制通知到在等待hdfs写返回的处理写请求的线程。</p>
-<p>wal用了一个ringbuffer，ringbuffer传递内容包括的sync标志（主要用于传递SyncFuture）和数据。分开可以用于控制。</p>
-<h1 id="主流程"><a href="#主流程" class="headerlink" title="主流程"></a>主流程</h1><ol>
-<li>handler将entry和txid写入disruptor，然后通过sync函数等待，通过一个threadlocal的设置了txid的SyncFuture，调用get方法阻塞。</li>
-<li>把SyncFuture和Sync标志写入到disruptor中。</li>
-<li>在disruptor的Handler的onEvent里：<ol>
-<li>将entry给append到writer里。</li>
-<li>设置SyncFuture，用于传递。</li>
-</ol>
-</li>
-<li>给syncRunners传递带txid的SyncFuture</li>
-<li>SyncRunner会在while里不停的跑，<ol>
-<li>releaseSyncFuture已经sync过的数据（可能在别的syncRunner）</li>
-<li>sync数据，然后releaseSyncFuture</li>
-</ol>
-</li>
-</ol>
-<h1 id="三个主要线程"><a href="#三个主要线程" class="headerlink" title="三个主要线程"></a>三个主要线程</h1><p>整个写wal流程涉及到如下三个线程。</p>
-<h2 id="handler线程"><a href="#handler线程" class="headerlink" title="handler线程"></a>handler线程</h2><p>handler通过netty接受来自客户端或thriftserver的写请求。</p>
-<p>在private void doMiniBatchMutate(BatchOperation&lt;?&gt; batchOp) throws IOException 总在执行写wal，写memstore，更改mvcc版本等操作。本篇文章主要集中于写wal（否则就跑题了）,主要在如下方法中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">writeEntry = doWALAppend(walEdit, batchOp.durability, batchOp.getClusterIds(), now,</div><div class="line">             nonceKey.getNonceGroup(), nonceKey.getNonce(), batchOp.getOrigLogSeqNum());</div></pre></td></tr></table></figure>
-<p>doWALAppend方法里主要内容如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">long</span> txid = <span class="keyword">this</span>.wal.append(<span class="keyword">this</span>.getRegionInfo(), walKey, walEdit, <span class="keyword">true</span>);</div><div class="line">   <span class="comment">// Call sync on our edit.</span></div><div class="line">   <span class="keyword">if</span> (txid != <span class="number">0</span>) &#123;</div><div class="line">     sync(txid, durability);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>append主要把数据加入到ringbuffer中，sync方法具体如下：</p>
-<ol>
-<li>讲ThreadLocal<syncfuture> cachedSyncFutures然后扔到ringbuffer里，然后讲syncFuture返回。</syncfuture></li>
-<li>执行syncFuture.get(walSyncTimeoutNs)阻塞。</li>
-</ol>
-<p>handler线程会卡在syncFuture.get(walSyncTimeoutNs)处。get具体实现如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">long</span> <span class="title">get</span><span class="params">(<span class="keyword">long</span> timeoutNs)</span> <span class="keyword">throws</span> InterruptedException,</span></div><div class="line">      ExecutionException, TimeoutIOException &#123;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">long</span> done = System.nanoTime() + timeoutNs;</div><div class="line">    <span class="keyword">while</span> (!isDone()) &#123;</div><div class="line">      wait(<span class="number">1000</span>);</div><div class="line">      <span class="keyword">if</span> (System.nanoTime() &gt;= done) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> TimeoutIOException(</div><div class="line">            <span class="string">"Failed to get sync result after "</span> + TimeUnit.NANOSECONDS.toMillis(timeoutNs)</div><div class="line">                + <span class="string">" ms for txid="</span> + <span class="keyword">this</span>.txid + <span class="string">", WAL system stuck?"</span>);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.throwable != <span class="keyword">null</span>) &#123;</div><div class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> ExecutionException(<span class="keyword">this</span>.throwable);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.doneTxid;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-<p>从上面的代码可以看到handler线程如果想要退出需要isDone方法返回false或者时间超过timeoutNs。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">isDone</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.doneTxid != NOT_DONE;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>handler线程部分到此我们只需要记住doneTxid的修改决定handler线程退出。</p>
-<h2 id="onEvent"><a href="#onEvent" class="headerlink" title="onEvent"></a>onEvent</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (truck.type() == RingBufferTruck.Type.SYNC) &#123;</div><div class="line">        <span class="comment">// 给syncFutures其中一个设置。</span></div><div class="line">        <span class="keyword">this</span>.syncFutures[<span class="keyword">this</span>.syncFuturesCount.getAndIncrement()] = truck.unloadSync();</div><div class="line">        <span class="comment">// Force flush of syncs if we are carrying a full complement of syncFutures.</span></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.syncFuturesCount.get() == <span class="keyword">this</span>.syncFutures.length) &#123;</div><div class="line">          endOfBatch = <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (truck.type() == RingBufferTruck.Type.APPEND) &#123;</div><div class="line">        FSWALEntry entry = truck.unloadAppend();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">	...</div><div class="line">          append(entry);</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">          ....</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">      &#125;</div></pre></td></tr></table></figure>
-<p>在onEvent里获取到的数据分为两种：</p>
-<ol>
-<li>SYNC，在syncFutures设置handler线程传递过来的syncFuture。</li>
-<li>APPEND，调用append。在这里我们可以看到ringbuffer的作用就是把多个线程的写入按时间顺序的append。</li>
-</ol>
-<p>我们需要注意这里的endOfBatch，通过一个ringbuffer其实让我们更容易去控制batch，将难度从多个线程移到了一个线程里。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (!endOfBatch || <span class="keyword">this</span>.syncFuturesCount.get() &lt;= <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">this</span>.syncRunnerIndex = (<span class="keyword">this</span>.syncRunnerIndex + <span class="number">1</span>) % <span class="keyword">this</span>.syncRunners.length;</div><div class="line">      <span class="keyword">try</span> &#123;</div><div class="line">        <span class="comment">// 给syncRunners其中一个设置，在offer方法内，将下标小于syncFuturesCount的所有syncFutures传递给其中一个的SyncRunners。</span></div><div class="line">        <span class="comment">// 下标小于syncFuturesCount的所有syncFutures都传递过去其实就代表了一个batch，这个逻辑可以通过endOfBatch捋出来。 *** 此处很重要 ***</span></div><div class="line">        <span class="keyword">this</span>.syncRunners[<span class="keyword">this</span>.syncRunnerIndex].offer(sequence, <span class="keyword">this</span>.syncFutures,</div><div class="line">          <span class="keyword">this</span>.syncFuturesCount.get());</div><div class="line">      &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">        <span class="comment">// Should NEVER get here.</span></div><div class="line">        requestLogRoll();</div><div class="line">        <span class="keyword">this</span>.exception = <span class="keyword">new</span> DamagedWALException(<span class="string">"Failed offering sync"</span>, e);</div><div class="line">      &#125;</div><div class="line">....</div><div class="line">      <span class="keyword">this</span>.syncFuturesCount.set(<span class="number">0</span>);</div></pre></td></tr></table></figure>
-<p>这里通过轮询的方式向syncRunners传递syncFutures。</p>
-<h2 id="syncRunner"><a href="#syncRunner" class="headerlink" title="syncRunner"></a>syncRunner</h2><p>syncRunner是一些线程，总共syncRunnerCount个，此线程是一个while不停的执行。多个线程通过highestSyncedTxid来沟通到什么地步了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line">   <span class="keyword">while</span> (!isInterrupted()) &#123;</div><div class="line">     <span class="keyword">int</span> syncCount = <span class="number">0</span>;</div><div class="line"></div><div class="line">     <span class="keyword">try</span> &#123;</div><div class="line">       <span class="comment">// 获取需要执行sync的场景</span></div><div class="line">       <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">         takeSyncFuture = <span class="keyword">null</span>;</div><div class="line">         <span class="comment">// We have to process what we 'take' from the queue</span></div><div class="line">         takeSyncFuture = <span class="keyword">this</span>.syncFutures.take();</div><div class="line">         currentSequence = <span class="keyword">this</span>.sequence;</div><div class="line">         <span class="keyword">long</span> syncFutureSequence = takeSyncFuture.getTxid();</div><div class="line">         <span class="keyword">if</span> (syncFutureSequence &gt; currentSequence) &#123;</div><div class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"currentSequence="</span> + currentSequence</div><div class="line">               + <span class="string">", syncFutureSequence="</span> + syncFutureSequence);</div><div class="line">         &#125;</div><div class="line">         <span class="comment">// See if we can process any syncfutures BEFORE we go sync.</span></div><div class="line">         <span class="comment">// 掠过一些已经sync过的sequence，可能在别syncRunner已经执行过了，或当时多加的部分。</span></div><div class="line">         <span class="keyword">long</span> currentHighestSyncedSequence = highestSyncedTxid.get();</div><div class="line">         <span class="keyword">if</span> (currentSequence &lt; currentHighestSyncedSequence) &#123;</div><div class="line">           syncCount += releaseSyncFuture(takeSyncFuture, currentHighestSyncedSequence, <span class="keyword">null</span>);</div><div class="line">           <span class="comment">// Done with the 'take'. Go around again and do a new 'take'.</span></div><div class="line">           <span class="keyword">continue</span>;</div><div class="line">         &#125;</div><div class="line">         <span class="keyword">break</span>;</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">try</span> &#123;</div><div class="line">         <span class="comment">// 执行sync</span></div><div class="line">         writer.sync(useHsync);</div><div class="line">         <span class="comment">// 更新highestSyncedTxid，此处记录了目前sync的最高Sequence。</span></div><div class="line">         currentSequence = updateHighestSyncedSequence(currentSequence);</div><div class="line">       &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">...</div><div class="line">       &#125; <span class="keyword">finally</span> &#123;</div><div class="line">         <span class="comment">// First release what we 'took' from the queue.</span></div><div class="line">         <span class="comment">// release目前取到的SyncFuture。</span></div><div class="line">         syncCount += releaseSyncFuture(takeSyncFuture, currentSequence, lastException);</div><div class="line">         <span class="comment">// Can we release other syncs?</span></div><div class="line">         <span class="comment">// release所有目前小于当前sequence的SyncFuture。这步感觉好像是没有必要的。</span></div><div class="line">         syncCount += releaseSyncFutures(currentSequence, lastException);</div><div class="line">         <span class="keyword">if</span> (lastException != <span class="keyword">null</span>) &#123;</div><div class="line">           requestLogRoll();</div><div class="line">         &#125; <span class="keyword">else</span> &#123;</div><div class="line">           checkLogRoll();</div><div class="line">         &#125;</div><div class="line">       &#125;</div><div class="line">       postSync(System.nanoTime() - start, syncCount);</div><div class="line">     &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">       ...</div><div class="line">     &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>调用完releaseSyncFuture之后，handler阻塞住的的get方式才能顺利进行下去。</p>
-<p>此处需要一张图</p>
-<p><img src="hbase-wal.png" alt=""></p>
-<p>思考：syncRunner为多个，大概是为了隔离notifier和sync，两种操作不要在一起，最终可以减轻同步代价。</p>
-<h2 id="简单版代码实现"><a href="#简单版代码实现" class="headerlink" title="简单版代码实现"></a>简单版代码实现</h2><p>见地址 <a href="https://github.com/liubinbin/pan/tree/master/src/main/java/cn/liubinbin/pan/experiment/log/v3" target="_blank" rel="external">https://github.com/liubinbin/pan/tree/master/src/main/java/cn/liubinbin/pan/experiment/log/v3</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hbase-src-wal/" data-id="ck00qv48t000vbn9svmm7ccsr" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-hadoop-hbase-mvn-cmd" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/12/30/hadoop-hbase-mvn-cmd/" class="article-date">
-  <time datetime="2018-12-30T14:49:06.000Z" itemprop="datePublished">2018-12-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/30/hadoop-hbase-mvn-cmd/">hadoop&amp;hbase编译打包</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#hbase 编译 </p>
-<p>命令：mvn clean package -Pdist,native, -DskipTests -Dtar</p>
-<p>hbase编译打包好像没有遇到什么问题，很顺利。</p>
-<p>#hadoop 编译</p>
-<p>命令：mvn clean package -DskipTests -Pdist,native -Dtar </p>
-<p>hadoop编译打包时还是遇到了些问题，主要是类似OPENSSL和findbugs等，看以下两个链接应该基本就能解决了。</p>
-<p><a href="http://bigdatadecode.club/mac%E4%B8%8B%E7%BC%96%E8%AF%91Hadoop.html" target="_blank" rel="external">http://bigdatadecode.club/mac%E4%B8%8B%E7%BC%96%E8%AF%91Hadoop.html</a></p>
-<p><a href="https://stackoverflow.com/questions/36818957/mac-hadoop-2-7-failed-to-execute-goal-org-apache-maven-pluginsmaven-antrun" target="_blank" rel="external">https://stackoverflow.com/questions/36818957/mac-hadoop-2-7-failed-to-execute-goal-org-apache-maven-pluginsmaven-antrun</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="ck00qv48j000cbn9s1lvv4end" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mvn/">mvn</a></li></ul>
 
     </footer>
   </div>
@@ -629,9 +606,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src-treemap/">src, treemap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src-treemap/">src, treemap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
     </div>
   </div>
 
@@ -639,9 +616,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 12.5px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kafka/" style="font-size: 12.5px;">kafka</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/src/" style="font-size: 12.5px;">src</a> <a href="/tags/src-treemap/" style="font-size: 10px;">src, treemap</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
+      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 12.5px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kafka/" style="font-size: 12.5px;">kafka</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/src/" style="font-size: 12.5px;">src</a> <a href="/tags/src-treemap/" style="font-size: 10px;">src, treemap</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
     </div>
   </div>
 
@@ -658,9 +635,17 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/">just-pick-the-first-one-from-todolist-and-finish-that</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/22/timezone-in-spring-mybatis-mysql/">timezone-in-spring-mybatis-mysql</a>
+          </li>
         
           <li>
             <a href="/2019/09/01/some-thoughts-about-recent-internal-job-transfer/">some-thoughts-about-recent-internal-job-transfer</a>
@@ -672,14 +657,6 @@
         
           <li>
             <a href="/2019/07/23/some-new-thoughts-about-career-development/">some-new-thoughts-about-career-development</a>
-          </li>
-        
-          <li>
-            <a href="/2019/02/24/kafka-security-saslscram-acl/">kafka-security-saslscram-acl</a>
-          </li>
-        
-          <li>
-            <a href="/2019/02/24/kafka-series/">kafka-series</a>
           </li>
         
       </ul>
@@ -695,7 +672,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2019 liu binbin<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

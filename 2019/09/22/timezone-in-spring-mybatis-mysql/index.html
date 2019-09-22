@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>timezone-in-spring-mybatis-mysql | bin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="spring，mybatis 和 mysql 里的时区问题大概路径客户端发起请求
+
+前端请求
+spring 服务端
+mybatis 访问
+mysql 数据
+spring 服务端
+前端显示
+
+mysql通过命令 show variables like “%time_zone%”;  可以获取 mysql 的时区。
+12345678mysql&amp;gt; show databases;+---------">
+<meta property="og:type" content="article">
+<meta property="og:title" content="timezone-in-spring-mybatis-mysql">
+<meta property="og:url" content="http://yoursite.com/2019/09/22/timezone-in-spring-mybatis-mysql/index.html">
+<meta property="og:site_name" content="bin">
+<meta property="og:description" content="spring，mybatis 和 mysql 里的时区问题大概路径客户端发起请求
+
+前端请求
+spring 服务端
+mybatis 访问
+mysql 数据
+spring 服务端
+前端显示
+
+mysql通过命令 show variables like “%time_zone%”;  可以获取 mysql 的时区。
+12345678mysql&amp;gt; show databases;+---------">
+<meta property="og:updated_time" content="2019-09-22T12:49:50.539Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="timezone-in-spring-mybatis-mysql">
+<meta name="twitter:description" content="spring，mybatis 和 mysql 里的时区问题大概路径客户端发起请求
+
+前端请求
+spring 服务端
+mybatis 访问
+mysql 数据
+spring 服务端
+前端显示
+
+mysql通过命令 show variables like “%time_zone%”;  可以获取 mysql 的时区。
+12345678mysql&amp;gt; show databases;+---------">
+  
+    <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">bin</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-timezone-in-spring-mybatis-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/09/22/timezone-in-spring-mybatis-mysql/" class="article-date">
+  <time datetime="2019-09-22T12:07:10.000Z" itemprop="datePublished">2019-09-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      timezone-in-spring-mybatis-mysql
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="spring，mybatis-和-mysql-里的时区问题"><a href="#spring，mybatis-和-mysql-里的时区问题" class="headerlink" title="spring，mybatis 和 mysql 里的时区问题"></a>spring，mybatis 和 mysql 里的时区问题</h1><h2 id="大概路径"><a href="#大概路径" class="headerlink" title="大概路径"></a>大概路径</h2><p>客户端发起请求</p>
+<ol>
+<li>前端请求</li>
+<li>spring 服务端</li>
+<li>mybatis 访问</li>
+<li>mysql 数据</li>
+<li>spring 服务端</li>
+<li>前端显示</li>
+</ol>
+<h2 id="mysql"><a href="#mysql" class="headerlink" title="mysql"></a>mysql</h2><p>通过命令 show variables like “%time_zone%”;  可以获取 mysql 的时区。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mysql&gt; show databases;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| test               |</div><div class="line">+--------------------+</div><div class="line">2 rows in set (0.00 sec)</div></pre></td></tr></table></figure>
+<h2 id="mybatis"><a href="#mybatis" class="headerlink" title="mybatis"></a>mybatis</h2><p>在 spring.datasource.url 参数中需要制定 serverTimezone 和数据库应该对应起来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">serverTimezone=GMT%2b8</div></pre></td></tr></table></figure>
+<h2 id="spring"><a href="#spring" class="headerlink" title="spring"></a>spring</h2><p>可以通过如下代码获取时区</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">TimeZone.getDefault()</div></pre></td></tr></table></figure>
+<p>如果数据为 Date 类型我们可以在服务打印对应的数据来查看数据是否是对的（当然需要考虑时区）。</p>
+<p>在对外显示时，我们需要 spring.jackson.time-zone 参数。比如我们如下制定东八区的话就可以看到Date类型被显示成 2019-09-23T00:32:12.000+0800。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">spring.jackson.time-zone=GMT+8</div></pre></td></tr></table></figure>
+<h2 id="序列化和反序列化"><a href="#序列化和反序列化" class="headerlink" title="序列化和反序列化"></a>序列化和反序列化</h2><p>###反序列化</p>
+<p>如果在 query （ 前端传给服务端 ）中，默认格式是奇葩的 yyyy-MM-dd’T’HH:mm:ss.SSSZ 格式。一般情况我们会使用到 yyyy-MM-dd HH:mm:ss ，这时候我们需要自定义反序列化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@JsonDeserialize</span>(using = CustomJsonDateDeserializer.class)</div><div class="line"><span class="keyword">private</span> Date operateStartDate;</div></pre></td></tr></table></figure>
+<p>反序列化类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomJsonDateDeserializer</span> <span class="keyword">extends</span> <span class="title">JsonDeserializer</span>&lt;<span class="title">Date</span>&gt; </span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Date <span class="title">deserialize</span><span class="params">(JsonParser jp, DeserializationContext ctxt)</span> <span class="keyword">throws</span> IOException, JsonProcessingException </span>&#123;</div><div class="line">        SimpleDateFormat format = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</div><div class="line">        String date = jp.getText();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">return</span> format.parse(date);</div><div class="line">        &#125; <span class="keyword">catch</span> (ParseException e1) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><p>如果在 dto （服务器端传给前端）中，默认的格式是奇葩的 2019-09-22T16:32:28.000+0800。一般情况下我们会使用到 yyyy-MM-dd HH:mm:ss ，这时候我们需要自定义序列化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@JsonSerialize</span>(using = CustomJsonDateSerializer.class)</div><div class="line"><span class="keyword">private</span> Date create_time;</div></pre></td></tr></table></figure>
+<p>序列化类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomJsonDateSerializer</span> <span class="keyword">extends</span> <span class="title">JsonSerializer</span>&lt;<span class="title">Date</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(Date date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)</span> <span class="keyword">throws</span> IOException, JsonProcessingException </span>&#123;</div><div class="line">        SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            String dateString = dateFormat.format(date);</div><div class="line">            jsonGenerator.writeString(dateString);</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="多时区"><a href="#多时区" class="headerlink" title="多时区"></a>多时区</h2><p>如果是多时区，应该使用 UTC 进行存储，然后在显示的地方（前端）转换到各种地方对应的时区。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/09/22/timezone-in-spring-mybatis-mysql/" data-id="ck0uzr4eu0027ha9sgz91p4ro" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          just-pick-the-first-one-from-todolist-and-finish-that
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/09/01/some-thoughts-about-recent-internal-job-transfer/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">some-thoughts-about-recent-internal-job-transfer</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-read/">life,read</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src-treemap/">src, treemap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 12.5px;">bank</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kafka/" style="font-size: 12.5px;">kafka</a> <a href="/tags/life/" style="font-size: 17.5px;">life</a> <a href="/tags/life-read/" style="font-size: 10px;">life,read</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 12.5px;">reading</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/src/" style="font-size: 12.5px;">src</a> <a href="/tags/src-treemap/" style="font-size: 10px;">src, treemap</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/">just-pick-the-first-one-from-todolist-and-finish-that</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/22/timezone-in-spring-mybatis-mysql/">timezone-in-spring-mybatis-mysql</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/01/some-thoughts-about-recent-internal-job-transfer/">some-thoughts-about-recent-internal-job-transfer</a>
+          </li>
+        
+          <li>
+            <a href="/2019/08/05/jdk-src-treemap/">jdk-src-treemap</a>
+          </li>
+        
+          <li>
+            <a href="/2019/07/23/some-new-thoughts-about-career-development/">some-new-thoughts-about-career-development</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 liu binbin<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
