@@ -3,14 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2017/5 | bin</title>
+  <title>jdb-usage | bin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="bin">
-<meta property="og:url" content="http://yoursite.com/archives/2017/05/index.html">
+  <meta name="description" content="在 java 进程有一些莫名其妙的问题，可以通过 jdb 来处理问题。
+在上周在通过 HttpClient 访问时，有发现代码里的 NPE，从源码日志看逻辑是没有问题，运行的进程的 jar 包又不好替换，就使用 jdb 命令发现 getContentLength 方法返回值为 -1（后来发现另一个可以使用的接口里没有判断这个值，并且这个值也为 -1，我猜想是从 stream中获取导致不需要这个值）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jdb-usage">
+<meta property="og:url" content="http://yoursite.com/2019/10/13/jdb-usage/index.html">
 <meta property="og:site_name" content="bin">
+<meta property="og:description" content="在 java 进程有一些莫名其妙的问题，可以通过 jdb 来处理问题。
+在上周在通过 HttpClient 访问时，有发现代码里的 NPE，从源码日志看逻辑是没有问题，运行的进程的 jar 包又不好替换，就使用 jdb 命令发现 getContentLength 方法返回值为 -1（后来发现另一个可以使用的接口里没有判断这个值，并且这个值也为 -1，我猜想是从 stream中获取导致不需要这个值）">
+<meta property="og:updated_time" content="2019-10-13T15:00:29.007Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="bin">
+<meta name="twitter:title" content="jdb-usage">
+<meta name="twitter:description" content="在 java 进程有一些莫名其妙的问题，可以通过 jdb 来处理问题。
+在上周在通过 HttpClient 访问时，有发现代码里的 NPE，从源码日志看逻辑是没有问题，运行的进程的 jar 包又不好替换，就使用 jdb 命令发现 getContentLength 方法返回值为 -1（后来发现另一个可以使用的接口里没有判断这个值，并且这个值也为 -1，我猜想是从 stream中获取导致不需要这个值）">
   
     <link rel="alternate" href="/atom.xml" title="bin" type="application/atom+xml">
   
@@ -59,96 +66,60 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/05/30/rit-in-HBase/" class="archive-article-date">
-  <time datetime="2017-05-30T12:08:15.000Z" itemprop="datePublished">May 30</time>
+        <section id="main"><article id="post-jdb-usage" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/13/jdb-usage/" class="article-date">
+  <time datetime="2019-10-13T14:19:34.000Z" itemprop="datePublished">2019-10-13</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/30/rit-in-HBase/">rit in HBase</a>
+    <h1 class="article-title" itemprop="name">
+      jdb-usage
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/05/14/hbase-src-hfile/" class="archive-article-date">
-  <time datetime="2017-05-14T02:01:39.000Z" itemprop="datePublished">May 14</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/14/hbase-src-hfile/">HBase源码系列之HFile</a>
-    </h1>
-  
+        <p>在 java 进程有一些莫名其妙的问题，可以通过 jdb 来处理问题。</p>
+<p>在上周在通过 HttpClient 访问时，有发现代码里的 NPE，从源码日志看逻辑是没有问题，运行的进程的 jar 包又不好替换，就使用 jdb 命令发现 getContentLength 方法返回值为 -1（后来发现另一个可以使用的接口里没有判断这个值，并且这个值也为 -1，我猜想是从 stream中获取导致不需要这个值），会导致 NPE。在这种情况下使用 jdb 命令非常方便的看到是怎么回事。</p>
+<p>具体使用方法有两个博客可以参考，这里记录一下：</p>
+<ol>
+<li><a href="https://www.ibm.com/developerworks/cn/java/joy-jdb/index.html" target="_blank" rel="external">https://www.ibm.com/developerworks/cn/java/joy-jdb/index.html</a></li>
+<li><a href="https://blog.csdn.net/arkblue/article/details/39718947" target="_blank" rel="external">https://blog.csdn.net/arkblue/article/details/39718947</a></li>
+</ol>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/05/09/hbase-src-compaction/" class="archive-article-date">
-  <time datetime="2017-05-09T15:44:59.000Z" itemprop="datePublished">May 9</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/09/hbase-src-compaction/">HBase源码系列之compaction</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/05/05/HBase-trap/" class="archive-article-date">
-  <time datetime="2017-05-05T14:29:12.000Z" itemprop="datePublished">May 5</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/13/jdb-usage/" data-id="ck1p466r40015489sdubr05k3" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/05/HBase-trap/">HBase的一些坑</a>
-    </h1>
-  
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
 
-    </header>
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">just-pick-the-first-one-from-todolist-and-finish-that</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         
