@@ -61,6 +61,200 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-ability-in-profession" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/14/ability-in-profession/" class="article-date">
+  <time datetime="2018-12-14T15:41:28.000Z" itemprop="datePublished">2018-12-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/14/ability-in-profession/">ability-in-profession</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="能力"><a href="#能力" class="headerlink" title="能力"></a>能力</h1><p>所有的事情最终都会落到成事的能力，证明成事能力的途径感觉只有两种途径。</p>
+<ol>
+<li>领导给一件事就成一件事。</li>
+<li>在专业领域展示能力，形成自己的影响力。</li>
+</ol>
+<p>其实公司不是一个让人积极向上，让人自动进步的地方，否则就不会出现这么多空降，否则就不会出现你解决不了一个项目直接裁掉从外面招人解决。能积极向上的只有自己。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/14/ability-in-profession/" data-id="ckv2k6us50005hh9shce2q4mo" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ability/">ability</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-paldb-analysis" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/02/paldb-analysis/" class="article-date">
+  <time datetime="2018-12-02T15:47:20.000Z" itemprop="datePublished">2018-12-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/02/paldb-analysis/">paldb解读</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>github地址：<a href="https://github.com/linkedin/PalDB.git" target="_blank" rel="external">https://github.com/linkedin/PalDB.git</a></p>
+<p>相关内容可以建项目的readme。</p>
+<p>主要分析函数如下：</p>
+<h1 id="StoreWriter的put方法"><a href="#StoreWriter的put方法" class="headerlink" title="StoreWriter的put方法"></a>StoreWriter的put方法</h1><p>paldb的数据按key对应的byte数组的长度散列。不同key长度会有不同index file和data file。</p>
+<p>此方法是paldb写入数据的主流程。</p>
+<p>相关代码和一些注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(<span class="keyword">byte</span>[] key, <span class="keyword">byte</span>[] value)</span></span></div><div class="line">     <span class="keyword">throws</span> IOException &#123;</div><div class="line">   <span class="keyword">int</span> keyLength = key.length;</div><div class="line"></div><div class="line">   <span class="comment">//获取indexfile的stream，如果在indexFiles数组和indexStreams数组没有对应key长度索引文件则创建。</span></div><div class="line">   DataOutputStream indexStream = getIndexStream(keyLength);</div><div class="line"></div><div class="line">   <span class="comment">// 在stream中写入key。</span></div><div class="line">   indexStream.write(key);</div><div class="line"></div><div class="line">   <span class="comment">// 判断此key对应长度的最后一个插入的值是否和目前值一致。不明白此处的判断意义。</span></div><div class="line">   <span class="keyword">byte</span>[] lastValue = lastValues[keyLength];</div><div class="line">   <span class="keyword">boolean</span> sameValue = lastValue != <span class="keyword">null</span> &amp;&amp; Arrays.equals(value, lastValue);</div><div class="line"></div><div class="line">   <span class="comment">// 获取对应的长度已写入的数据的长度，这个值在后续close时会使用到。</span></div><div class="line">   <span class="keyword">long</span> dataLength = dataLengths[keyLength];</div><div class="line">   <span class="keyword">if</span> (sameValue) &#123;</div><div class="line">     dataLength -= lastValuesLength[keyLength];</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="comment">// 在indexStream写入的长度（就是的value的offset），获取offset的长度，，并在maxOffsetLengths记录当前key长度的最大offset的长度，此数值在后面的计算slot时会使用到。</span></div><div class="line">   <span class="keyword">int</span> offsetLength = LongPacker.packLong(indexStream, dataLength);</div><div class="line">   System.out.println(<span class="string">"offsetLength: "</span> + offsetLength + <span class="string">" maxOffsetLengths[keyLength]: "</span> + maxOffsetLengths[keyLength]);</div><div class="line">   maxOffsetLengths[keyLength] = Math.max(offsetLength, maxOffsetLengths[keyLength]);</div><div class="line"></div><div class="line">   <span class="comment">// 只有sameValue为false时才执行下面的命令：</span></div><div class="line">   <span class="keyword">if</span> (!sameValue) &#123;</div><div class="line">     <span class="comment">// 获取datafile的stream，如果在dataFiles数组和dataStreams数组没有对应key长度索引文件则创建。</span></div><div class="line">     DataOutputStream dataStream = getDataStream(keyLength);</div><div class="line"></div><div class="line">     <span class="comment">// 在datastream写入value长度和value值</span></div><div class="line">     <span class="keyword">int</span> valueSize = LongPacker.packInt(dataStream, value.length);</div><div class="line">     dataStream.write(value);</div><div class="line"></div><div class="line">     <span class="comment">// 更新数据长度，此处可以认为是在datastream里的offset，在后续close时会使用到。</span></div><div class="line">     dataLengths[keyLength] += valueSize + value.length;</div><div class="line"></div><div class="line">     <span class="comment">// 更新最后一个插入值的信息，在lastValues和lastValuesLength中。</span></div><div class="line">     lastValues[keyLength] = value;</div><div class="line">     lastValuesLength[keyLength] = valueSize + value.length;</div><div class="line">  <span class="comment">// 更新所有插入的value的count计数</span></div><div class="line">     valueCount++;</div><div class="line">   &#125;</div><div class="line"><span class="comment">// 更新key的count计数, 此数和valueCount不一定一致。</span></div><div class="line">   keyCount++;</div><div class="line">   keyCounts[keyLength]++;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<h1 id="StoreWriter的close方法"><a href="#StoreWriter的close方法" class="headerlink" title="StoreWriter的close方法"></a>StoreWriter的close方法</h1><p>此方法为close方法，主要整理了从打卡到目前为止的临时数据。</p>
+<p>相关代码和一些注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span></div><div class="line">    <span class="keyword">throws</span> IOException &#123;</div><div class="line">  <span class="comment">// 关闭data file和index file的stream</span></div><div class="line">  <span class="keyword">for</span> (DataOutputStream dos : dataStreams) &#123;</div><div class="line">    <span class="keyword">if</span> (dos != <span class="keyword">null</span>) &#123;</div><div class="line">      dos.close();</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">for</span> (DataOutputStream dos : indexStreams) &#123;</div><div class="line">    <span class="keyword">if</span> (dos != <span class="keyword">null</span>) &#123;</div><div class="line">      dos.close();</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Stats</span></div><div class="line">  LOGGER.log(Level.INFO, <span class="string">"Number of keys: &#123;0&#125;"</span>, keyCount);</div><div class="line">  LOGGER.log(Level.INFO, <span class="string">"Number of values: &#123;0&#125;"</span>, valueCount);</div><div class="line"></div><div class="line">  <span class="comment">// 新建一个list变量filesToMerge来存储要merge的文件，包括meta文件，index文件，data文件</span></div><div class="line">  List&lt;File&gt; filesToMerge = <span class="keyword">new</span> ArrayList&lt;File&gt;();</div><div class="line"></div><div class="line">  <span class="keyword">try</span> &#123;</div><div class="line"></div><div class="line">    <span class="comment">// 写metadata文件（以metadata.dat结尾）</span></div><div class="line">    File metadataFile = <span class="keyword">new</span> File(tempFolder, <span class="string">"metadata.dat"</span>);</div><div class="line">    metadataFile.deleteOnExit();</div><div class="line">    FileOutputStream metadataOututStream = <span class="keyword">new</span> FileOutputStream(metadataFile);</div><div class="line">    DataOutputStream metadataDataOutputStream = <span class="keyword">new</span> DataOutputStream(metadataOututStream);</div><div class="line">    writeMetadata(metadataDataOutputStream);</div><div class="line">    metadataDataOutputStream.close();</div><div class="line">    metadataOututStream.close();</div><div class="line">    filesToMerge.add(metadataFile);</div><div class="line"></div><div class="line">    <span class="comment">// 创建索引文件</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; indexFiles.length; i++) &#123;</div><div class="line">      <span class="keyword">if</span> (indexFiles[i] != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// 按的key长度索引文件。</span></div><div class="line">        filesToMerge.add(buildIndex(i));</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Stats collisions</span></div><div class="line">    LOGGER.log(Level.INFO, <span class="string">"Number of collisions: &#123;0&#125;"</span>, collisions);</div><div class="line"></div><div class="line">    <span class="comment">// 把数据文件加入到filesToMerge文件</span></div><div class="line">    <span class="keyword">for</span> (File dataFile : dataFiles) &#123;</div><div class="line">      <span class="keyword">if</span> (dataFile != <span class="keyword">null</span>) &#123;</div><div class="line">        filesToMerge.add(dataFile);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 检查磁盘空间</span></div><div class="line">    checkFreeDiskSpace(filesToMerge);</div><div class="line">    <span class="comment">// merge三类文件值一个文件outputStream中。</span></div><div class="line">    mergeFiles(filesToMerge, outputStream);</div><div class="line">  &#125; <span class="keyword">finally</span> &#123;</div><div class="line">    <span class="comment">// 关闭outputStream，删除临时文件（filesToMerge）</span></div><div class="line">    outputStream.close();</div><div class="line">    cleanup(filesToMerge);</div><div class="line">    <span class="comment">// 最终所有的数据合并在outputStream（也就是我们指出的文件中）中。</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="StoreWriter的writeMetadata方法"><a href="#StoreWriter的writeMetadata方法" class="headerlink" title="StoreWriter的writeMetadata方法"></a>StoreWriter的writeMetadata方法</h1><p>此方法为写meta部分的代码，从中可以看到meta部分的结构。</p>
+<p>相关代码和一些注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeMetadata</span><span class="params">(DataOutputStream dataOutputStream)</span></span></div><div class="line">    <span class="keyword">throws</span> IOException &#123;</div><div class="line">  <span class="comment">// 写入版本信息</span></div><div class="line">  dataOutputStream.writeUTF(FormatVersion.getLatestVersion().name());</div><div class="line"></div><div class="line">  <span class="comment">// 写入当前时间</span></div><div class="line">  dataOutputStream.writeLong(System.currentTimeMillis());</div><div class="line"></div><div class="line">  <span class="comment">// 获取对应长度有值的个数和目前key长度的最大</span></div><div class="line">  <span class="keyword">int</span> keyLengthCount = getNumKeyCount();</div><div class="line">  <span class="keyword">int</span> maxKeyLength = keyCounts.length - <span class="number">1</span>;</div><div class="line"></div><div class="line">  <span class="comment">// 写入key个数</span></div><div class="line">  dataOutputStream.writeInt(keyCount);</div><div class="line"></div><div class="line">  <span class="comment">// 写入获取到的有值的key长度的个数keyLengthCount</span></div><div class="line">  dataOutputStream.writeInt(keyLengthCount);</div><div class="line"></div><div class="line">  <span class="comment">// 写入获取到key长度最大值maxKeyLength</span></div><div class="line">  dataOutputStream.writeInt(maxKeyLength);</div><div class="line"></div><div class="line">  <span class="comment">// 初始化datasLength</span></div><div class="line">  <span class="keyword">long</span> datasLength = <span class="number">0l</span>;</div><div class="line">  <span class="comment">// 针对每个key长度有值的长度执行如下命令</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; keyCounts.length; i++) &#123;</div><div class="line">    <span class="comment">// 判断是否有此长度的key</span></div><div class="line">    <span class="keyword">if</span> (keyCounts[i] &gt; <span class="number">0</span>) &#123;</div><div class="line">      <span class="comment">// 写入长度</span></div><div class="line">      dataOutputStream.writeInt(i);</div><div class="line"></div><div class="line">      <span class="comment">// 写入key的个数</span></div><div class="line">      dataOutputStream.writeInt(keyCounts[i]);</div><div class="line"></div><div class="line">      <span class="comment">// 写入slot个数（有key的个数除以loadFactor，loadFactor默认为0.75），此slot用于包含数据。</span></div><div class="line">      <span class="keyword">int</span> slots = (<span class="keyword">int</span>) Math.round(keyCounts[i] / loadFactor);</div><div class="line">      dataOutputStream.writeInt(slots);</div><div class="line"></div><div class="line">      <span class="comment">// 以下四步记录各个部分key对应的index和data的offset。</span></div><div class="line">      <span class="comment">// 写入slot大小(key长度 + 最大offset的长度)</span></div><div class="line">      <span class="keyword">int</span> offsetLength = maxOffsetLengths[i];</div><div class="line">      dataOutputStream.writeInt(i + offsetLength);</div><div class="line"></div><div class="line">      <span class="comment">// 写入index的offset</span></div><div class="line">      dataOutputStream.writeInt((<span class="keyword">int</span>) indexesLength);</div><div class="line"></div><div class="line">      <span class="comment">// 偏移此长度对应的index需要的offset偏移</span></div><div class="line">      indexesLength += (i + offsetLength) * slots;</div><div class="line"></div><div class="line">      <span class="comment">// 写入数据长度</span></div><div class="line">      dataOutputStream.writeLong(datasLength);</div><div class="line"></div><div class="line">      <span class="comment">// 偏移本长度对应的data需要的offset偏移</span></div><div class="line">      datasLength += dataLengths[i];</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// 写入序列化信息</span></div><div class="line">  <span class="keyword">try</span> &#123;</div><div class="line">    Serializers.serialize(dataOutputStream, config.getSerializers());</div><div class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// 写入最终文件中index部分的offset和data部分的offset。index通过目前再加两个值的offset开始，data部分从在index之后再写完所有index的长度开始。</span></div><div class="line">  <span class="keyword">int</span> indexOffset = dataOutputStream.size() + (Integer.SIZE / Byte.SIZE) + (Long.SIZE / Byte.SIZE);</div><div class="line">  dataOutputStream.writeInt(indexOffset);</div><div class="line">  dataOutputStream.writeLong(indexOffset + indexesLength);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="StoreWriter的buildIndex方法"><a href="#StoreWriter的buildIndex方法" class="headerlink" title="StoreWriter的buildIndex方法"></a>StoreWriter的buildIndex方法</h1><p>此方法为buildindex，可以看到paldb怎么获取offset，怎么做冲突等。</p>
+<p>相关代码和一些注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> File <span class="title">buildIndex</span><span class="params">(<span class="keyword">int</span> keyLength)</span></span></div><div class="line">    <span class="keyword">throws</span> IOException &#123;</div><div class="line">  <span class="comment">// 初始化count（本长度key的个数），slots个数，offsetLength，slotSize(key长度+offset长度)</span></div><div class="line">  <span class="keyword">long</span> count = keyCounts[keyLength];</div><div class="line">  <span class="keyword">int</span> slots = (<span class="keyword">int</span>) Math.round(count / loadFactor);</div><div class="line">  <span class="keyword">int</span> offsetLength = maxOffsetLengths[keyLength];</div><div class="line">  <span class="keyword">int</span> slotSize = keyLength + offsetLength;</div><div class="line"></div><div class="line">  <span class="comment">// 初始化index文件，此index文件没有temp</span></div><div class="line">  File indexFile = <span class="keyword">new</span> File(tempFolder, <span class="string">"index"</span> + keyLength + <span class="string">".dat"</span>);</div><div class="line">  RandomAccessFile indexAccessFile = <span class="keyword">new</span> RandomAccessFile(indexFile, <span class="string">"rw"</span>);</div><div class="line">  <span class="keyword">try</span> &#123;</div><div class="line">    indexAccessFile.setLength(slots * slotSize);</div><div class="line">    FileChannel indexChannel = indexAccessFile.getChannel();</div><div class="line">    <span class="comment">// 使用了一个MappedByteBuffer</span></div><div class="line">    MappedByteBuffer byteBuffer = indexChannel.map(FileChannel.MapMode.READ_WRITE, <span class="number">0</span>, indexAccessFile.length());</div><div class="line"></div><div class="line">    <span class="comment">// 初始化临时index文件的用于读的流</span></div><div class="line">    File tempIndexFile = indexFiles[keyLength];</div><div class="line">    DataInputStream tempIndexStream = <span class="keyword">new</span> DataInputStream(<span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(tempIndexFile)));</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      <span class="keyword">byte</span>[] keyBuffer = <span class="keyword">new</span> <span class="keyword">byte</span>[keyLength];</div><div class="line">      <span class="keyword">byte</span>[] slotBuffer = <span class="keyword">new</span> <span class="keyword">byte</span>[slotSize];</div><div class="line">      <span class="keyword">byte</span>[] offsetBuffer = <span class="keyword">new</span> <span class="keyword">byte</span>[offsetLength];</div><div class="line"></div><div class="line">      <span class="comment">// 处理所有的key，由于slot为key个数除以一个系数，系统小于1，所以slot肯定可以放下所有的数据，如果slot过于，冲突会少，但是更多多余的空间会被浪费。</span></div><div class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</div><div class="line">        <span class="comment">// 读取key</span></div><div class="line">        tempIndexStream.readFully(keyBuffer);</div><div class="line"></div><div class="line">        <span class="comment">// 读取的offset</span></div><div class="line">        <span class="keyword">long</span> offset = LongPacker.unpackLong(tempIndexStream);</div><div class="line"></div><div class="line">        <span class="comment">// 计算hash值</span></div><div class="line">        <span class="keyword">long</span> hash = (<span class="keyword">long</span>) hashUtils.hash(keyBuffer);</div><div class="line"></div><div class="line">        <span class="keyword">boolean</span> collision = <span class="keyword">false</span>;</div><div class="line">        <span class="comment">// 用一个探针去试探，检测冲突，这同时也是在散列。</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> probe = <span class="number">0</span>; probe &lt; count; probe++) &#123;</div><div class="line">          <span class="keyword">int</span> slot = (<span class="keyword">int</span>) ((hash + probe) % slots);</div><div class="line">          byteBuffer.position(slot * slotSize);</div><div class="line">          byteBuffer.get(slotBuffer);</div><div class="line"></div><div class="line">          <span class="keyword">long</span> found = LongPacker.unpackLong(slotBuffer, keyLength);</div><div class="line">          <span class="comment">// 去试探的对应的位置是否有数据</span></div><div class="line">          <span class="keyword">if</span> (found == <span class="number">0</span>) &#123;</div><div class="line">            <span class="comment">// 如果没有值，则说明没有冲突，写入key和offset。</span></div><div class="line">            byteBuffer.position(slot * slotSize);</div><div class="line">            byteBuffer.put(keyBuffer);</div><div class="line">            <span class="keyword">int</span> pos = LongPacker.packLong(offsetBuffer, offset);</div><div class="line">            byteBuffer.put(offsetBuffer, <span class="number">0</span>, pos);</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">          &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// 如果有值说明有冲突，则标记。</span></div><div class="line">            collision = <span class="keyword">true</span>;</div><div class="line">            <span class="comment">// Check for duplicates</span></div><div class="line">            <span class="keyword">if</span> (Arrays.equals(keyBuffer, Arrays.copyOf(slotBuffer, keyLength))) &#123;</div><div class="line">              <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</div><div class="line">                      String.format(<span class="string">"A duplicate key has been found for for key bytes %s"</span>, Arrays.toString(keyBuffer)));</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">  <span class="comment">// 统计冲突个数</span></div><div class="line">        <span class="keyword">if</span> (collision) &#123;</div><div class="line">          collisions++;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      String msg = <span class="string">"  Max offset length: "</span> + offsetLength + <span class="string">" bytes"</span> +</div><div class="line">              <span class="string">"\n  Slot size: "</span> + slotSize + <span class="string">" bytes"</span>;</div><div class="line"></div><div class="line">      LOGGER.log(Level.INFO, <span class="string">"Built index file &#123;0&#125;\n"</span> + msg, indexFile.getName());</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">      <span class="comment">// 关闭临时index文件输入流</span></div><div class="line">      tempIndexStream.close();</div><div class="line"></div><div class="line">      <span class="comment">// 关闭index文件的channel，释放资源。</span></div><div class="line">      indexChannel.close();</div><div class="line">      indexChannel = <span class="keyword">null</span>;</div><div class="line">      byteBuffer = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">      <span class="comment">// 删除临时index文件</span></div><div class="line">      <span class="keyword">if</span> (tempIndexFile.delete()) &#123;</div><div class="line">        LOGGER.log(Level.INFO, <span class="string">"Temporary index file &#123;0&#125; has been deleted"</span>, tempIndexFile.getName());</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">finally</span>&#123;</div><div class="line">    <span class="comment">// 关闭index文件</span></div><div class="line">    indexAccessFile.close();</div><div class="line">    indexAccessFile = <span class="keyword">null</span>;</div><div class="line">    <span class="comment">// 手动执行一次gc，所以在这时候不能在jdk参数中关闭手动gc。</span></div><div class="line">    System.gc();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> indexFile;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="StoreReader的get方法"><a href="#StoreReader的get方法" class="headerlink" title="StoreReader的get方法"></a>StoreReader的get方法</h1><p>此方法是paldb读取数据的主流程。</p>
+<p>相关代码和一些注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"> <span class="keyword">public</span> <span class="keyword">byte</span>[] get(<span class="keyword">byte</span>[] key)</div><div class="line">     <span class="keyword">throws</span> IOException &#123;</div><div class="line">   <span class="comment">// 获取key的长度，检测key长度是否有数据在</span></div><div class="line">   <span class="keyword">int</span> keyLength = key.length;</div><div class="line">   <span class="keyword">if</span> (keyLength &gt;= slots.length || keyCounts[keyLength] == <span class="number">0</span>) &#123;</div><div class="line">     <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">   &#125;</div><div class="line">   <span class="comment">// 计算hash值</span></div><div class="line">   <span class="keyword">long</span> hash = (<span class="keyword">long</span>) hashUtils.hash(key);</div><div class="line">   <span class="comment">// 获取对应的key长度的slot个数</span></div><div class="line">   <span class="keyword">int</span> numSlots = slots[keyLength];</div><div class="line">   <span class="comment">// 获取对应的key长度的slot大小</span></div><div class="line">   <span class="keyword">int</span> slotSize = slotSizes[keyLength];</div><div class="line">   <span class="comment">// 获取index部分的offset</span></div><div class="line">   <span class="keyword">int</span> indexOffset = indexOffsets[keyLength];</div><div class="line">   <span class="comment">// 获取data部分的offset</span></div><div class="line">   <span class="keyword">long</span> dataOffset = dataOffsets[keyLength];</div><div class="line"><span class="comment">// 用一个探针去试探对应位置上是否有数据。</span></div><div class="line">   <span class="keyword">for</span> (<span class="keyword">int</span> probe = <span class="number">0</span>; probe &lt; numSlots; probe++) &#123;</div><div class="line">     <span class="keyword">int</span> slot = (<span class="keyword">int</span>) ((hash + probe) % numSlots);</div><div class="line">     <span class="comment">// slotBuffer 为slotSize的byte数组, 将所有的key+offset打到一个固定大小slot的好处就是我们可以使用slotSize来定位。</span></div><div class="line">     indexBuffer.position(indexOffset + slot * slotSize);</div><div class="line">     indexBuffer.get(slotBuffer, <span class="number">0</span>, slotSize);</div><div class="line">  <span class="comment">// 解析读取出来的对应slot中的数据</span></div><div class="line">     <span class="keyword">long</span> offset = LongPacker.unpackLong(slotBuffer, keyLength);</div><div class="line">     <span class="comment">// 判断此slot里是否有数据</span></div><div class="line">     <span class="keyword">if</span> (offset == <span class="number">0</span>) &#123;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="comment">// 比较slotBuffer和key是否完全相等</span></div><div class="line">     <span class="keyword">if</span> (isKey(slotBuffer, key)) &#123;</div><div class="line">       <span class="comment">// mMapData来标记的是否使用MMap</span></div><div class="line">       <span class="keyword">byte</span>[] value = mMapData ? getMMapBytes(dataOffset + offset) : getDiskBytes(dataOffset + offset);</div><div class="line">       <span class="keyword">return</span> value;</div><div class="line">     &#125;</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<h1 id="StoreReader的getMMapBytes方法"><a href="#StoreReader的getMMapBytes方法" class="headerlink" title="StoreReader的getMMapBytes方法"></a>StoreReader的getMMapBytes方法</h1><p>此方法为启用mmap时读取真实value的方法。</p>
+<p>相关代码和一些注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">byte</span>[] getMMapBytes(<span class="keyword">long</span> offset)</div><div class="line">    <span class="keyword">throws</span> IOException &#123;</div><div class="line">  <span class="comment">// 一些bytebuffer的操作，暂不详细分析, 主要的是数据不能一下子读取出来，比较麻烦。</span></div><div class="line">  <span class="comment">//Read the first 4 bytes to get the size of the data</span></div><div class="line">  ByteBuffer buf = getDataBuffer(offset);</div><div class="line">  <span class="keyword">int</span> maxLen = (<span class="keyword">int</span>) Math.min(<span class="number">5</span>, dataSize - offset);</div><div class="line">  <span class="comment">// 获取的size</span></div><div class="line">  <span class="keyword">int</span> size;</div><div class="line">  <span class="keyword">if</span> (buf.remaining() &gt;= maxLen) &#123;</div><div class="line">    <span class="comment">//Continuous read</span></div><div class="line">    <span class="keyword">int</span> pos = buf.position();</div><div class="line">    size = LongPacker.unpackInt(buf);</div><div class="line"></div><div class="line">    <span class="comment">// Used in case of data is spread over multiple buffers</span></div><div class="line">    offset += buf.position() - pos;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">//The size of the data is spread over multiple buffers</span></div><div class="line">    <span class="keyword">int</span> len = maxLen;</div><div class="line">    <span class="keyword">int</span> off = <span class="number">0</span>;</div><div class="line">    sizeBuffer.reset();</div><div class="line">    <span class="keyword">while</span> (len &gt; <span class="number">0</span>) &#123;</div><div class="line">      buf = getDataBuffer(offset + off);</div><div class="line">      <span class="keyword">int</span> count = Math.min(len, buf.remaining());</div><div class="line">      buf.get(sizeBuffer.getBuf(), off, count);</div><div class="line">      off += count;</div><div class="line">      len -= count;</div><div class="line">    &#125;</div><div class="line">    size = LongPacker.unpackInt(sizeBuffer);</div><div class="line">    offset += sizeBuffer.getPos();</div><div class="line">    buf = getDataBuffer(offset);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// 初始化输出结果</span></div><div class="line">  <span class="keyword">byte</span>[] res = <span class="keyword">new</span> <span class="keyword">byte</span>[size];</div><div class="line"></div><div class="line">  <span class="comment">//Check if the data is one buffer</span></div><div class="line">  <span class="keyword">if</span> (buf.remaining() &gt;= size) &#123;</div><div class="line">    <span class="comment">//Continuous read</span></div><div class="line">    buf.get(res, <span class="number">0</span>, size);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="keyword">int</span> len = size;</div><div class="line">    <span class="keyword">int</span> off = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span> (len &gt; <span class="number">0</span>) &#123;</div><div class="line">      buf = getDataBuffer(offset);</div><div class="line">      <span class="keyword">int</span> count = Math.min(len, buf.remaining());</div><div class="line">      buf.get(res, off, count);</div><div class="line">      offset += count;</div><div class="line">      off += count;</div><div class="line">      len -= count;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> res;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="StoreReader的getDiskBytes方法"><a href="#StoreReader的getDiskBytes方法" class="headerlink" title="StoreReader的getDiskBytes方法"></a>StoreReader的getDiskBytes方法</h1><p>此方法为没有启用mmap时读取真实value的方法。</p>
+<p>相关代码和一些注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">byte</span>[] getDiskBytes(<span class="keyword">long</span> offset)</div><div class="line">    <span class="keyword">throws</span> IOException &#123;</div><div class="line">  <span class="comment">// seek到对应长度的offset</span></div><div class="line">  mappedFile.seek(dataOffset + offset);</div><div class="line"></div><div class="line">  <span class="comment">// 从对应长度读取size</span></div><div class="line">  <span class="keyword">int</span> size = LongPacker.unpackInt(mappedFile);</div><div class="line"></div><div class="line">  <span class="comment">// 初始化输出结果</span></div><div class="line">  <span class="keyword">byte</span>[] res = <span class="keyword">new</span> <span class="keyword">byte</span>[size];</div><div class="line"></div><div class="line">  <span class="comment">// 读取数据</span></div><div class="line">  <span class="keyword">if</span> (mappedFile.read(res) == -<span class="number">1</span>) &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> EOFException();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> res;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="重要成员变量"><a href="#重要成员变量" class="headerlink" title="重要成员变量"></a>重要成员变量</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">indexOffset: index部分的偏移量</div><div class="line">dataOffset：data部分的偏移量</div><div class="line">slots(int[])：slot个数，用于hash计算</div><div class="line">slotSizes(int[])：slot的大小，用于计算offset</div><div class="line">indexOffsets(int[])：index部分中每个key长度对应的offset</div><div class="line">dataOffsets(int[])：data部分中每个key长度对应的offset</div></pre></td></tr></table></figure>
+<h1 id="文件格式图"><a href="#文件格式图" class="headerlink" title="文件格式图"></a>文件格式图</h1><p><img src="paldb-file-format.jpeg" alt=""></p>
+<h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>从图中可以知道，paldb的文件主要的分为三个部分，metadata，index和data。</p>
+<p>metadata：主要用于描述paldb文件，其中包括了重要成员变量。</p>
+<p>index：主要保存了key和对应的offset。在paldb中数据按key长度区分，并提出了一个slot的概念。一个slot包含key和对应的offset（此offset用于在data部分找到真实数据）。slot的长度是固定，所以在index去获取offset时可以，直接使用下标和slotSize的乘积。下标通过对key的hash计算得到，并使用探针的方式去不停尝试获取到正确的下标。相当于在文件中实现了一个hash函数。</p>
+<p>data：主要保存了value长度和value具体的值。具体的offset由在index部分获取。在这里的length的字节数是固定的，所以可以拿到offset后就可以解析处value长度和value值。</p>
+<h1 id="可能的问题"><a href="#可能的问题" class="headerlink" title="可能的问题"></a>可能的问题</h1><ul>
+<li>在创建slot时，不好把握factor计算slot个数。</li>
+<li>如果hash特别不均衡，会导致探针试探次数很多，由于每次试探会读取磁盘，代价略高。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/02/paldb-analysis/" data-id="ckv2k6usv001shh9s4wrjdep6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/paldb/">paldb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src/">src</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-install-hadoop-and-hbase-in-mac" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/02/install-hadoop-and-hbase-in-mac/" class="article-date">
+  <time datetime="2018-12-02T08:37:26.000Z" itemprop="datePublished">2018-12-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/02/install-hadoop-and-hbase-in-mac/">在macbook的os上直接安装hadoop&amp;hbase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天决定抛弃vmare+centos虚拟机的形式安装hadoop&amp;hbase了，开始直接在macbook的os上安装hadoop&amp;hbase。理由：</p>
+<ol>
+<li>需要配资源，如果安装在os x上会更加直接全面地利用机器的资源。</li>
+<li>两个系统之间倒来倒去不是一件高效的事情。</li>
+<li>今天发现这台macbook的大部分使用场景都是和工作有关，那就不如直接使用macbook了。</li>
+</ol>
+<h2 id="预备"><a href="#预备" class="headerlink" title="预备"></a>预备</h2><p>现在安装的是hbase，提前需要做的就是：</p>
+<ul>
+<li><p>给macbook安装jdk</p>
+</li>
+<li><p>在Sharing里打开远程登录，使机器能免密执行ssh localhost。</p>
+</li>
+<li><p>下载zookeeper-3.4.12.tar.gz， hadoop-3.1.1.tar.gz和hbase-2.1.1-bin.tar.gz。</p>
+</li>
+</ul>
+<h2 id="zookeeper安装"><a href="#zookeeper安装" class="headerlink" title="zookeeper安装"></a>zookeeper安装</h2><p>将zoo_sample.cfg拷贝一份为zoo.cfg，就可以通过zkServer.sh的命令来启动。</p>
+<p>然后可以通过zkCli.sh来对zk服务进行访问。</p>
+<p>##hdfs安装</p>
+<ol>
+<li>修改core-site.xml，hdfs-site.xml文件。</li>
+<li>hadoop namenode -format。</li>
+<li>通过sbin/start-dfs.sh启动服务。</li>
+</ol>
+<h2 id="hbase安装"><a href="#hbase安装" class="headerlink" title="hbase安装"></a>hbase安装</h2><p>几个坑：</p>
+<ol>
+<li><p>htrace-core-3.1.0-incubating.jar需要自己下载，并且hadoop中htrace-core4-4.0.1-incubating.jar是不行的。有不兼容的情况。</p>
+</li>
+<li><p>需要自己在配置文件中注定hbase.master.ipc.address，否则在mac中会报Can’t assign requested address 无法启动rpc，但是没有日志显示这个配置是啥。</p>
+  <property><br>​    <name>hbase.master.ipc.address</name><br>​    <value>localhost</value><br>  </property>
+
+</li>
+</ol>
+<p>##集成验证</p>
+<p>在hbase shell中创建一个表，写入一条数据，检索。</p>
+<ol>
+<li>create ‘test’, ‘cf1’</li>
+<li>put ‘test’, ‘key1’, ‘cf1:col1’ , ‘value’</li>
+<li>scan ‘test’</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="ckv2k6usm001ahh9s4ycq0007" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zk/">zk</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-impression-after-reading-bank-valuation-and-value-based-mangement" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" class="article-date">
@@ -122,7 +316,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="ckttrc3kw000wxq9saiabx0dy" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="ckv2k6ush000xhh9shma3duij" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bank-reading/">bank, reading</a></li></ul>
@@ -160,7 +354,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/09/two-important-things-realized-recently/" data-id="ckttrc3ls0029xq9sro06e07j" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/11/09/two-important-things-realized-recently/" data-id="ckv2k6ut4002chh9sabxh19i2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -214,7 +408,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/09/impression-after-reading-tap-dancing-to-work/" data-id="ckttrc3l20013xq9supuuvkuq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/11/09/impression-after-reading-tap-dancing-to-work/" data-id="ckv2k6usm0017hh9s74sfg62p" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reading/">reading</a></li></ul>
@@ -262,7 +456,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/" data-id="ckttrc3ky000yxq9sdxynohv6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/" data-id="ckv2k6usj0010hh9s4f8wxu0a" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reading/">reading</a></li></ul>
@@ -306,7 +500,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/28/long-distance-running/" data-id="ckttrc3ld001lxq9sbhc3enlz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/28/long-distance-running/" data-id="ckv2k6uss001nhh9soacejkhs" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/">life</a></li></ul>
@@ -348,7 +542,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/paper-reading/" data-id="ckttrc3lj001sxq9s22ixv5ox" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/03/04/paper-reading/" data-id="ckv2k6usw001vhh9s53xmjxjd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/paper/">paper</a></li></ul>
@@ -395,164 +589,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/12/10/impression-after-reading-optiona-B/" data-id="ckttrc3l00011xq9s58gnwf7d" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/12/10/impression-after-reading-optiona-B/" data-id="ckv2k6usl0015hh9sql020e07" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life-reading/">life,reading</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-object-storage" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/10/18/object-storage/" class="article-date">
-  <time datetime="2017-10-18T15:08:33.000Z" itemprop="datePublished">2017-10-18</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/10/18/object-storage/">对象存储</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>接下来一段时间对集中搞对象存储这件事情。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/object-storage/" data-id="ckttrc3le001nxq9siazzkk23" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/minio-swift/">minio,swift</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-DFSOutputStream-analysis" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/10/18/DFSOutputStream-analysis/" class="article-date">
-  <time datetime="2017-10-18T14:59:00.000Z" itemprop="datePublished">2017-10-18</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/10/18/DFSOutputStream-analysis/">DFSOutputStream分析</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>private void waitAndQueueCurrentPacket()<br>调用者：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">flushOrSync</span><span class="params">(<span class="keyword">boolean</span> isSync, EnumSet&lt;SyncFlag&gt; syncFlags)</span></span></div><div class="line"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">writeChunk</span><span class="params">(<span class="keyword">byte</span>[] b, <span class="keyword">int</span> offset, <span class="keyword">int</span> len, <span class="keyword">byte</span>[] checksum)</span> </div><div class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></div></pre></td></tr></table></figure>
-<p>public class DFSOutputStream extends FSOutputSummer<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">implements Syncable, CanSetDropBehind &#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> LinkedList&lt;Packet&gt; dataQueue = <span class="keyword">new</span> LinkedList&lt;Packet&gt;(); <span class="comment">// dataQueue是数据队列，用于保存等待发送给datanode的数据包</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> LinkedList&lt;Packet&gt; ackQueue = <span class="keyword">new</span> LinkedList&lt;Packet&gt;(); <span class="comment">// ackQueue是确认队列，保存还没有被datanode确认接收的数据包</span></div><div class="line">	<span class="keyword">private</span> DataStreamer streamer;  <span class="comment">// streamer线程，不停的从dataQueue中取出数据包，发送给datanode</span></div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataStreamer</span> <span class="keyword">extends</span> <span class="title">Daemon</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> streamerClosed = <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">private</span> ExtendedBlock block; <span class="comment">// its length is number of bytes acked</span></div><div class="line">	<span class="keyword">private</span> Token&lt;BlockTokenIdentifier&gt; accessToken;</div><div class="line">	<span class="keyword">private</span> DataOutputStream blockStream; <span class="comment">// socket的输出流(client-&gt;datanode)，用于将数据传输给datanode</span></div><div class="line">	<span class="keyword">private</span> DataInputStream blockReplyStream; <span class="comment">// socket的输入流(datanode-&gt;client)，用户收到datanode的确认包</span></div><div class="line">	<span class="keyword">private</span> ResponseProcessor response = <span class="keyword">null</span>; <span class="comment">// response线程，用于接收从datanode返回的反馈信息</span></div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>block &gt; packet &gt; chunk(带chunksum)<br>​<br>主要看看writeChunk方法。</p>
-<ol>
-<li>构造currentPacket，写入data和checksum，并且的chunk数++，bytesCurBlock增加数据的长度。</li>
-<li>如果chunk数足够多。则调用waitAndQueueCurrentPacket</li>
-<li>如果如果block的大小足够大的话，</li>
-</ol>
-<p>其中一个处理时添加chunk到缓存中。一下具体处理为判断是否可以添加入发送给datanode的缓存中。lastQueuedSeqno保存了最后一个需要处理的序号。<br>/**</p>
-<ul>
-<li><p>如果没有足够空间话就等待，然后<br> */<br> ​</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">waitAndQueueCurrentPacket</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">  <span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line"> 	<span class="keyword">try</span> &#123;</div><div class="line"> 		<span class="comment">// If queue is full, then wait till we have enough space</span></div><div class="line"> 		<span class="keyword">while</span> (!closed &amp;&amp; dataQueue.size() + ackQueue.size()  &gt; MAX_PACKETS) &#123;</div><div class="line">   			<span class="keyword">try</span> &#123;</div><div class="line"> 				dataQueue.wait();</div><div class="line">      		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">      			Thread.currentThread().interrupt();</div><div class="line"> 				<span class="keyword">break</span>;</div><div class="line">        	&#125;</div><div class="line"> 	&#125;</div><div class="line"> 	checkClosed();</div><div class="line"> 	queueCurrentPacket();</div><div class="line"> 	&#125; <span class="keyword">catch</span> (ClosedChannelException e) &#123;</div><div class="line">	...</div><div class="line"> 	&#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>/**</p>
-</li>
-<li><p>添加dataQueue，设置lastQueuedSeqno<br> */<br> ​</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">queueCurrentPacket</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">		<span class="keyword">if</span> (currentPacket == <span class="keyword">null</span>) <span class="keyword">return</span>;</div><div class="line">		dataQueue.addLast(currentPacket);</div><div class="line">		lastQueuedSeqno = currentPacket.seqno;  <span class="comment">//在waitForAckedSeqno方法使用，判断是否所有数据都被写入并接受到ack了。</span></div><div class="line">		<span class="keyword">if</span> (DFSClient.LOG.isDebugEnabled()) &#123;</div><div class="line">			DFSClient.LOG.debug(<span class="string">"Queued packet "</span> + currentPacket.seqno);</div><div class="line">		&#125;</div><div class="line">		currentPacket = <span class="keyword">null</span>;</div><div class="line">		dataQueue.notifyAll();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>​</p>
-</li>
-</ul>
-<p>DataStreamer是处理添加入缓存dataQueue的数据。将他们发送然后添加到ackQueue中。<br>在while中有processDatanodeError的处理。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">  <span class="comment">// move packet from dataQueue to ackQueue</span></div><div class="line">  <span class="keyword">if</span> (!one.isHeartbeatPacket()) &#123;</div><div class="line">    dataQueue.removeFirst();</div><div class="line">    ackQueue.addLast(one);</div><div class="line">    dataQueue.notifyAll();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// write out data to remote datanode</span></div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">  one.writeTo(blockStream);</div><div class="line">  blockStream.flush();   </div><div class="line">&#125;</div><div class="line"></div><div class="line">还需要一个线程接受ack，为ResponseProcessor</div><div class="line"><span class="comment">//获取返回的序号</span></div><div class="line">ack.readFields(blockReplyStream);</div><div class="line"><span class="keyword">long</span> seqno = ack.getSeqno();</div><div class="line"><span class="comment">//获取dataQueue里第一个包的序号</span></div><div class="line">Packet one;</div><div class="line"><span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">  one = ackQueue.getFirst();</div><div class="line">&#125;</div><div class="line"><span class="keyword">if</span> (one.seqno != seqno) &#123;</div><div class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"ResponseProcessor: Expecting seqno "</span> +</div><div class="line">                        <span class="string">" for block "</span> + block +</div><div class="line">                        one.seqno + <span class="string">" but received "</span> + seqno);</div><div class="line">&#125;</div><div class="line"><span class="comment">//移除ackQueuede里的第一个，</span></div><div class="line"><span class="keyword">synchronized</span> (dataQueue) &#123;</div><div class="line">  lastAckedSeqno = seqno; <span class="comment">//lastAckedSeqno在waitForAckedSeqno有使用</span></div><div class="line">  ackQueue.removeFirst();</div><div class="line">  dataQueue.notifyAll();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>toWaitFor = lastQueuedSeqno;<br>waitForAckedSeqno(toWaitFor)在flushInternal和flushOrSync会调用。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/18/DFSOutputStream-analysis/" data-id="ckttrc3k00001xq9s9kc60icq" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-a-special-case-about-rwlock" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/10/08/a-special-case-about-rwlock/" class="article-date">
-  <time datetime="2017-10-08T12:31:28.000Z" itemprop="datePublished">2017-10-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/10/08/a-special-case-about-rwlock/">一个奇怪的rwlock锁卡住的case</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>遇到一个case，有关于读写锁。原因路径如下：</p>
-<ol>
-<li>线上有一个datanode节点宕机，导致与此节点的连接出现问题。</li>
-<li>有hdfs客户端进程在处理此连接超时部分的代码有问题，没有将外层的超市传入至底层socket里，出问题的线程持有了无法超市推出，一直hang住，此线程还持有了一个读写锁的读锁。</li>
-<li>由于内部某些机制另一个线程需要写锁，同时此锁的读锁会不停有人由于请求需要拿到和释放。</li>
-<li>这时候出现了其他线程的读锁也无法获取到。</li>
-</ol>
-<p>从线程栈看，就是一个线程获取了读锁，阻塞了别的线程获取读锁和写锁。</p>
-<p>还原现场例子代码地址：<a href="https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock" target="_blank" rel="external">https://github.com/liubinbin/sta/tree/master/rwlock/src/rwlock</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">看看ReentrantReadWriteLock，注意构造函数里可以传一个布尔值，区分公平锁和非公平锁。</div></pre></td></tr></table></figure>
-<p>NonfairSync和FairSync分别是两种实现，其中都实现了readerShouldBlock方法。这问题分两种情况：</p>
-<ol>
-<li>公平锁：这种情况下对AQS的请求是需要安装时间顺序，如果新来的读请求在写请求之后就需要等待。</li>
-<li>非公平锁：为了防止写请求饥饿，读请求会先判断等待队列头是否是写请求，所以在这种情况下，写请求会隔离读锁和读锁。</li>
-</ol>
-<p>此问题最后解决办法是让那个出问题的读锁尽快的释放，不要一直占着读锁就可以把影响降低。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/08/a-special-case-about-rwlock/" data-id="ckttrc3k80004xq9sntzk3oao" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li></ul>
 
     </footer>
   </div>
@@ -577,7 +617,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank-reading/">bank, reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career-reading/">career,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-reading/">life,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src-treemap/">src, treemap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank/">bank</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank-reading/">bank, reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career/">career</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career-reading/">career,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-reading/">life,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/minio-swift/">minio,swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src-treemap/">src, treemap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/writing/">writing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/">zk</a></li></ul>
     </div>
   </div>
 
@@ -587,7 +627,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 10px;">bank</a> <a href="/tags/bank-reading/" style="font-size: 10px;">bank, reading</a> <a href="/tags/career-reading/" style="font-size: 10px;">career,reading</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 14px;">hdfs</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kafka/" style="font-size: 12px;">kafka</a> <a href="/tags/life/" style="font-size: 18px;">life</a> <a href="/tags/life-reading/" style="font-size: 10px;">life,reading</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 16px;">reading</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/src/" style="font-size: 12px;">src</a> <a href="/tags/src-treemap/" style="font-size: 10px;">src, treemap</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
+      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank/" style="font-size: 10px;">bank</a> <a href="/tags/bank-reading/" style="font-size: 10px;">bank, reading</a> <a href="/tags/career/" style="font-size: 10px;">career</a> <a href="/tags/career-reading/" style="font-size: 10px;">career,reading</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 14px;">hdfs</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kafka/" style="font-size: 12px;">kafka</a> <a href="/tags/life/" style="font-size: 18px;">life</a> <a href="/tags/life-reading/" style="font-size: 10px;">life,reading</a> <a href="/tags/minio-swift/" style="font-size: 10px;">minio,swift</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 16px;">reading</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/src/" style="font-size: 12px;">src</a> <a href="/tags/src-treemap/" style="font-size: 10px;">src, treemap</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/writing/" style="font-size: 10px;">writing</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
     </div>
   </div>
 
@@ -596,7 +636,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -609,23 +649,23 @@
       <ul>
         
           <li>
+            <a href="/2021/10/22/hexo添加文章/">hexo添加文章</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/07/《一个企业的信念》读后感/">《一个企业的信念》读后感</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/07/管理人员的优秀品质/">管理人员的优秀品质</a>
+          </li>
+        
+          <li>
             <a href="/2021/09/21/《做正确的事》读后感/">《做正确的事》读后感</a>
           </li>
         
           <li>
             <a href="/2021/09/20/《体验经济》读后感/">《体验经济》读后感</a>
-          </li>
-        
-          <li>
-            <a href="/2021/09/19/《卓有成效的管理者》读后感/">《卓有成效的管理者》读后感</a>
-          </li>
-        
-          <li>
-            <a href="/2019/10/13/jdb-usage/">jdb-usage</a>
-          </li>
-        
-          <li>
-            <a href="/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/">just-pick-the-first-one-from-todolist-and-finish-that</a>
           </li>
         
       </ul>
