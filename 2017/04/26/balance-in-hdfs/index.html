@@ -4,22 +4,22 @@
   <meta charset="utf-8">
   
   
-  <title>hdfs balance的一些解读和问题记录 | Hexo</title>
+  <title>hdfs balance的一些解读和问题记录 | BIN</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="##balance过程的解读  准备工作获取的namenode  调用Balancer.run L1422，开始迭代一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）    2.1 ReturnStatus r &#x3D; b.run L1352  ​	2.1.1 initNode获取需要移动的字节数bytesLeftToMove ​			计算">
 <meta property="og:type" content="article">
 <meta property="og:title" content="hdfs balance的一些解读和问题记录">
 <meta property="og:url" content="http://example.com/2017/04/26/balance-in-hdfs/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="BIN">
 <meta property="og:description" content="##balance过程的解读  准备工作获取的namenode  调用Balancer.run L1422，开始迭代一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）    2.1 ReturnStatus r &#x3D; b.run L1352  ​	2.1.1 initNode获取需要移动的字节数bytesLeftToMove ​			计算">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2017-04-26T15:33:10.000Z">
 <meta property="article:modified_time" content="2018-12-02T07:32:56.749Z">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="binbin liu">
 <meta property="article:tag" content="hdfs">
 <meta name="twitter:card" content="summary">
   
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="BIN" type="application/atom+xml">
   
   
     <link rel="shortcut icon" href="/favicon.png">
@@ -44,8 +44,12 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
+        <a href="/" id="logo">BIN</a>
       </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">a blog of bin</a>
+        </h2>
       
     </div>
     <div id="header-inner" class="inner">
@@ -118,7 +122,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clyh7kxro0007ef60bsymh8xl" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clyh7mmak0007ob608lsxgo5f" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -226,7 +230,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       
-      &copy; 2024 John Doe<br>
+      &copy; 2024 binbin liu<br>
       Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

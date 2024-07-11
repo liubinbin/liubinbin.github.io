@@ -4,22 +4,22 @@
   <meta charset="utf-8">
   
   
-  <title>HBase源码系列之MVCC | Hexo</title>
+  <title>HBase源码系列之MVCC | BIN</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="关键点​	KeyValue类中有long mvcc的变量，感觉此处可以跟踪。 ​	MultiVersionConsistencyControl在一个Region有一个。 ​	MultiVersionConsistencyControl{ ​		memstoreRead：能够读取的序列号。 ​		memstoreWrite：写操作的序列号。 ​		writeQueue：写操作队列} 问题点就是需要去">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HBase源码系列之MVCC">
 <meta property="og:url" content="http://example.com/2017/04/09/hbase-src-mvcc/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="BIN">
 <meta property="og:description" content="关键点​	KeyValue类中有long mvcc的变量，感觉此处可以跟踪。 ​	MultiVersionConsistencyControl在一个Region有一个。 ​	MultiVersionConsistencyControl{ ​		memstoreRead：能够读取的序列号。 ​		memstoreWrite：写操作的序列号。 ​		writeQueue：写操作队列} 问题点就是需要去">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2017-04-09T15:55:35.000Z">
 <meta property="article:modified_time" content="2018-12-31T13:16:34.971Z">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="binbin liu">
 <meta property="article:tag" content="hbase">
 <meta name="twitter:card" content="summary">
   
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="BIN" type="application/atom+xml">
   
   
     <link rel="shortcut icon" href="/favicon.png">
@@ -44,8 +44,12 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
+        <a href="/" id="logo">BIN</a>
       </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">a blog of bin</a>
+        </h2>
       
     </div>
     <div id="header-inner" class="inner">
@@ -122,7 +126,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clyh7kxrp000kef60azdigs3s" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clyh7mmal000mob60g8zk44cw" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -230,7 +234,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       
-      &copy; 2024 John Doe<br>
+      &copy; 2024 binbin liu<br>
       Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

@@ -4,22 +4,22 @@
   <meta charset="utf-8">
   
   
-  <title>HBase的一些坑 | Hexo</title>
+  <title>HBase的一些坑 | BIN</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="最近遇到了一些hbase的坑，先记录一下。  mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts &#x3D;&gt; 想再测一次就删除了 &#x3D;&gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hb">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HBase的一些坑">
 <meta property="og:url" content="http://example.com/2017/05/05/HBase-trap/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="BIN">
 <meta property="og:description" content="最近遇到了一些hbase的坑，先记录一下。  mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts &#x3D;&gt; 想再测一次就删除了 &#x3D;&gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hb">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2017-05-05T14:29:12.000Z">
 <meta property="article:modified_time" content="2018-12-02T07:35:35.987Z">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="binbin liu">
 <meta property="article:tag" content="hbase">
 <meta name="twitter:card" content="summary">
   
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="BIN" type="application/atom+xml">
   
   
     <link rel="shortcut icon" href="/favicon.png">
@@ -44,8 +44,12 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
+        <a href="/" id="logo">BIN</a>
       </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">a blog of bin</a>
+        </h2>
       
     </div>
     <div id="header-inner" class="inner">
@@ -105,7 +109,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/05/HBase-trap/" data-id="clyh7kxrn0003ef606uvsaac8" data-title="HBase的一些坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/05/HBase-trap/" data-id="clyh7mmak0005ob604h2z5h69" data-title="HBase的一些坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -213,7 +217,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       
-      &copy; 2024 John Doe<br>
+      &copy; 2024 binbin liu<br>
       Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
