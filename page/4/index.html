@@ -69,6 +69,86 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-install-hadoop-and-hbase-in-mac" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2018/12/02/install-hadoop-and-hbase-in-mac/" class="article-date">
+  <time class="dt-published" datetime="2018-12-02T08:37:26.000Z" itemprop="datePublished">2018-12-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2018/12/02/install-hadoop-and-hbase-in-mac/">在macbook的os上直接安装hadoop&amp;hbase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>今天决定抛弃vmare+centos虚拟机的形式安装hadoop&amp;hbase了，开始直接在macbook的os上安装hadoop&amp;hbase。理由：</p>
+<ol>
+<li>需要配资源，如果安装在os x上会更加直接全面地利用机器的资源。</li>
+<li>两个系统之间倒来倒去不是一件高效的事情。</li>
+<li>今天发现这台macbook的大部分使用场景都是和工作有关，那就不如直接使用macbook了。</li>
+</ol>
+<h2 id="预备"><a href="#预备" class="headerlink" title="预备"></a>预备</h2><p>现在安装的是hbase，提前需要做的就是：</p>
+<ul>
+<li><p>给macbook安装jdk</p>
+</li>
+<li><p>在Sharing里打开远程登录，使机器能免密执行ssh localhost。</p>
+</li>
+<li><p>下载zookeeper-3.4.12.tar.gz， hadoop-3.1.1.tar.gz和hbase-2.1.1-bin.tar.gz。</p>
+</li>
+</ul>
+<h2 id="zookeeper安装"><a href="#zookeeper安装" class="headerlink" title="zookeeper安装"></a>zookeeper安装</h2><p>将zoo_sample.cfg拷贝一份为zoo.cfg，就可以通过zkServer.sh的命令来启动。</p>
+<p>然后可以通过zkCli.sh来对zk服务进行访问。</p>
+<p>##hdfs安装</p>
+<ol>
+<li>修改core-site.xml，hdfs-site.xml文件。</li>
+<li>hadoop namenode -format。</li>
+<li>通过sbin&#x2F;start-dfs.sh启动服务。</li>
+</ol>
+<h2 id="hbase安装"><a href="#hbase安装" class="headerlink" title="hbase安装"></a>hbase安装</h2><p>几个坑：</p>
+<ol>
+<li><p>htrace-core-3.1.0-incubating.jar需要自己下载，并且hadoop中htrace-core4-4.0.1-incubating.jar是不行的。有不兼容的情况。</p>
+</li>
+<li><p>需要自己在配置文件中注定hbase.master.ipc.address，否则在mac中会报Can’t assign requested address 无法启动rpc，但是没有日志显示这个配置是啥。</p>
+  <property>
+​    <name>hbase.master.ipc.address</name>
+​    <value>localhost</value>
+  </property></li>
+</ol>
+<p>##集成验证</p>
+<p>在hbase shell中创建一个表，写入一条数据，检索。</p>
+<ol>
+<li>create ‘test’, ‘cf1’</li>
+<li>put ‘test’, ‘key1’, ‘cf1:col1’ , ‘value’</li>
+<li>scan ‘test’</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="clyh7el9j0016ga602tvvd5i6" data-title="在macbook的os上直接安装hadoop&amp;hbase" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zk/" rel="tag">zk</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-impression-after-reading-bank-valuation-and-value-based-mangement" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" class="article-date">
@@ -130,7 +210,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="clyh79fpf000wnc602nhw2vq8" data-title="《银行估值与价值管理》读后感" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/02/impression-after-reading-bank-valuation-and-value-based-mangement/" data-id="clyh7el9i000wga608zzd5xct" data-title="《银行估值与价值管理》读后感" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -186,7 +266,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/11/09/impression-after-reading-tap-dancing-to-work/" data-id="clyh79fpg0013nc601d2o9h3m" data-title="《跳着踢踏舞去上班》读后感" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/11/09/impression-after-reading-tap-dancing-to-work/" data-id="clyh7el9i0013ga605dh894wq" data-title="《跳着踢踏舞去上班》读后感" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -236,7 +316,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/" data-id="clyh79fpf000ync601o322oy8" data-title="《程序员修炼之道》读后感" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/11/03/impression-after-reading-new-programmer-s-survival-manual/" data-id="clyh7el9i000yga60epww3uq4" data-title="《程序员修炼之道》读后感" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -282,7 +362,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/10/28/long-distance-running/" data-id="clyh79fph001inc60az861zsw" data-title="长跑" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/10/28/long-distance-running/" data-id="clyh7el9k001iga600la3h0dx" data-title="长跑" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -326,7 +406,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/03/04/paper-reading/" data-id="clyh79fph001mnc60hvpl4pgg" data-title="论文阅读" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/03/04/paper-reading/" data-id="clyh7el9k001mga600ok8dzcv" data-title="论文阅读" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -375,7 +455,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/12/10/impression-after-reading-optiona-B/" data-id="clyh79fpg0011nc607srah8vw" data-title="《另一种选择》读后感" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/12/10/impression-after-reading-optiona-B/" data-id="clyh7el9i0011ga609rfpfz1y" data-title="《另一种选择》读后感" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -440,7 +520,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/10/18/DFSOutputStream-analysis/" data-id="clyh79fpb0001nc606q2fepir" data-title="DFSOutputStream分析" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/10/18/DFSOutputStream-analysis/" data-id="clyh7el9e0001ga600u7xgqsa" data-title="DFSOutputStream分析" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -497,7 +577,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/10/08/a-special-case-about-rwlock/" data-id="clyh79fpc0004nc60dn2o2skk" data-title="一个奇怪的rwlock锁卡住的case" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/10/08/a-special-case-about-rwlock/" data-id="clyh7el9f0005ga6031o0fdmn" data-title="一个奇怪的rwlock锁卡住的case" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -578,71 +658,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/08/25/docker-basics/" data-id="clyh79fpd0008nc60c53e04w9" data-title="最近使用docker的一些小记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-some-thoughts" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2017/08/25/some-thoughts/" class="article-date">
-  <time class="dt-published" datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2017/08/25/some-thoughts/">最近感想</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>最近在读萨缪尔森的《经济学》，其实很早此书就在淘宝的购物车里，一直没有买来读。大概是自己懒的原因吧。整本书很大并且很厚，很有教材的感觉，读完真的很累，但是觉得很值。现在渐渐感觉看到一件事，一个政策，一个评论能想到一些东西。</p>
-<p>之前微博里在说保险相关的信息，其实我们每个人都应该读点经济学和金融的书，使自己能更好的理解发布的各种信息背后可能隐藏的一些更深层次的信息，以便我们能更好的做出更加理智的判断。</p>
-<p><code>点赞</code>学长，前几天下载的《Linux System Prorgramming》中文翻译的pdf是工大的一些学长做的。我真的感慨自己表达出的观点真的太少，并且没有做能影响别人的事情，以后我一定要多在此博客中发表自己的想法，并且希望以后能做一些影响别人的事情，至少是一些有趣的事情。</p>
-<h2 id="经济学"><a href="#经济学" class="headerlink" title="经济学"></a>经济学</h2><p>那本书里面其实说了很多原理性的东西，读着很枯燥，但是原理又是理解一切的基础。在那本书中，我最感兴趣的其实是货币政策和财政政策这些部分，那两部分是比较接近有用，能用于生活判断一些东西。</p>
-<p>等过段时间像把货币相关的一些东西再找几本书捋一捋，希望可以到时候能更加准确的理解这些事情。等更加理解了之后再写点东西。</p>
-<p>大概一个月之前，看了《大逃港》这本书，给我的感觉是，每个人最终应该是为了利益在做事情，一件事情也只有有足够的利益诱惑才能推行直至完成。嗨，不能讲太多，不是很确定line在哪里。</p>
-<p>##最近想法</p>
-<p>最近看完那本《经济学》之后，越来越感觉自己应该找些事情做。当然基本应该是和计算机相关的，下面列一些最近想到的一些东西。</p>
-<h3 id="写一个数据库"><a href="#写一个数据库" class="headerlink" title="写一个数据库"></a>写一个数据库</h3><p>在大学时，个人对数据库其实也挺感兴趣，最近三年的工作其实很多也是和数据库相关。现在的想法是自己写个数据库应该是一件有意思的事情，另一个动因是买了《代码大全》这本书，感觉看完之后应该能够有东西来实践。两者可以结合在一起做。应该是件有意思的事情。</p>
-<h3 id="获取跑步路线"><a href="#获取跑步路线" class="headerlink" title="获取跑步路线"></a>获取跑步路线</h3><p>之前在北京的时候，跑步很多时候是在公园进行的。跑完看着那个路线图，如果自己跑了一个2017等数字的形状的，应该是件有意思的事情。</p>
-<p>最近稍微想了这个事情，这功能的实现很依赖地图数据的样子。</p>
-<h3 id="水果店买水果"><a href="#水果店买水果" class="headerlink" title="水果店买水果"></a>水果店买水果</h3><p>有一次去水果店买东西的时候，店里工作让加入一个群，说里面有各种优惠。到现在也对此种产品信息的推送感觉不是很理想。</p>
-<ol>
-<li><p>水果店的水果信息没法完全展示在顾客面前，因为每天在群里只能看到一些优惠的水果。</p>
-</li>
-<li><p>通过每个人把自己想买的东西加入一个列表里，然后在群里不停的发列表。这种方式其实是对店主友好，对群里的顾客不友好。</p>
-</li>
-<li><p>仔细想这件事，本质很团购或会员卡没什么区别，但是这其中店主和顾客之间信息的交流很不顺畅。</p>
-<p>信息的顺畅交流才能更好地提升效率，利用好互联网这个工具和提高营收。</p>
-</li>
-</ol>
-<h3 id="阅读英文查阅的很不方便和音乐软件的割裂"><a href="#阅读英文查阅的很不方便和音乐软件的割裂" class="headerlink" title="阅读英文查阅的很不方便和音乐软件的割裂"></a>阅读英文查阅的很不方便和音乐软件的割裂</h3><p>英文阅读方面，扇贝做的不错。看到有不懂的词汇或词组可以直接长摁然后显示意思，可以非常快的回到阅读中，对整体的阅读流畅性影响不是很大，有一个问题是文章比较尴尬。如果是别的文章质量更加好的app或网址的话，生词查阅方面做的没这么好。</p>
-<p>网易云音乐貌似遇到的版权问题，我看了一下我收藏的音乐，基本没有变灰无法听的，突然感觉自己的音乐品味是不是和大众不太一样。</p>
-<h3 id="研报，公告的信息获取"><a href="#研报，公告的信息获取" class="headerlink" title="研报，公告的信息获取"></a>研报，公告的信息获取</h3><p>研报和公告信息相对来说比较难。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2017/08/25/some-thoughts/" data-id="clyh79fpi001wnc60h7v01uvr" data-title="最近感想" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/08/25/docker-basics/" data-id="clyh7el9g0008ga60avm8432q" data-title="最近使用docker的一些小记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -706,6 +722,10 @@
       <ul>
         
           <li>
+            <a href="/2024/07/11/%E5%81%9A%E5%86%B3%E5%AE%9A%E7%9A%84%E6%96%B9%E5%BC%8F/">做决定的方式</a>
+          </li>
+        
+          <li>
             <a href="/2024/07/11/%E8%B4%A1%E7%8C%AE%E7%A1%AE%E5%AE%9A%E6%80%A7/">贡献确定性</a>
           </li>
         
@@ -719,10 +739,6 @@
         
           <li>
             <a href="/2024/01/12/%E5%B1%80%E9%83%A8%E4%BB%A5%E5%A4%9A%E6%89%93%E5%B0%91/">局部以多打少</a>
-          </li>
-        
-          <li>
-            <a href="/2024/01/12/%E6%88%90%E5%8A%9F%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%89%E4%B8%AA%E7%89%B9%E5%BE%81/">成功人士的三个特征</a>
           </li>
         
       </ul>
