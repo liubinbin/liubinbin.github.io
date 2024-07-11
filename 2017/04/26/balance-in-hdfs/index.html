@@ -4,14 +4,19 @@
   <meta charset="utf-8">
   
   
-  <title>Archives | Hexo</title>
+  <title>hdfs balance的一些解读和问题记录 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/archives/index.html">
+  <meta name="description" content="##balance过程的解读  准备工作获取的namenode  调用Balancer.run L1422，开始迭代一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）    2.1 ReturnStatus r &#x3D; b.run L1352  ​	2.1.1 initNode获取需要移动的字节数bytesLeftToMove ​			计算">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hdfs balance的一些解读和问题记录">
+<meta property="og:url" content="http://example.com/2017/04/26/balance-in-hdfs/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="##balance过程的解读  准备工作获取的namenode  调用Balancer.run L1422，开始迭代一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）    2.1 ReturnStatus r &#x3D; b.run L1352  ​	2.1.1 initNode获取需要移动的字节数bytesLeftToMove ​			计算">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-04-26T15:33:10.000Z">
+<meta property="article:modified_time" content="2018-12-02T07:32:56.749Z">
 <meta property="article:author" content="John Doe">
+<meta property="article:tag" content="hdfs">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
@@ -67,236 +72,84 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2024" class="archive-year">2024</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2024/01/26/%E5%8F%AA%E4%B8%93%E6%B3%A8%E4%B8%80%E4%BB%B6%E4%BA%8B%E6%83%85/" class="archive-article-date">
-  <time class="dt-published" datetime="2024-01-26T12:47:31.000Z" itemprop="datePublished">Jan 26</time>
+        <section id="main"><article id="post-balance-in-hdfs" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/04/26/balance-in-hdfs/" class="article-date">
+  <time class="dt-published" datetime="2017-04-26T15:33:10.000Z" itemprop="datePublished">2017-04-26</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/01/26/%E5%8F%AA%E4%B8%93%E6%B3%A8%E4%B8%80%E4%BB%B6%E4%BA%8B%E6%83%85/">只专注一件事情</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      hdfs balance的一些解读和问题记录
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>##balance过程的解读</p>
+<ol>
+<li><p>准备工作<br>获取的namenode</p>
+</li>
+<li><p>调用Balancer.run L1422，开始迭代<br>一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）</p>
+</li>
+</ol>
+<p> 2.1 ReturnStatus r &#x3D; b.run L1352</p>
+<p> ​	2.1.1 initNode获取需要移动的字节数bytesLeftToMove<br> ​			计算平均使用率<br> ​			计算出过载和未充分利用的节点需要移动的字节数，两者选取较大值（已排除在与平均值相差在threshold内的节点）<br> ​	2.1.2 chooseNode获取决定要移动的字节<br>             chooseDatanodes: 三种匹配类型Matcher选取（同一组，同一机架，剩下的），每一类型做如下类型操作</p>
+<p>​	1. 处理过载到未好好利用的。 2. 处理过载到使用少的。 3. 处理多使用到少使用</p>
+<p>​	chooseCandidate对于每个源节点，选个候选节点（如果能符合匹配规则Matcher就选择他）<br>​				matchSourceWithTargetToMove选择两者能移动的少的字节数，形成NodeTask<br>​	2.1.3 dispatchBlockMoves L1103启动线程去移动数据，处理NodeTask<br>​		{两个条件会结束noPendingBlockIteration &gt;&#x3D; MAX_NO_PENDING_BLOCK_ITERATIONS 和Time.now()-				startTime &gt; MAX_ITERATION_TIME}<br>​		dispatchBlocks L614 为每个source启动一个线程去移动数据(线程放入dispatcherExecutor线程池)，然后等待回复<br>​		此处一轮迭代有时间限制<br>​			dispatcherExecutor.submit(source.new BlockMoveDispatcher());(调用dispatchBlocks())<br>​				chooseNextBlockToMove 获取下一步需要移动block，选择的代理节点是拥有此block但是传递到target比较好。<br>​				此处有一个5个任务的限制，难怪增大timeout的时间之后不会quota is exceeded***<br>​					chooseBlockAndProxy 选择块和代理节点<br>​						isGoodBlockCandidate 选择好的块<br>​						chooseProxySource 在选中的块中选择一个和target比较好的location<br>​				scheduleBlockMove 发送到代理节点并给代理节点的发送复制请求<br>​					dispatch() 发送数据(<em><strong>此处看代码不是异步处理，果然不是</strong></em>)<br>​					在目的节点DataXceiver.replaceBlock方法接受来自proxy的block发送流<br>​						在此处有balanceThrottler限制<br>​				filterMovedBlocks 过滤<br>​				判断需要不需要更多的block<br>​			waitForMoveCompletion()等待所有targets里的pending任务结束(如果没有结束此处会等待)<br>​	shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于零次数少于	MAX_NOT_CHANGED_ITERATIONS就是in_progress<br>2.2 resetData清楚数据，为再来一次循环做准备<br>2.3 根据r判断是否结束，判断条件在上面</p>
+<p>简单概括</p>
+<pre><code>--&gt; 计算那些需要移动的节点 
+--&gt; 在此节点中选择想要移动的block 
+--&gt; 对此block选择一个proxy（此proxy也有这个block的副本，并且传输起来比较好） 
+--&gt; 建立任务（向target节点发送replaceBlock请求，target节点向proxy节点发送copyBlock请求）拷贝数据
+</code></pre>
+<h2 id="问题与解决"><a href="#问题与解决" class="headerlink" title="问题与解决"></a>问题与解决</h2><ol>
+<li>balancer节点发送请求会有超时，在日志文件中报Read timed out -&gt; 日志会报线程数超出配额 -&gt; 提早退出balance过程，这种情况是balancer节点和target节点之间的rpc断开连接。只要改大超时设置就可以了（不清楚为啥不把超时统一到那个配置，并且hdfs把那些异常处理不打印问题，这个处理方式也很奇怪，可能新版本有改进）。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clyh5n1q30005eb60afxl6kx1" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/" rel="tag">hdfs</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/05/05/HBase-trap/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          HBase的一些坑
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/04/25/hbase-src-get-in-server/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">HBase源码系列之server端的get请求处理</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2024/01/12/%E6%8E%A8%E6%BC%94%E8%83%BD%E5%8A%9B/" class="archive-article-date">
-  <time class="dt-published" datetime="2024-01-12T14:52:32.000Z" itemprop="datePublished">Jan 12</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/01/12/%E6%8E%A8%E6%BC%94%E8%83%BD%E5%8A%9B/">推演能力</a>
-    </h1>
-  
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2024/01/12/%E5%B1%80%E9%83%A8%E4%BB%A5%E5%A4%9A%E6%89%93%E5%B0%91/" class="archive-article-date">
-  <time class="dt-published" datetime="2024-01-12T14:51:57.000Z" itemprop="datePublished">Jan 12</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/01/12/%E5%B1%80%E9%83%A8%E4%BB%A5%E5%A4%9A%E6%89%93%E5%B0%91/">局部以多打少</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2024/01/12/%E6%88%90%E5%8A%9F%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%89%E4%B8%AA%E7%89%B9%E5%BE%81/" class="archive-article-date">
-  <time class="dt-published" datetime="2024-01-12T14:49:34.000Z" itemprop="datePublished">Jan 12</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/01/12/%E6%88%90%E5%8A%9F%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%89%E4%B8%AA%E7%89%B9%E5%BE%81/">成功人士的三个特征</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2023" class="archive-year">2023</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2023/06/11/%E6%9B%BC%E5%9F%8E%E8%B5%A2%E4%B8%8B%E7%9A%87%E9%A9%AC%E3%80%81%E6%8B%BF%E5%88%B0%E6%AC%A7%E5%86%A0%E7%9A%84%E6%80%9D%E8%80%83/" class="archive-article-date">
-  <time class="dt-published" datetime="2023-06-11T15:31:39.000Z" itemprop="datePublished">Jun 11</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/06/11/%E6%9B%BC%E5%9F%8E%E8%B5%A2%E4%B8%8B%E7%9A%87%E9%A9%AC%E3%80%81%E6%8B%BF%E5%88%B0%E6%AC%A7%E5%86%A0%E7%9A%84%E6%80%9D%E8%80%83/">曼城赢下皇马、拿到欧冠的思考</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2023/05/17/%E5%88%AB%E7%BA%A0%E7%BB%93/" class="archive-article-date">
-  <time class="dt-published" datetime="2023-05-17T10:35:15.000Z" itemprop="datePublished">May 17</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/05/17/%E5%88%AB%E7%BA%A0%E7%BB%93/">别纠结</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2023/05/07/%E6%88%90%E4%B8%BA%E6%9C%AC%E8%AF%A5%E6%88%90%E4%B8%BA%E7%9A%84%E4%BA%BA/" class="archive-article-date">
-  <time class="dt-published" datetime="2023-05-07T12:24:05.000Z" itemprop="datePublished">May 7</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/05/07/%E6%88%90%E4%B8%BA%E6%9C%AC%E8%AF%A5%E6%88%90%E4%B8%BA%E7%9A%84%E4%BA%BA/">成为本该成为的人</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2022" class="archive-year">2022</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2022/05/05/%E3%80%8A%E5%86%B3%E7%AD%96%E7%9A%84%E8%89%BA%E6%9C%AF%E3%80%8B%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time class="dt-published" datetime="2022-05-05T15:44:02.000Z" itemprop="datePublished">May 5</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/05/05/%E3%80%8A%E5%86%B3%E7%AD%96%E7%9A%84%E8%89%BA%E6%9C%AF%E3%80%8B%E7%AC%94%E8%AE%B0/">《决策的艺术》笔记</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2022/05/04/%E3%80%8A%E9%AB%98%E6%95%88%E8%83%BD%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%83%E4%B8%AA%E4%B9%A0%E6%83%AF%E3%80%8B%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time class="dt-published" datetime="2022-05-04T03:11:54.000Z" itemprop="datePublished">May 4</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/05/04/%E3%80%8A%E9%AB%98%E6%95%88%E8%83%BD%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%83%E4%B8%AA%E4%B9%A0%E6%83%AF%E3%80%8B%E7%AC%94%E8%AE%B0/">《高效能人士的七个习惯》笔记</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2022/03/27/%E6%80%9D%E7%BB%B4%E6%96%B9%E5%BC%8F/" class="archive-article-date">
-  <time class="dt-published" datetime="2022-03-26T16:19:27.000Z" itemprop="datePublished">Mar 27</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/03/27/%E6%80%9D%E7%BB%B4%E6%96%B9%E5%BC%8F/">思维方式的重要性</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
-    
-    <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/5/">5</a><a class="extend next" rel="next" href="/archives/page/2/">Next &raquo;</a>
-  </nav>
 
 </section>
         

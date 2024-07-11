@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/page/5/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-rit-in-HBase" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/05/30/rit-in-HBase/" class="article-date">
+  <time class="dt-published" datetime="2017-05-30T12:08:15.000Z" itemprop="datePublished">2017-05-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/05/30/rit-in-HBase/">rit in HBase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>以前在别人博客中看到看到hbase中RIT的蛋疼，最近也确实感觉这个状态是比较尴尬的，别人会来找你。最近会放一些精力来解析hbase的rit状态，同时也是希望自己能对hbase有更全面和深入的了解。感觉过去两个月对hbase的的检索和加载流程看的比较多了。</p>
+<p>遇到一个case：</p>
+<p>一个region处于pending_open的状态。</p>
+<p>大概逻辑，本来master给某个节点发送open此region的请求，过程进行的很好。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/05/30/rit-in-HBase/" data-id="clyh5n1q8001peb601dej11vd" data-title="rit in HBase" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-hbase-src-hfile" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/05/14/hbase-src-hfile/" class="article-date">
+  <time class="dt-published" datetime="2017-05-14T02:01:39.000Z" itemprop="datePublished">2017-05-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/05/14/hbase-src-hfile/">HBase源码系列之HFile</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>本文讨论0.98版本的hbase里v2版本。其实对于HFile能有一个大体的较深入理解是在我去查看”到底是不是一条记录不能垮block“的时候突然意识到的。</p>
+<p>首先说一个对HFile很直观的感觉，我觉得HFile的整个设计中很重要的一点是为减少内容占用。首先写时候可以把一个个block按顺序写入，满足一个chunk写入一个元数据（包括bloomfilter），最后是一些HFile的元数据。对于HFile，我个人觉得主要把握好几个问题。</p>
+<ol>
+<li>block的组织</li>
+<li>bf和block的关系</li>
+<li>index和block的关系</li>
+<li>写入顺序和一些基本的元数据信息结构</li>
+<li>记录能不能跨block</li>
+</ol>
+<p>明白这四个问题感觉基本可以大致的描绘出HFile了。</p>
+<h2 id="HFileWriterV2"><a href="#HFileWriterV2" class="headerlink" title="HFileWriterV2"></a>HFileWriterV2</h2><p>首先，我们知道会引起下HFile的操作有flush和compaction。在此，我们就选择从flush这个入口跟进去看。</p>
+<p>在StoreFile中，以下方法主要是为了Store书写到一个HFile中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">long</span> org.apache.hadoop.hbase.regionserver.StoreFlusher.performFlush(InternalScanner scanner, CellSink sink, <span class="type">long</span> smallestReadPoint) <span class="keyword">throws</span> IOException</span><br></pre></td></tr></table></figure>
+
+<p>在此方法会调用如下方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">append</span><span class="params">(<span class="keyword">final</span> KeyValue kv)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">  <span class="comment">//如下两行主要是来加入到bf中的，下面的这个就是我们经常说的bf索引。</span></span><br><span class="line">  appendGeneralBloomfilter(kv);</span><br><span class="line">  appendDeleteFamilyBloomFilter(kv);</span><br><span class="line">  <span class="comment">//这行是重点</span></span><br><span class="line">  writer.append(kv);</span><br><span class="line">  <span class="comment">//这行先不管，处理时间戳</span></span><br><span class="line">  trackTimestamps(kv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以下分解append方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//检查key是否有问题，是否按顺序（memstore使用ConcurrentSkipListMap存储，应该不会有此问题）。</span></span><br><span class="line"><span class="comment">//并且返回key是否重复</span></span><br><span class="line"><span class="type">boolean</span> <span class="variable">dupKey</span> <span class="operator">=</span> checkKey(key, koffset, klength);</span><br><span class="line">checkValue(value, voffset, vlength);</span><br><span class="line"><span class="comment">//如果不重复，则不检查边界，答案不能，因为如果有重复，不会检查边界更不会新建一个block。***问题5***</span></span><br><span class="line"><span class="keyword">if</span> (!dupKey) &#123;</span><br><span class="line">  <span class="comment">//此出会检查block的大小，并且有一处需要注意，在里面的代码中有一些记录block信息的，这个以后会有用。</span></span><br><span class="line">  <span class="comment">//此处会写出chunk，处理readyChunks</span></span><br><span class="line">  checkBlockBoundary();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面注释中说的那个代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">byte</span>[] indexKey = comparator.calcIndexKey(lastKeyOfPreviousBlock, firstKeyInBlock);</span><br><span class="line">dataBlockIndexWriter.addEntry(indexKey, lastDataBlockOffset, onDiskSize);</span><br></pre></td></tr></table></figure>
+
+<p>append下面是一些很正常的数据写入（都是对stream的添加操作），元数据记录（firstKeyInBlock）等。</p>
+<p>回到appendGeneralBloomfilter(kv)方法，此方法里面有一个判断是值得注意的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//在此代码中会判断key的个数，如果key的个数达到了一定程度就新建一个chunk，放入readyChunks（这个会在checkBlockBoundary中处理），此出会写bf。***问题2***</span></span><br><span class="line">enqueueReadyChunk(<span class="literal">false</span>);</span><br><span class="line">... 这种是处理chunk被写出的时候的操作。重置一些值 ...</span><br><span class="line"><span class="comment">//真正的添加到bf中</span></span><br><span class="line">chunk.add(bloomKey, keyOffset, keyLength);</span><br></pre></td></tr></table></figure>
+
+<p>在enqueueReadyChunk(false)中有</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ReadyChunk</span> <span class="variable">readyChunk</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReadyChunk</span>();</span><br><span class="line">readyChunk.chunkId = numChunks - <span class="number">1</span>;</span><br><span class="line">readyChunk.chunk = chunk;</span><br><span class="line">readyChunk.firstKey = firstKeyInChunk; </span><br><span class="line">readyChunks.add(readyChunk);</span><br></pre></td></tr></table></figure>
+
+<p>然后时间很快就到了close环节。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//此处组织了block，将加入到此HFile的chunk生成树的结构。</span></span><br><span class="line"><span class="type">long</span> <span class="variable">rootIndexOffset</span> <span class="operator">=</span> dataBlockIndexWriter.writeIndexBlocks(outputStream);</span><br></pre></td></tr></table></figure>
+
+<p>block组织也分两类，一个chunk里组织block（他们共生存啊，用了一个bf），另外是root index和intermedia index的组织，实际这个更多感觉是组织chunk。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">writeInlineBlocks</span><span class="params">(<span class="type">boolean</span> closing)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">  <span class="comment">//inlineBlockWriters 应该就3个，两个bf和一个block（待确定）</span></span><br><span class="line">  <span class="keyword">for</span> (InlineBlockWriter ibw : inlineBlockWriters) &#123;</span><br><span class="line">    <span class="keyword">while</span> (ibw.shouldWriteBlock(closing)) &#123;</span><br><span class="line">      <span class="type">long</span> <span class="variable">offset</span> <span class="operator">=</span> outputStream.getPos();</span><br><span class="line">      <span class="type">boolean</span> <span class="variable">cacheThisBlock</span> <span class="operator">=</span> ibw.getCacheOnWrite();</span><br><span class="line">      ibw.writeInlineBlock(fsBlockWriter.startWriting(</span><br><span class="line">          ibw.getInlineBlockType()));</span><br><span class="line">      fsBlockWriter.writeHeaderAndData(outputStream);</span><br><span class="line">      <span class="comment">//此处添加leaf index block</span></span><br><span class="line">      ibw.blockWritten(offset, fsBlockWriter.getOnDiskSizeWithHeader(),</span><br><span class="line">          fsBlockWriter.getUncompressedSizeWithoutHeader());</span><br><span class="line">      totalUncompressedBytes += fsBlockWriter.getUncompressedSizeWithHeader();</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (cacheThisBlock) &#123;</span><br><span class="line">        doCacheOnWrite(offset);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ibw.shouldWriteBlock(closing)方法的判断如下，实际是判断是否有chunk</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">shouldWriteBlock</span><span class="params">(<span class="type">boolean</span> closing)</span> &#123;</span><br><span class="line">  enqueueReadyChunk(closing);</span><br><span class="line">  <span class="comment">//readyChunks中保存的是chunk，也就是lead index block</span></span><br><span class="line">  <span class="keyword">return</span> !readyChunks.isEmpty();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面是写入bloom meta index，感觉就是chunk的那些。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bloomBlockIndexWriter.writeSingleLevelIndex(out, <span class="string">&quot;Bloom filter&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>其实还有部分元数据（各种offset和树的生成）没有分析。以后在说吧。</p>
+<h2 id="HFileReaderV2"><a href="#HFileReaderV2" class="headerlink" title="HFileReaderV2"></a>HFileReaderV2</h2><p>由上述的代码分析来看，其实读取的时候最主要要解决的是是否读此block。决定了读此block之后已经没有太多需要在此文章中分析了，因为那是检索流程的事情（组织memstore和storefile）</p>
+<ol>
+<li>读block index和bloom filter信息</li>
+<li>使用这两种索引过滤block</li>
+</ol>
+<p>HFileReader主要涉及到的几个方法，包括获取和open。发生在在检索获取scanner和过滤scanner时。</p>
+<p>在List<KeyValueScanner> HStore.getScanners(boolean cacheBlocks, boolean isGet, boolean usePread, boolean isCompaction, ScanQueryMatcher matcher, byte[] startRow, byte[] stopRow, long readPt)中如下代码，获取此store中的file对应的scanner。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;StoreFileScanner&gt; sfScanners = StoreFileScanner.getScannersForStoreFiles(storeFilesToScan, cacheBlocks, usePread, isCompaction, <span class="literal">false</span>, matcher, readPt);</span><br></pre></td></tr></table></figure>
+
+<p>此方法调用了如下方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//此方法会调用Open方法</span></span><br><span class="line">StoreFile.<span class="type">Reader</span> <span class="variable">r</span> <span class="operator">=</span> file.createReader(canUseDrop);</span><br></pre></td></tr></table></figure>
+
+<p>接着调用open方法，方法如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">if</span> (<span class="built_in">this</span>.reader != <span class="literal">null</span>) &#123;</span><br><span class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalAccessError</span>(<span class="string">&quot;Already open&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// Open the StoreFile.Reader</span></span><br><span class="line">   <span class="built_in">this</span>.reader = fileInfo.open(<span class="built_in">this</span>.fs, <span class="built_in">this</span>.cacheConf, canUseDropBehind);</span><br><span class="line"></span><br><span class="line">   <span class="comment">// Load up indices and fileinfo. This also loads Bloom filter type.</span></span><br><span class="line">   metadataMap = Collections.unmodifiableMap(<span class="built_in">this</span>.reader.loadFileInfo());</span><br><span class="line"></span><br><span class="line">   <span class="comment">// Read in our metadata.</span></span><br><span class="line">   <span class="type">byte</span> [] b = metadataMap.get(MAX_SEQ_ID_KEY);</span><br><span class="line">   <span class="keyword">if</span> (b != <span class="literal">null</span>) &#123;</span><br><span class="line">     <span class="comment">// By convention, if halfhfile, top half has a sequence number &gt; bottom</span></span><br><span class="line">     <span class="comment">// half. Thats why we add one in below. Its done for case the two halves</span></span><br><span class="line">     <span class="comment">// are ever merged back together --rare.  Without it, on open of store,</span></span><br><span class="line">     <span class="comment">// since store files are distinguished by sequence id, the one half would</span></span><br><span class="line">     <span class="comment">// subsume the other.</span></span><br><span class="line">     <span class="built_in">this</span>.sequenceid = Bytes.toLong(b);</span><br><span class="line">     <span class="keyword">if</span> (fileInfo.isTopReference()) &#123;</span><br><span class="line">       <span class="built_in">this</span>.sequenceid += <span class="number">1</span>;</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span> (isBulkLoadResult())&#123;</span><br><span class="line">     <span class="comment">// generate the sequenceId from the fileName</span></span><br><span class="line">     <span class="comment">// fileName is of the form &lt;randomName&gt;_SeqId_&lt;id-when-loaded&gt;_</span></span><br><span class="line">     <span class="type">String</span> <span class="variable">fileName</span> <span class="operator">=</span> <span class="built_in">this</span>.getPath().getName();</span><br><span class="line">     <span class="comment">// Use lastIndexOf() to get the last, most recent bulk load seqId.</span></span><br><span class="line">     <span class="type">int</span> <span class="variable">startPos</span> <span class="operator">=</span> fileName.lastIndexOf(<span class="string">&quot;SeqId_&quot;</span>);</span><br><span class="line">     <span class="keyword">if</span> (startPos != -<span class="number">1</span>) &#123;</span><br><span class="line">       <span class="built_in">this</span>.sequenceid = Long.parseLong(fileName.substring(startPos + <span class="number">6</span>,</span><br><span class="line">           fileName.indexOf(<span class="string">&#x27;_&#x27;</span>, startPos + <span class="number">6</span>)));</span><br><span class="line">       <span class="comment">// Handle reference files as done above.</span></span><br><span class="line">       <span class="keyword">if</span> (fileInfo.isTopReference()) &#123;</span><br><span class="line">         <span class="built_in">this</span>.sequenceid += <span class="number">1</span>;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="built_in">this</span>.reader.setBulkLoaded(<span class="literal">true</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="built_in">this</span>.reader.setSequenceID(<span class="built_in">this</span>.sequenceid);</span><br><span class="line"></span><br><span class="line">   b = metadataMap.get(HFileWriterV2.MAX_MEMSTORE_TS_KEY);</span><br><span class="line">   <span class="keyword">if</span> (b != <span class="literal">null</span>) &#123;</span><br><span class="line">     <span class="built_in">this</span>.maxMemstoreTS = Bytes.toLong(b);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   b = metadataMap.get(MAJOR_COMPACTION_KEY);</span><br><span class="line">   <span class="keyword">if</span> (b != <span class="literal">null</span>) &#123;</span><br><span class="line">     <span class="type">boolean</span> <span class="variable">mc</span> <span class="operator">=</span> Bytes.toBoolean(b);</span><br><span class="line">     <span class="keyword">if</span> (<span class="built_in">this</span>.majorCompaction == <span class="literal">null</span>) &#123;</span><br><span class="line">       <span class="built_in">this</span>.majorCompaction = <span class="keyword">new</span> <span class="title class_">AtomicBoolean</span>(mc);</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       <span class="built_in">this</span>.majorCompaction.set(mc);</span><br><span class="line">     &#125;</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     <span class="comment">// Presume it is not major compacted if it doesn&#x27;t explicity say so</span></span><br><span class="line">     <span class="comment">// HFileOutputFormat explicitly sets the major compacted key.</span></span><br><span class="line">     <span class="built_in">this</span>.majorCompaction = <span class="keyword">new</span> <span class="title class_">AtomicBoolean</span>(<span class="literal">false</span>);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   b = metadataMap.get(EXCLUDE_FROM_MINOR_COMPACTION_KEY);</span><br><span class="line">   <span class="built_in">this</span>.excludeFromMinorCompaction = (b != <span class="literal">null</span> &amp;&amp; Bytes.toBoolean(b));</span><br><span class="line"></span><br><span class="line"><span class="comment">//此出会读取bloom filter</span></span><br><span class="line">   <span class="type">BloomType</span> <span class="variable">hfileBloomType</span> <span class="operator">=</span> reader.getBloomFilterType();</span><br><span class="line">   <span class="keyword">if</span> (cfBloomType != BloomType.NONE) &#123;</span><br><span class="line">     reader.loadBloomfilter(BlockType.GENERAL_BLOOM_META);</span><br><span class="line">     <span class="keyword">if</span> (hfileBloomType != cfBloomType) &#123;</span><br><span class="line">       LOG.info(<span class="string">&quot;HFile Bloom filter type for &quot;</span></span><br><span class="line">           + reader.getHFileReader().getName() + <span class="string">&quot;: &quot;</span> + hfileBloomType</span><br><span class="line">           + <span class="string">&quot;, but &quot;</span> + cfBloomType + <span class="string">&quot; specified in column family &quot;</span></span><br><span class="line">           + <span class="string">&quot;configuration&quot;</span>);</span><br><span class="line">     &#125;</span><br><span class="line">   &#125; <span class="keyword">else</span> <span class="keyword">if</span> (hfileBloomType != BloomType.NONE) &#123;</span><br><span class="line">     LOG.info(<span class="string">&quot;Bloom filter turned off by CF config for &quot;</span></span><br><span class="line">         + reader.getHFileReader().getName());</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// load delete family bloom filter</span></span><br><span class="line">   reader.loadBloomfilter(BlockType.DELETE_FAMILY_BLOOM_META);</span><br><span class="line"></span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">     <span class="built_in">this</span>.reader.timeRange = TimeRangeTracker.getTimeRange(metadataMap.get(TIMERANGE_KEY));</span><br><span class="line">   &#125; <span class="keyword">catch</span> (IllegalArgumentException e) &#123;</span><br><span class="line">     LOG.error(<span class="string">&quot;Error reading timestamp range data from meta -- &quot;</span> +</span><br><span class="line">         <span class="string">&quot;proceeding without&quot;</span>, e);</span><br><span class="line">     <span class="built_in">this</span>.reader.timeRange = <span class="literal">null</span>;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> <span class="built_in">this</span>.reader;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>判断的一个文件是否需要读取时，在伟大的 boolean org.apache.hadoop.hbase.regionserver.StoreFileScanner.shouldUseScanner(Scan scan, SortedSet&lt;byte[]&gt; columns, long oldestUnexpiredTS) 方法中的如下方法使用了bloomfilter。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//此处使用bloomfilter过滤。在此方法中会调用bloomFilter.contains，在此contains会先使用block index 判断。</span></span><br><span class="line">reader.passesBloomFilter(scan, columns)</span><br></pre></td></tr></table></figure>
+
+<p>里面会调用一个contains</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">//判断读取哪个block，rootBlockContaingKey里的blockKeys为chunk的个数。</span></span><br><span class="line"><span class="comment">//index是从bloommeta中读取，DataInput bloomMeta = reader.getGeneralBloomFilterMetadata(); 代码获取。</span></span><br><span class="line"><span class="type">int</span> <span class="variable">block</span> <span class="operator">=</span> index.rootBlockContainingKey(key, keyOffset, keyLength);</span><br><span class="line">   <span class="keyword">if</span> (block &lt; <span class="number">0</span>) &#123;</span><br><span class="line">     result = <span class="literal">false</span>; <span class="comment">// This key is not in the file.</span></span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     HFileBlock bloomBlock;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">       <span class="comment">// We cache the block and use a positional read.</span></span><br><span class="line">       <span class="comment">//读取那个chunk的bf</span></span><br><span class="line">       bloomBlock = reader.readBlock(index.getRootBlockOffset(block),</span><br><span class="line">           index.getRootBlockDataSize(block), <span class="literal">true</span>, <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">true</span>,</span><br><span class="line">           BlockType.BLOOM_CHUNK);</span><br><span class="line">     &#125; <span class="keyword">catch</span> (IOException ex) &#123;</span><br><span class="line">       <span class="comment">// The Bloom filter is broken, turn it off.</span></span><br><span class="line">       <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(</span><br><span class="line">           <span class="string">&quot;Failed to load Bloom block for key &quot;</span></span><br><span class="line">               + Bytes.toStringBinary(key, keyOffset, keyLength), ex);</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="type">ByteBuffer</span> <span class="variable">bloomBuf</span> <span class="operator">=</span> bloomBlock.getBufferReadOnly();</span><br><span class="line">     result = ByteBloomFilter.contains(key, keyOffset, keyLength,</span><br><span class="line">         bloomBuf.array(), bloomBuf.arrayOffset() + bloomBlock.headerSize(),</span><br><span class="line">         bloomBlock.getUncompressedSizeWithoutHeader(), hash, hashCount);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在如下方法(感觉时seekTO时，用于scan时指定了开始的rowkey，这样解释就合理了。在reader.passesBloomFilter中有判断是否时scan)中使用block index过滤了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BlockWithScanInfo org.apache.hadoop.hbase.io.hfile.HFileBlockIndex.BlockIndexReader.loadDataBlockWithScanInfo(<span class="type">byte</span>[] key, <span class="type">int</span> keyOffset, <span class="type">int</span> keyLength, HFileBlock currentBlock, <span class="type">boolean</span> cacheBlocks, <span class="type">boolean</span> pread, <span class="type">boolean</span> isCompaction) <span class="keyword">throws</span> IOException</span><br></pre></td></tr></table></figure>
+
+<p>CompoundBloomFilter构造方法中读取Block index的数据。 </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/05/14/hbase-src-hfile/" data-id="clyh5n1q4000heb603ba50m7w" data-title="HBase源码系列之HFile" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-hbase-src-compaction" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/05/09/hbase-src-compaction/" class="article-date">
+  <time class="dt-published" datetime="2017-05-09T15:44:59.000Z" itemprop="datePublished">2017-05-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/05/09/hbase-src-compaction/">HBase源码系列之compaction</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>像hbase这种基于LSM的架构，compaction是其中很重要一个环节。</p>
+<h2 id="触发compaction"><a href="#触发compaction" class="headerlink" title="触发compaction"></a>触发compaction</h2><ol>
+<li><p>手工出发</p>
+</li>
+<li><p>chore线程</p>
+<ol>
+<li>CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」</li>
+</ol>
+</li>
+<li><p>flush触发</p>
+</li>
+</ol>
+<h2 id="执行compaction"><a href="#执行compaction" class="headerlink" title="执行compaction"></a>执行compaction</h2><p>​	此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。</p>
+<p>​	首先调用的是如下方法，生成CompactionContext构造CompactionRunner放入线程池中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">synchronized</span> CompactionRequest <span class="title function_">requestCompactionInternal</span><span class="params">(<span class="keyword">final</span> HRegion r, <span class="keyword">final</span> Store s,</span></span><br><span class="line"><span class="params">      <span class="keyword">final</span> String why, <span class="type">int</span> priority, CompactionRequest request, <span class="type">boolean</span> selectNow, User user)</span></span><br></pre></td></tr></table></figure>
+
+<p>​	在里面调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">boolean</span> <span class="variable">completed</span> <span class="operator">=</span> region.compact(compaction, store, compactionThroughputController, user);</span><br></pre></td></tr></table></figure>
+
+<p>​	然后调用相应store的compact方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">store.compact(compaction, throughputController, user);</span><br></pre></td></tr></table></figure>
+
+<p>​	里面一个compact操作具体的步骤如下：</p>
+<p>​	1. 开始合并返回合并的结果。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Path&gt; newFiles = compaction.compact(throughputController, user);</span><br></pre></td></tr></table></figure>
+
+<p>​	此方法中一个判断是否是major</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ScanType</span> <span class="variable">scanType</span> <span class="operator">=</span> scannerFactory.getScanType(request);</span><br></pre></td></tr></table></figure>
+
+<p>​	此ScanType传递给了ScanQueryMatcher来做scan类型的判断。</p>
+<p>​	2. 结果写入对应的cf的目录中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sfs = moveCompatedFilesIntoPlace(cr, newFiles, user);</span><br></pre></td></tr></table></figure>
+
+<p>​	3. 将本次compaction写入HLOG中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">writeCompactionWalRecord(filesToCompact, sfs);</span><br></pre></td></tr></table></figure>
+
+<p>​	4. 更新StoreFileManager的storefiles，去除旧的文件，加入新的文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">replaceStoreFiles(filesToCompact, sfs);</span><br></pre></td></tr></table></figure>
+
+<p>​	5. 此时已经可以安心的文件读取了，最后一步骤就是删除旧的数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">completeCompaction(filesToCompact); </span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/05/09/hbase-src-compaction/" data-id="clyh5n1q4000ceb60buovdbf9" data-title="HBase源码系列之compaction" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-HBase-trap" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/05/05/HBase-trap/" class="article-date">
+  <time class="dt-published" datetime="2017-05-05T14:29:12.000Z" itemprop="datePublished">2017-05-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/05/05/HBase-trap/">HBase的一些坑</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>最近遇到了一些hbase的坑，先记录一下。</p>
+<ol>
+<li><p>mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts &#x3D;&gt; 想再测一次就删除了 &#x3D;&gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很比较，可以使用mvcc的版本来解决操作请求的顺序，而不出现delete后加入的数据的不能被显示出来）</p>
+</li>
+<li><p>有时候重启regionserver需要有些region没有上线，需要执行hbase hbck -repair，此命令很危险。</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/05/05/HBase-trap/" data-id="clyh5n1q20003eb60dl94gsf3" data-title="HBase的一些坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-balance-in-hdfs" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/04/26/balance-in-hdfs/" class="article-date">
+  <time class="dt-published" datetime="2017-04-26T15:33:10.000Z" itemprop="datePublished">2017-04-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/04/26/balance-in-hdfs/">hdfs balance的一些解读和问题记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>##balance过程的解读</p>
+<ol>
+<li><p>准备工作<br>获取的namenode</p>
+</li>
+<li><p>调用Balancer.run L1422，开始迭代<br>一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）</p>
+</li>
+</ol>
+<p> 2.1 ReturnStatus r &#x3D; b.run L1352</p>
+<p> ​	2.1.1 initNode获取需要移动的字节数bytesLeftToMove<br> ​			计算平均使用率<br> ​			计算出过载和未充分利用的节点需要移动的字节数，两者选取较大值（已排除在与平均值相差在threshold内的节点）<br> ​	2.1.2 chooseNode获取决定要移动的字节<br>             chooseDatanodes: 三种匹配类型Matcher选取（同一组，同一机架，剩下的），每一类型做如下类型操作</p>
+<p>​	1. 处理过载到未好好利用的。 2. 处理过载到使用少的。 3. 处理多使用到少使用</p>
+<p>​	chooseCandidate对于每个源节点，选个候选节点（如果能符合匹配规则Matcher就选择他）<br>​				matchSourceWithTargetToMove选择两者能移动的少的字节数，形成NodeTask<br>​	2.1.3 dispatchBlockMoves L1103启动线程去移动数据，处理NodeTask<br>​		{两个条件会结束noPendingBlockIteration &gt;&#x3D; MAX_NO_PENDING_BLOCK_ITERATIONS 和Time.now()-				startTime &gt; MAX_ITERATION_TIME}<br>​		dispatchBlocks L614 为每个source启动一个线程去移动数据(线程放入dispatcherExecutor线程池)，然后等待回复<br>​		此处一轮迭代有时间限制<br>​			dispatcherExecutor.submit(source.new BlockMoveDispatcher());(调用dispatchBlocks())<br>​				chooseNextBlockToMove 获取下一步需要移动block，选择的代理节点是拥有此block但是传递到target比较好。<br>​				此处有一个5个任务的限制，难怪增大timeout的时间之后不会quota is exceeded***<br>​					chooseBlockAndProxy 选择块和代理节点<br>​						isGoodBlockCandidate 选择好的块<br>​						chooseProxySource 在选中的块中选择一个和target比较好的location<br>​				scheduleBlockMove 发送到代理节点并给代理节点的发送复制请求<br>​					dispatch() 发送数据(<em><strong>此处看代码不是异步处理，果然不是</strong></em>)<br>​					在目的节点DataXceiver.replaceBlock方法接受来自proxy的block发送流<br>​						在此处有balanceThrottler限制<br>​				filterMovedBlocks 过滤<br>​				判断需要不需要更多的block<br>​			waitForMoveCompletion()等待所有targets里的pending任务结束(如果没有结束此处会等待)<br>​	shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于零次数少于	MAX_NOT_CHANGED_ITERATIONS就是in_progress<br>2.2 resetData清楚数据，为再来一次循环做准备<br>2.3 根据r判断是否结束，判断条件在上面</p>
+<p>简单概括</p>
+<pre><code>--&gt; 计算那些需要移动的节点 
+--&gt; 在此节点中选择想要移动的block 
+--&gt; 对此block选择一个proxy（此proxy也有这个block的副本，并且传输起来比较好） 
+--&gt; 建立任务（向target节点发送replaceBlock请求，target节点向proxy节点发送copyBlock请求）拷贝数据
+</code></pre>
+<h2 id="问题与解决"><a href="#问题与解决" class="headerlink" title="问题与解决"></a>问题与解决</h2><ol>
+<li>balancer节点发送请求会有超时，在日志文件中报Read timed out -&gt; 日志会报线程数超出配额 -&gt; 提早退出balance过程，这种情况是balancer节点和target节点之间的rpc断开连接。只要改大超时设置就可以了（不清楚为啥不把超时统一到那个配置，并且hdfs把那些异常处理不打印问题，这个处理方式也很奇怪，可能新版本有改进）。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clyh5n1q30005eb60afxl6kx1" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/" rel="tag">hdfs</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-hbase-src-get-in-server" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/04/25/hbase-src-get-in-server/" class="article-date">
+  <time class="dt-published" datetime="2017-04-25T14:40:14.000Z" itemprop="datePublished">2017-04-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/04/25/hbase-src-get-in-server/">HBase源码系列之server端的get请求处理</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="scanner的层次"><a href="#scanner的层次" class="headerlink" title="scanner的层次"></a>scanner的层次</h2><p>一个Region对应一个RegionScannerImpl</p>
+<hr>
+<ul>
+<li><p>RegionScannerImpl (下面缩进代表了层级)</p>
+<ul>
+<li><p>StoreScanner (组成storeHeap 和 joinedHeap， 这俩都是KeyValueHeap， 用的是region的Comparator) </p>
+<ul>
+<li>MemStoreScanner</li>
+<li>StoreFileScanner</li>
+</ul>
+<p>​  (MemStoreScanner 和 StoreFileScanner 组成heap ，也是一个KeyValueHeap， 用的是store的Comparator)</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="对scanner预处理（裁剪等）"><a href="#对scanner预处理（裁剪等）" class="headerlink" title="对scanner预处理（裁剪等）"></a>对scanner预处理（裁剪等）</h2><ol>
+<li><p>获取此region中store里的mem和file能组成的scanner，并做一定程度的过滤（rang，bf和ts）</p>
+<p>获取所有的scanner</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//对此region中每个store（列族）都需要获取scanner</span></span><br><span class="line"><span class="keyword">for</span> (Map.Entry&lt;<span class="type">byte</span>[], NavigableSet&lt;<span class="type">byte</span>[]&gt;&gt; entry : scan.getFamilyMap().entrySet()) &#123;</span><br><span class="line">  <span class="comment">//此方法是获取了scanner，过滤了一些scanner，并且还粗略的检索到需要的位置。</span></span><br><span class="line">  <span class="comment">//此scanner是一个store对应的</span></span><br><span class="line">  <span class="type">KeyValueScanner</span> <span class="variable">scanner</span> <span class="operator">=</span> store.getScanner(scan, entry.getValue(), <span class="built_in">this</span>.readPt);</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">this</span>.filter == <span class="literal">null</span> || !scan.doLoadColumnFamiliesOnDemand() || 					 <span class="built_in">this</span>.filter.isFamilyEssential(entry.getKey())) &#123;</span><br><span class="line">     scanners.add(scanner);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     <span class="comment">//比如有filter的情况</span></span><br><span class="line">     joinedScanners.add(scanner);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//生成俩KeyValueHeap，此处的比较器不知道啥意思。真他妈尴尬</span></span><br><span class="line">initializeKVHeap(scanners, joinedScanners, region);</span><br></pre></td></tr></table></figure>
+
+<p>1.1 跟入store.getScanner方法，现在次问题只在一个store中讨论。store间的协调后面会提到。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//此方法和1.1.4节中想呼应。</span></span><br><span class="line"><span class="built_in">this</span>.store.addChangedReaderObserver(<span class="built_in">this</span>);</span><br><span class="line"><span class="comment">//获取所有的file，打开文件，做一些过滤等。</span></span><br><span class="line">List&lt;KeyValueScanner&gt; scanners = getScannersNoCompaction();</span><br><span class="line">seekScanners(scanners, matcher.getStartKey(), explicitColumnQuery &amp;&amp; lazySeekEnabledGlobally, isParallelSeekEnabled);</span><br><span class="line">resetKVHeap(scanners, store.getComparator());</span><br></pre></td></tr></table></figure>
+
+<p>1.1.1 getScannersNoCompaction()里面有重要的方法如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</span><br><span class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="built_in">this</span>.readPt));</span><br></pre></td></tr></table></figure>
+
+<p>​	主要两层，store.getScanners中是获取所有的file，打开文件。</p>
+<p>​	selectScannersFrom主要做过滤，主要是如下方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kvs.shouldUseScanner(scan, columns, expiredTimestampCutoff)</span><br><span class="line">  此方法两个分支，mem和file值得关注，此处就不说了。反正用了一些range和bf（bf只针对单行和单行列族）</span><br><span class="line">  bf的过滤有一个判断（!scan.isGetScan()），如果是get，并且isStartRowAndEqualsStopRow为<span class="literal">true</span>才走bf。</span><br></pre></td></tr></table></figure>
+
+<p>1.1.2 seekScanners</p>
+<p>​	bf判断，时间判断，伪造kv使其跳过此个检索吧。	</p>
+<p>1.1.3 resetKVHeap</p>
+<p>​	组织成一个KeyValueHeap，比较器有代表时间的id等。</p>
+<p>1.1.4<code>另外</code>如下方法也会让检索重新打开scanner，一般是有compact，bulkload等操作。需要去重新，应该为更改了一些东西。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">notifyChangedReadersObservers()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>裁剪的storefile和block的方式</p>
+<p>我个人觉得总共几个部分，包括time裁剪，key裁剪，bf和索引</p>
+<p>获取scanner分两个，一个memstore的，另一个是file的。</p>
+<p>获取有关file的Scanner如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.storeEngine.getStoreFileManager().getFilesForScanOrGet(isGet, startRow, stopRow);</span><br><span class="line"></span><br><span class="line">List&lt;StoreFileScanner&gt; sfScanners = StoreFileScanner.getScannersForStoreFiles(storeFilesToScan,</span><br><span class="line">        cacheBlocks, usePread, isCompaction, <span class="literal">false</span>, matcher, readPt);</span><br></pre></td></tr></table></figure>
+
+<p>获取有关mem的Scanner如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">memStoreScanners = <span class="built_in">this</span>.memstore.getScanners(readPt);</span><br></pre></td></tr></table></figure>
+
+<p>然后在返回之前做了筛选，注意那个selectScannerFrom方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">selectScannersFrom(store.getScanners(cacheBlocks, isGet, usePread,</span><br><span class="line">        isCompaction, matcher, scan.getStartRow(), scan.getStopRow(), <span class="built_in">this</span>.readPt));</span><br></pre></td></tr></table></figure>
+
+<p>selectScannerFrom还是分两个分支，有两个实现，file的和mem的。</p>
+<p>file的过滤分三种，time，key和bf。file过滤实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">shouldUseScanner</span><span class="params">(Scan scan, SortedSet&lt;<span class="type">byte</span>[]&gt; columns, <span class="type">long</span> oldestUnexpiredTS)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> reader.passesTimerangeFilter(scan.getTimeRange(), oldestUnexpiredTS)</span><br><span class="line">        &amp;&amp; reader.passesKeyRangeFilter(scan) &amp;&amp; reader.passesBloomFilter(scan, columns);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>memstore的实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">shouldSeek</span><span class="params">(Scan scan, <span class="type">long</span> oldestUnexpiredTS)</span> &#123;</span><br><span class="line">    <span class="type">TimeRange</span> <span class="variable">timeRange</span> <span class="operator">=</span> scan.getTimeRange();</span><br><span class="line">    <span class="keyword">return</span> (timeRangeTracker.includesTimeRange(timeRange) ||</span><br><span class="line">        snapshotTimeRangeTracker.includesTimeRange(timeRange)) &amp;&amp;</span><br><span class="line">        (Math.max(timeRangeTracker.getMax(), snapshotTimeRangeTracker.getMax())</span><br><span class="line">            &gt;= oldestUnexpiredTS);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从文件格式看，主要是几个过滤，主要代码如下</p>
+<p>主要的实现在如下方法中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">BlockWithScanInfo</span> <span class="variable">blockWithScanInfo</span> <span class="operator">=</span></span><br><span class="line">  indexReader.loadDataBlockWithScanInfo(key, offset, length, block, 、</span><br><span class="line">    cacheBlocks, pread, isCompaction);</span><br></pre></td></tr></table></figure>
+
+<p>在HFileReaderV2中，由索引过滤和blockcache的实现，在</p>
+<p>根据索引信息过滤block</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">rootLevelIndex</span> <span class="operator">=</span> rootBlockContainingKey(key, keyOffset, keyLength);</span><br></pre></td></tr></table></figure>
+
+<p>方法实现如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public int rootBlockContainingKey(final byte[] key, int offset,</span><br><span class="line">    int length) &#123;</span><br><span class="line">  int pos = Bytes.binarySearch(blockKeys, key, offset, length,</span><br><span class="line">      comparator);</span><br><span class="line">  ....&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果需要读取，会先从blockcache中读取，减少io。blcokcache中读取block，代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">block = cachingBlockReader.readBlock(currentOffset,</span><br><span class="line">    currentOnDiskSize, shouldCache, pread, isCompaction, <span class="literal">true</span>,</span><br><span class="line">    expectedBlockType);</span><br></pre></td></tr></table></figure>
+
+<p>两处使用bf索引过滤，一处是isLazy&#x3D;&#x3D;true时</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">boolean</span> org.apache.hadoop.hbase.regionserver.StoreFileScanner.requestSeek(KeyValue kv, <span class="type">boolean</span> forward, <span class="type">boolean</span> useBloom)</span><br></pre></td></tr></table></figure>
+
+<p>bf的粒度是chunk。</p>
+</li>
+</ol>
+<h2 id="协调一个cf下的检索"><a href="#协调一个cf下的检索" class="headerlink" title="协调一个cf下的检索"></a>协调一个cf下的检索</h2><ol>
+<li><p>我们讲获取到的scanner组织成heap，然后从heap中获取对应的数据。这个heap需要有一定的组织，比如检索到了数据，需要关闭；对于同一个key，需要在所有的scanner中获取到等</p>
+<p>获取到scanner之后就开始获取数据结果了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scanner.next(results);</span><br></pre></td></tr></table></figure>
+
+<p>里面一堆逻辑的，实际获取数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> KeyValue <span class="title function_">populateResult</span><span class="params">(List&lt;Cell&gt; results, KeyValueHeap heap, <span class="type">int</span> limit,</span></span><br><span class="line"><span class="params">    <span class="type">byte</span>[] currentRow, <span class="type">int</span> offset, <span class="type">short</span> length)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">  KeyValue nextKv;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">      heap.next(results, limit - results.size());</span><br><span class="line">      <span class="keyword">if</span> (limit &gt; <span class="number">0</span> &amp;&amp; results.size() == limit) &#123;</span><br><span class="line">        <span class="keyword">return</span> KV_LIMIT;</span><br><span class="line">      &#125;</span><br><span class="line">      nextKv = heap.peek();</span><br><span class="line">    &#125; <span class="keyword">while</span> (nextKv != <span class="literal">null</span> &amp;&amp; nextKv.matchingRow(currentRow, offset, length));</span><br><span class="line">  <span class="keyword">return</span> nextKv;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="StoreFileScanner中检索相关的处理"><a href="#StoreFileScanner中检索相关的处理" class="headerlink" title="StoreFileScanner中检索相关的处理"></a>StoreFileScanner中检索相关的处理</h2><p>。。。</p>
+<h2 id="协调不同cf下的检索"><a href="#协调不同cf下的检索" class="headerlink" title="协调不同cf下的检索"></a>协调不同cf下的检索</h2><figure class="highlight plaintext"><figcaption><span>暂时不看，暂时在业务中不需要。</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">=====================   以下太乱 ======================</span><br><span class="line"></span><br><span class="line">hbase检索在region中的检索流程，其中主要需要分析的是在一个store中的检索的操作，分两个层面：一个是到scanner的上层的处理，另一个是scanner的内部的处理（包括men和file）两种。</span><br><span class="line"></span><br><span class="line">## 处理scanner</span><br><span class="line"></span><br><span class="line">## scanner内部</span><br><span class="line"></span><br><span class="line">### memscanner</span><br><span class="line"></span><br><span class="line">要从memstore中获取想要的数据，感觉不会很难，因为memstore是个有一定顺序。</span><br><span class="line"></span><br><span class="line">### filescanner</span><br><span class="line"></span><br><span class="line">对于filestore的检索，hbase提供了集中方式来加速检索。</span><br><span class="line"></span><br><span class="line">1. bloomfilter的过滤，见”处理scanner“</span><br><span class="line">2. index的过滤</span><br><span class="line">3. blockcache的使用</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 对一个get的请求怎么判断结束</span><br><span class="line"></span><br><span class="line">boolean org.apache.hadoop.hbase.regionserver.HRegion.RegionScannerImpl.nextInternal(List&lt;Cell&gt; results, int limit)  </span><br><span class="line"></span><br><span class="line">只执行一次。一个keyvalue只会在一个block中，其实并不需要再去检索，只要检索一次就可以了，感觉是对的。没想到前几天想的有问题。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## scan判断结束</span><br><span class="line"></span><br><span class="line">scan的判断结束</span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line">while (i &lt; rows) &#123;</span><br><span class="line">  // Stop collecting results if maxScannerResultSize is set and we have exceeded it</span><br><span class="line">  if ((maxResultSize &lt; Long.MAX_VALUE) &amp;&amp;</span><br><span class="line">      (currentScanResultSize &gt;= maxResultSize)) &#123;</span><br><span class="line">    builder.setMoreResultsInRegion(true);</span><br><span class="line">    break;</span><br><span class="line">  &#125;</span><br><span class="line">  // Collect values to be returned here</span><br><span class="line">  moreRows = scanner.nextRaw(values);</span><br><span class="line">  if (!values.isEmpty()) &#123;</span><br><span class="line">    for (Cell cell : values) &#123;</span><br><span class="line">      KeyValue kv = KeyValueUtil.ensureKeyValue(cell);</span><br><span class="line">      currentScanResultSize += kv.heapSizeWithoutTags();</span><br><span class="line">      totalKvSize += kv.getLength();</span><br><span class="line">    &#125;</span><br><span class="line">    results.add(Result.create(values));</span><br><span class="line">    i++;</span><br><span class="line">  &#125;</span><br><span class="line">  if (!moreRows) &#123;</span><br><span class="line">  	//结束了</span><br><span class="line">    break;</span><br><span class="line">  &#125;</span><br><span class="line">  values.clear();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="检索keyvalue"><a href="#检索keyvalue" class="headerlink" title="检索keyvalue"></a>检索keyvalue</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> org.apache.hadoop.hbase.io.hfile.HFileReaderV2.AbstractScannerV2.seekTo(<span class="type">byte</span>[] key, <span class="type">int</span> offset, <span class="type">int</span> length, <span class="type">boolean</span> rewind) <span class="keyword">throws</span> IOException</span><br></pre></td></tr></table></figure>
+
+<p>实现获取block</p>
+<p>​	index 去检索</p>
+<p>检索到指定位置</p>
+<h1 id="bloom-index的位置"><a href="#bloom-index的位置" class="headerlink" title="bloom index的位置"></a>bloom index的位置</h1><p>第一层的root index就是chunk的位置。</p>
+<p>但是root index指向的是imtermediate或leaf，理论上来说leaf对应chunk</p>
+<p>HFile中除了Data Block需要索引之外，上一篇文章提到过Bloom Block也需要索引，索引结构实际上就是采用了single-level结构，文中Bloom Index Block就是一种Root Index Block。</p>
+<p>bloom block 和 data block的索引不一致。bloom block采用单层结构，data  block采用多层结构。</p>
+<p>bloom block的单层结构的叶子结点是chunk。</p>
+<h2 id="get请求读取block的种类和情况"><a href="#get请求读取block的种类和情况" class="headerlink" title="get请求读取block的种类和情况"></a>get请求读取block的种类和情况</h2><ol>
+<li>正常读取block的</li>
+</ol>
+<p>get 流程真是复杂。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">seek</span><span class="params">(KeyValue key)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    <span class="keyword">if</span> (seekCount != <span class="literal">null</span>) seekCount.incrementAndGet();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(!seekAtOrAfter(hfs, key)) &#123;</span><br><span class="line">          LOG.info(<span class="string">&quot;liubb seekAtOrAfter false&quot;</span>);</span><br><span class="line">          close();</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          LOG.info(<span class="string">&quot;liubb seekAtOrAfter true&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        cur = hfs.getKeyValue();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> !hasMVCCInfo ? <span class="literal">true</span> : skipKVsNewerThanReadpoint();</span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        realSeekDone = <span class="literal">true</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">      <span class="keyword">throw</span> e;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException ioe) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IOException</span>(<span class="string">&quot;Could not seek &quot;</span> + <span class="built_in">this</span> + <span class="string">&quot; to key &quot;</span> + key, ioe);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">里面的seekAtOrAfter很重要。</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ScanQueryMatcher.<span class="type">MatchCode</span> <span class="variable">qcode</span> <span class="operator">=</span> matcher.match(kv);</span><br><span class="line">qcode = optimize(qcode, kv);</span><br><span class="line"><span class="keyword">switch</span>(qcode) &#123;</span><br><span class="line">   </span><br><span class="line">此处各种code的解释对于不同storefile的理解也很好。</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>可以看到一些问题和关注点</strong></p>
+<ol>
+<li>RegionScannerImpl里使用StoreScanner 时，各种heap的操作主要需要关注一个记录的组织，因为一条记录的不同列族保存在不同的store中。还要关注什么时候结束。</li>
+<li>StoreScanner中的两种scanner（StoreFileScanner可能有多个）需要协调在不同scanner中的不同的版本的问题。还要关注什么时候结束。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clyh5n1q4000feb609q6v9ioj" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-hbase-src-memstore" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/04/12/hbase-src-memstore/" class="article-date">
+  <time class="dt-published" datetime="2017-04-11T16:01:56.000Z" itemprop="datePublished">2017-04-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/04/12/hbase-src-memstore/">HBase源码系列之memstore</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="主要结构"><a href="#主要结构" class="headerlink" title="主要结构"></a>主要结构</h2><p>​	主要结构包括「kvset，snapshot」，先说snapshot，主要适用于生成HFile时临时存放的kvset的一个快照。更改的snaphost一定条件判断可以生成HFile时调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, <span class="type">long</span> myseqid, MonitoredTask status)</span><br></pre></td></tr></table></figure>
+
+<p>此方法两种情况会调用</p>
+<p>​	一个是关闭时。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HRegion.doClose(<span class="type">boolean</span> abort, MonitoredTask status)</span><br></pre></td></tr></table></figure>
+
+<p>​	另一个时需要flush时。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FlushResult org.apache.hadoop.hbase.regionserver.HRegion.internalFlushcache(HLog wal, <span class="type">long</span> myseqid, MonitoredTask status)</span><br></pre></td></tr></table></figure>
+
+<h2 id="flush过程"><a href="#flush过程" class="headerlink" title="flush过程"></a>flush过程</h2><ol>
+<li>准备工作</li>
+<li>获取HRegion.updatesLock的写锁</li>
+<li>获取mvcc事务，并努力前提读点</li>
+<li>调用prepare（）<ol>
+<li>将snapshot设置为的kvset，并重新生成一个kvset，用于写入。</li>
+</ol>
+</li>
+<li>释放写锁</li>
+<li>同步wal日志</li>
+<li>等到mvcc结束</li>
+<li>flushcache()</li>
+<li>commit()<ol>
+<li>才更新构造scanner使用的org.apache.hadoop.hbase.regionserver.DefaultStoreFileManager.storefiles</li>
+</ol>
+</li>
+</ol>
+<h2 id="疑问与解释"><a href="#疑问与解释" class="headerlink" title="疑问与解释"></a>疑问与解释</h2><h3 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h3><p>最开始，我感觉逻辑有问题，可能会导致在某个时间点（flush）时，读取不到已经写入的数据。</p>
+<h3 id="回答："><a href="#回答：" class="headerlink" title="回答："></a>回答：</h3><p>有三个方面：</p>
+<ol>
+<li><p>读取数据时会读取snapshot的数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> KeyValue <span class="title function_">next</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (theNext == <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">final</span> <span class="type">KeyValue</span> <span class="variable">ret</span> <span class="operator">=</span> theNext;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Advance one of the iterators</span></span><br><span class="line">  <span class="keyword">if</span> (theNext == kvsetNextRow) &#123;</span><br><span class="line">    kvsetNextRow = getNext(kvsetIt);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    snapshotNextRow = getNext(snapshotIt);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Calculate the next value</span></span><br><span class="line">  theNext = getLowest(kvsetNextRow, snapshotNextRow);</span><br><span class="line"></span><br><span class="line">  <span class="comment">//long readpoint = ReadWriteConsistencyControl.getThreadReadPoint();</span></span><br><span class="line">  <span class="comment">//DebugPrint.println(&quot; MS@&quot; + hashCode() + &quot; next: &quot; + theNext + &quot; next_next: &quot; +</span></span><br><span class="line">  <span class="comment">//    getLowest() + &quot; threadpoint=&quot; + readpoint);</span></span><br><span class="line">  <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>清除snapshot和更新文件时在一个锁内。</p>
+<p>insertNewFiles方法将刷写成的HFile加入Store的fileManger里storefiles里，此结构用语构造storefilescanner。</p>
+<p>clearSnapshot方法将snapshot设置为一个新的空的结构。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.lock.writeLock().lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.storeEngine.getStoreFileManager().insertNewFiles(sfs);</span><br><span class="line">      <span class="built_in">this</span>.memstore.clearSnapshot(set);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      <span class="comment">// We need the lock, as long as we are updating the storeFiles</span></span><br><span class="line">      <span class="comment">// or changing the memstore. Let us release it before calling</span></span><br><span class="line">      <span class="comment">// notifyChangeReadersObservers. See HBASE-4485 for a possible</span></span><br><span class="line">      <span class="comment">// deadlock scenario that could have happened if continue to hold</span></span><br><span class="line">      <span class="comment">// the lock.</span></span><br><span class="line">      <span class="built_in">this</span>.lock.writeLock().unlock();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第三个方面，注意到第一个方面读取时或去的scanner方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;KeyValueScanner&gt; <span class="title function_">getScanners</span><span class="params">(<span class="type">boolean</span> cacheBlocks, <span class="type">boolean</span> isGet,</span></span><br><span class="line"><span class="params">     <span class="type">boolean</span> usePread, <span class="type">boolean</span> isCompaction, ScanQueryMatcher matcher, <span class="type">byte</span>[] startRow,</span></span><br><span class="line"><span class="params">     <span class="type">byte</span>[] stopRow, <span class="type">long</span> readPt)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">   Collection&lt;StoreFile&gt; storeFilesToScan;</span><br><span class="line">   List&lt;KeyValueScanner&gt; memStoreScanners;</span><br><span class="line">   <span class="built_in">this</span>.lock.readLock().lock();</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">     storeFilesToScan =</span><br><span class="line">         <span class="built_in">this</span>.storeEngine.getStoreFileManager().getFilesForScanOrGet(isGet, startRow, stopRow);</span><br><span class="line">     memStoreScanners = <span class="built_in">this</span>.memstore.getScanners(readPt);</span><br><span class="line">   &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">     <span class="built_in">this</span>.lock.readLock().unlock();</span><br><span class="line">   &#125;</span><br><span class="line">  ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>snapshot里的数据要么被getScanner引用到要么清空并生成新文件，而且两者互斥（使用的是同一个锁）。这样就可以保证数据能被读取到了。</p>
+<p>​</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clyh5n1q5000keb60fj8gb6qx" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-hbase-src-mvcc" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/04/09/hbase-src-mvcc/" class="article-date">
+  <time class="dt-published" datetime="2017-04-09T15:55:35.000Z" itemprop="datePublished">2017-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/04/09/hbase-src-mvcc/">HBase源码系列之MVCC</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h2><p>​	KeyValue类中有long mvcc的变量，感觉此处可以跟踪。</p>
+<p>​	MultiVersionConsistencyControl在一个Region有一个。</p>
+<p>​	MultiVersionConsistencyControl{</p>
+<p>​		memstoreRead：能够读取的序列号。</p>
+<p>​		memstoreWrite：写操作的序列号。</p>
+<p>​		writeQueue：写操作队列}</p>
+<h2 id="问题点"><a href="#问题点" class="headerlink" title="问题点"></a>问题点</h2><p>就是需要去回答的问题，这些问题十分有助于思考这个大问题</p>
+<ol>
+<li><p>读取是版本的选择</p>
+<p>在org.apache.hadoop.hbase.regionserver.MemStore.MemStoreScanner.getNext(Iterator<KeyValue> it)  L777中判断了曲出来的KeyValue是否到了可以读的范围（v.getMvccVersion() &lt;&#x3D; this.readPoint）。否则掠过</p>
+<p>在构造scanner时会将readpoint传入到scanner，说明能读到的版本在构造开始就定好了。</p>
+</li>
+<li><p>写的时候的版本</p>
+<p>w &#x3D; mvcc.beginMemstoreInsert();</p>
+<p>​	申请一个写操作的序列号，使用的变量是memstoreWrite</p>
+<p>mvcc.completeMemstoreInsert(w);</p>
+<p>​	标记操作结束，尽量更新memstoreRead，并且通知readWriters（在compaction和flush时会用到，因为这时需要将那时的版本都等待写完才能操作）。</p>
+<p>​	等待到此操作完成</p>
+</li>
+<li><p>回滚memstore的时候版本的控制</p>
+<p>回滚操作时找kv有版本比较MemStore.java L334。并且会滚后再执行mvcc.completeMemstoreInsert(w);</p>
+</li>
+</ol>
+<p>ps：long org.apache.hadoop.hbase.regionserver.HRegion.getReadpoint(IsolationLevel isolationLevel) L1115用了一个隔离级别。之后写一篇隔离级别的小文，加深理解。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clyh5n1q5000meb60ccx058bu" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-to-Hangzhou" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/03/20/to-Hangzhou/" class="article-date">
+  <time class="dt-published" datetime="2017-03-20T14:01:37.000Z" itemprop="datePublished">2017-03-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/03/20/to-Hangzhou/">去杭州</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>大学毕业在北京工作生活了近三年之后，即将回到自己的家乡的省会（杭州）来工作生活。明天就要去杭州正式开始我的杭州的生活了。有诸多感慨，从生活和工作两方面，在此小记一下。</p>
+<h2 id="生活"><a href="#生活" class="headerlink" title="生活"></a>生活</h2><p>北京的生活方面貌似常被吐槽，具体有空气不好，节奏快等等。但是我对北京的感觉还不错，这是个非常适合学习和工作的城市，这也是个伟大的城市。</p>
+<p>北京有十分发达的地铁网络并且有十分发达的文化资源，我在工作日可以非常便捷的去上班，在周末可以非常方便的去逛北京的博物馆，美术馆等，去了一些博物馆之后，可以感受到这个世界有很多值得我们去关注的，真是真心喜欢北京这座城市。相较之下，杭州就没这么好，很多地方没通地铁，哭。当然我隐约的感觉到杭州潜力很大，并且希望自己能参与到其中，能随着这个城市的成长而成长。</p>
+<p>在去年清明假期时，一个来杭州呆了一个假期，晚上睡宾馆，白天到处走走停停看看，感觉十分惬意，只是略讨厌那一只下雨的天气。当时第一天就去了浙大的玉泉校区，走在曾经梦想的校园里，有种考上浙大来读书的感觉，当我在留学生食堂吃完晚饭之后听着校园里的音乐，走在校园的一个个角落，我感觉这就是天堂。之后去了杭州图书馆，太子湾，植物园等，可以说这很斌斌。不知道为什么，自己很喜欢这种略文艺的东西，也许以后我会用脚步去丈量杭州的每条路。</p>
+<h2 id="工作"><a href="#工作" class="headerlink" title="工作"></a>工作</h2><p>毫无疑问，自己真的没法说喜欢在北京的工作。不仅仅是自己感觉没有激情的，而且做的事情也不是未来长期能发展的。去绿湾面试时，被问到在上一家公司的感受时，说了一句“不太开心，只是觉得数据量大，人比较有意思”，我猜这应该是我最真实的感受。</p>
+<p>到了杭州开始找工作之后，有两个问题一直在心里徘徊：技术还要做多久？我还能不能在技术深度上去努力达到一个程度了。目前还无解。</p>
+<p>最近倒是对python去分析金融信息有一定的兴趣，什么时候要搞一搞。</p>
+<h2 id="城市"><a href="#城市" class="headerlink" title="城市"></a>城市</h2><p>谈谈对杭州的感觉，据说杭州市政府对应届毕业生来杭工作给很大补助，本人也感觉杭州最近人口的增长太慢了。其次，从面试来看隐约感觉杭州现在吸引了大量的人才，而且环境好，未来估计会好。但是在六月份市政府出了如此蛋疼的入户政策，简直无语。</p>
+<p>IT和金融感觉是未来很有前途的。</p>
+<h3 id="PS"><a href="#PS" class="headerlink" title="PS"></a>PS</h3><p>其实从来也没有在网上发表过自己很内心的想法，经过这几个月，也确实发现自己需要改变，需要有更多的表达，以后要多写一些东西，多发些东西。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/03/20/to-Hangzhou/" data-id="clyh5n1q90021eb60ctp7b46x" data-title="去杭州" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" class="article-date">
+  <time class="dt-published" datetime="2017-03-08T05:23:28.000Z" itemprop="datePublished">2017-03-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/">写RCFile不停报的ArrayIndexOutOfBoundsException错误</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <pre><code>场景：使用flume＋自主开发的形式将数据按系统的要求写入hdfs中，并生成相应的索引
+最近在一个试运行集群中经常发生数据无法入库情况，然后看了一下系统日志，发现日志在不停的抛出如下异常。
+</code></pre>
+<h2 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h2><p>登录及其的查看异常（不停歇的报此错）如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">java.lang.ArrayIndexOutOfBoundsException: <span class="number">7107</span></span><br><span class="line">   at org.apache.hadoop.fs.FSOutputSummer.write(FSOutputSummer.java:<span class="number">76</span>)</span><br><span class="line">   at org.apache.hadoop.fs.FSDataOutputStream$PositionCache.write(FSDataOutputStream.java:<span class="number">50</span>)</span><br><span class="line">   at java.io.DataOutputStream.writeInt(DataOutputStream.java:<span class="number">197</span>)</span><br></pre></td></tr></table></figure>
+
+<p>首先，我看到此日志，我内心第一反应，这错真是奇葩，没想到定位和解决这个问题用了好几天。</p>
+<h2 id="步骤2"><a href="#步骤2" class="headerlink" title="步骤2"></a>步骤2</h2><p>看到此异常后，我第一反应是得先找到第一个报错的地方并且查看的此报错的原因。然后我就开始看此处涉及到hdfs的代码，想看看为什么会报错。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">sync</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">	<span class="keyword">if</span> (sync != <span class="literal">null</span> &amp;&amp; lastSyncPos != out.getPos()) &#123;</span><br><span class="line">		out.writeInt(SYNC_ESCAPE); <span class="comment">// mark the start of the sync</span></span><br><span class="line">		out.write(sync); <span class="comment">// write sync</span></span><br><span class="line">		lastSyncPos = out.getPos(); <span class="comment">// update lastSyncPos</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>RCFile.java中如上代码，程序在out.writeInt就开始报错了，lastSyncPos无法的更新。但是在上层使用如下代码的判断的调用sync。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">checkAndWriteSync</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">	<span class="keyword">if</span> (sync != <span class="literal">null</span> &amp;&amp; out.getPos() &gt;= lastSyncPos + SYNC_INTERVAL) &#123;</span><br><span class="line">		sync();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>好吧，这writeInt报错了，对于这个我真是醉了。</p>
+<h2 id="步骤3"><a href="#步骤3" class="headerlink" title="步骤3"></a>步骤3</h2><p>发现了此处无法理解的地方后，我将重点转向了第一个报错的地方。因为他是不确定时间报错，我就开始启动程序后，时常的查看日志，终于在之后的某个早上，我在查看日志时，我发现了第一个报错的地方。然后在那上面看到了如下异常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">java.io.IOException: All datanodes ...:<span class="number">50010</span> are bad. Aborting...</span><br><span class="line">    at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:<span class="number">1147</span>)</span><br><span class="line">    at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:<span class="number">945</span>)</span><br><span class="line">    at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:<span class="number">496</span>)</span><br></pre></td></tr></table></figure>
+
+<p>然后在日志中找第一个报次错的地方，还发现了其他的报错</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ShortCircuitCache_SlotReleaser] (org.apache.hadoop.hdfs.shortcircuit.ShortCircuitCache$SlotReleaser.run:<span class="number">215</span>)  - ShortCircuitCache(<span class="number">0x3fbdc007</span>): failed to release <span class="type">short</span>-circuit shared memory slot <span class="title function_">Slot</span><span class="params">(slotIdx=<span class="number">1</span>, shm=DfsClientShm(7bf35643718a2bf0a9d85884afb8f4f8)</span>) by sending ReleaseShortCircuitAccessRequestProto to /<span class="keyword">var</span>/run/hdfs-sockets/dn.  Closing shared memory segment.</span><br><span class="line"></span><br><span class="line">java.net.ConnectException: connect(<span class="number">2</span>) error: Connection refused when trying to connect to <span class="string">&#x27;/var/run/hdfs-sockets/dn&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="number">29</span> 七月 <span class="number">2016</span> <span class="number">10</span>:<span class="number">14</span>:<span class="number">17</span>,<span class="number">390</span> WARN  [ShortCircuitCache_SlotReleaser] (org.apache.hadoop.hdfs.shortcircuit.DfsClientShmManager$EndpointShmManager.shutdown:<span class="number">380</span>)  - EndpointShmManager(<span class="number">10.139</span><span class="number">.90</span><span class="number">.136</span>:<span class="number">50010</span>, parent=ShortCircuitShmManager(5c89577b)): error shutting down shm: got IOException calling <span class="title function_">shutdown</span><span class="params">(SHUT_RDWR)</span></span><br><span class="line"></span><br><span class="line">java.nio.channels.ClosedChannelException</span><br></pre></td></tr></table></figure>
+
+<h2 id="步骤4"><a href="#步骤4" class="headerlink" title="步骤4"></a>步骤4</h2><p>看到这些日志后，我感觉在10:14一定发生了什么，于是我开始寻找datanode中相关时间点日志STARTUP_MSG: Starting DataNode这种datanode启动信息，我内心一万只草泥马飘过。<br>在此日志的上面我看到了诸如的的日志。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2016</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">10</span>:<span class="number">14</span>:<span class="number">12</span>,<span class="number">374</span> INFO org.apache.hadoop.util.JvmPauseMonitor: Detected pause in JVM or host <span class="title function_">machine</span> <span class="params">(eg GC)</span>: pause of approximately 4519ms</span><br><span class="line">No GCs detected </span><br></pre></td></tr></table></figure>
+
+<p>然后就是</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2016</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">10</span>:<span class="number">14</span>:<span class="number">36</span>,<span class="number">720</span> INFO org.apache.hadoop.hdfs.server.datanode.DataNode: STARTUP_MSG:</span><br></pre></td></tr></table></figure>
+
+<p>中间隔了三十秒。<br>从这种情况看感觉应该是datanode进程死了，然后又重启了。</p>
+<h2 id="步骤5"><a href="#步骤5" class="headerlink" title="步骤5"></a>步骤5</h2><p>然后我就开始全力找为什么此datanode会挂。列出几点信息，这些信息是感觉有点头疼。</p>
+<ol>
+<li>supervisord.log的日志中有2016-07-29 10:14:16,820 INFO exited: 411-hdfs-DATANODE (terminated by SIGKILL; not expected)此时间正好在10:14:12到10:14:36之间。</li>
+<li>之前无聊时看过datanode虚拟机参数，记得有这么个参数。-XX:OnOutOfMemoryError&#x3D;&#x2F;usr&#x2F;lib64&#x2F;cmf&#x2F;service&#x2F;common&#x2F;killparent.sh<br>我开始怀疑是不是我这个参数给datanode进程发了kill信号，然后又重新启动。在&#x2F;var&#x2F;log&#x2F;messages中也没发现oom的异常。</li>
+</ol>
+<h2 id="步骤6"><a href="#步骤6" class="headerlink" title="步骤6"></a>步骤6</h2><p>开始看killparent.sh脚本，发现在调用此脚本时会将一个字符串写入一个文件，但是我在系统中没有发现这个文件，然后我就有点懵逼了。然后我在此脚本中加了一行我自己的代码，等再看看会不会再出现这种情况。</p>
+<h2 id="步骤7"><a href="#步骤7" class="headerlink" title="步骤7"></a>步骤7</h2><p>跟了一个周末后，发现killparent.sh的脚本没有调用。然后开始在晚上搜索，看了一些hdfs源码，可以确定的是flume的hdfs客户端和datanode之间的连接断了，然后导致datanode报超时错误，最后在flume中报读取流出错。</p>
+<h2 id="步骤8"><a href="#步骤8" class="headerlink" title="步骤8"></a>步骤8</h2><p>然后开始了两天完全懵逼的时光，在网上看到说可能ulimit对进程的限制，然后就开始在的集群中查看lsof中flume和datanode的链接使用数量。监控了一晚上什么收获都没有，然后就放弃了。</p>
+<h2 id="步骤9"><a href="#步骤9" class="headerlink" title="步骤9"></a>步骤9</h2><p>然后开始猜测是不是flume进程的某些原因，因为我在成个几次重启的过程中没有重启过datanode，而只重启了flume，但是重启了之后集群就可以开始加载了。然后又开始做尝试，同时看到看tailf过滤datanode日志中的error和warn信息和flume的出错日志。不停等，终于等到了出错，发现只有datanode报连接异常的时候才会导致flume出错，这时候就断定是flume和datanode之间的连接，突然想到可能是gc，想到之前的看过datanode没有full gc，那就可能是flume，看了flumegc日志，尼玛在出错时间点之前还真有一次400多秒的gc。我内心是崩溃的。</p>
+<h2 id="步骤10"><a href="#步骤10" class="headerlink" title="步骤10"></a>步骤10</h2><p>明天开始尝试将timeout时间再延长，将超时时间设置为3600，跑了周末两天都没什么问题。</p>
+<h2 id="暂时告一段落"><a href="#暂时告一段落" class="headerlink" title="暂时告一段落"></a>暂时告一段落</h2><p>因为接下来要做的是调整gc参数。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="clyh5n1q90026eb6085eahxal" data-title="写RCFile不停报的ArrayIndexOutOfBoundsException错误" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flume/" rel="tag">flume</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gc/" rel="tag">gc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/" rel="tag">hdfs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rcfile/" rel="tag">rcfile</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/" rel="tag">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank-reading/" rel="tag">bank, reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career/" rel="tag">career</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career-reading/" rel="tag">career,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/" rel="tag">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/" rel="tag">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/" rel="tag">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/" rel="tag">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/" rel="tag">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-reading/" rel="tag">life,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/" rel="tag">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/" rel="tag">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/" rel="tag">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/" rel="tag">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/" rel="tag">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/" rel="tag">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/" rel="tag">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src-treemap/" rel="tag">src, treemap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/" rel="tag">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/writing/" rel="tag">writing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/" rel="tag">zk</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank-reading/" style="font-size: 10px;">bank, reading</a> <a href="/tags/career/" style="font-size: 10px;">career</a> <a href="/tags/career-reading/" style="font-size: 10px;">career,reading</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kafka/" style="font-size: 12.5px;">kafka</a> <a href="/tags/life/" style="font-size: 20px;">life</a> <a href="/tags/life-reading/" style="font-size: 10px;">life,reading</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 17.5px;">reading</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/src/" style="font-size: 10px;">src</a> <a href="/tags/src-treemap/" style="font-size: 10px;">src, treemap</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/writing/" style="font-size: 10px;">writing</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/01/26/%E5%8F%AA%E4%B8%93%E6%B3%A8%E4%B8%80%E4%BB%B6%E4%BA%8B%E6%83%85/">只专注一件事情</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/12/%E6%8E%A8%E6%BC%94%E8%83%BD%E5%8A%9B/">推演能力</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/12/%E5%B1%80%E9%83%A8%E4%BB%A5%E5%A4%9A%E6%89%93%E5%B0%91/">局部以多打少</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/12/%E6%88%90%E5%8A%9F%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%89%E4%B8%AA%E7%89%B9%E5%BE%81/">成功人士的三个特征</a>
+          </li>
+        
+          <li>
+            <a href="/2023/06/11/%E6%9B%BC%E5%9F%8E%E8%B5%A2%E4%B8%8B%E7%9A%87%E9%A9%AC%E3%80%81%E6%8B%BF%E5%88%B0%E6%AC%A7%E5%86%A0%E7%9A%84%E6%80%9D%E8%80%83/">曼城赢下皇马、拿到欧冠的思考</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

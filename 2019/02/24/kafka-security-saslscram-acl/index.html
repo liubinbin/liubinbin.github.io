@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>kafka-security-saslscram-acl | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="1. 介绍kafka安全主题的内容主要是分为认证和权限。 认证为了证明你是alice，而权限是决定了你能做什么事情，比如能不能些topic，能不能读topic等之类的事情。 在 http:&#x2F;&#x2F;kafka.apache.org&#x2F;documentation&#x2F;#security 里介绍了好多种类型。如果我们想要在线上开启认证和权限，我们需要考虑好多东西。比如能否动态增加权限，客户端接入操作是否足够简单等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kafka-security-saslscram-acl">
+<meta property="og:url" content="http://example.com/2019/02/24/kafka-security-saslscram-acl/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. 介绍kafka安全主题的内容主要是分为认证和权限。 认证为了证明你是alice，而权限是决定了你能做什么事情，比如能不能些topic，能不能读topic等之类的事情。 在 http:&#x2F;&#x2F;kafka.apache.org&#x2F;documentation&#x2F;#security 里介绍了好多种类型。如果我们想要在线上开启认证和权限，我们需要考虑好多东西。比如能否动态增加权限，客户端接入操作是否足够简单等">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-02-24T07:25:06.000Z">
+<meta property="article:modified_time" content="2021-02-26T13:58:17.229Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="kafka">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-kafka-security-saslscram-acl" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/02/24/kafka-security-saslscram-acl/" class="article-date">
+  <time class="dt-published" datetime="2019-02-24T07:25:06.000Z" itemprop="datePublished">2019-02-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      kafka-security-saslscram-acl
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h1><p>kafka安全主题的内容主要是分为认证和权限。</p>
+<p>认证为了证明你是alice，而权限是决定了你能做什么事情，比如能不能些topic，能不能读topic等之类的事情。</p>
+<p>在 <a target="_blank" rel="noopener" href="http://kafka.apache.org/documentation/#security">http://kafka.apache.org/documentation/#security</a> 里介绍了好多种类型。如果我们想要在线上开启认证和权限，我们需要考虑好多东西。比如能否动态增加权限，客户端接入操作是否足够简单等等。基于各种讨论后，我们目前决定使用sasl&#x2F;scram + acl的方式。</p>
+<p>此文章主要分为两块：一个是配置，另一个是操作命令。</p>
+<h1 id="2-配置"><a href="#2-配置" class="headerlink" title="2. 配置"></a>2. 配置</h1><h2 id="2-1-说明"><a href="#2-1-说明" class="headerlink" title="2.1 说明"></a>2.1 说明</h2><p>在broker和zookeeper之间的认证不支持org.apache.kafka.common.security.scram.ScramLoginModule，所以引入org.apache.zookeeper.server.auth.DigestLoginModule。详见如下链接：</p>
+<p><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/ZOOKEEPER/Client-Server+mutual+authentication">https://cwiki.apache.org/confluence/display/ZOOKEEPER/Client-Server+mutual+authentication</a></p>
+<p>如果不配置的话也可以，但是会在日志限制No JAAS Configure ‘Client’</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[2019-02-24 16:03:15,121] WARN SASL configuration failed: javax.security.auth.login.LoginException: No JAAS configuration section named &#x27;Client&#x27; was found in specified JAAS configuration file: &#x27;/Users/liubinbin/Documents/install/kafka_2.12-2.1.0/config/kafka_server_jaas.conf&#x27;. Will continue connection to Zookeeper server without SASL authentication, if Zookeeper server allows it. (org.apache.zookeeper.ClientCnxn)</span><br></pre></td></tr></table></figure>
+
+<p>如果配置之后启动broker会在日志里显示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[2019-02-24 14:06:09,599] INFO Client successfully logged <span class="keyword">in</span>. (org.apache.zookeeper.Login)</span><br><span class="line">[2019-02-24 14:06:09,600] INFO Client will use DIGEST-MD5 as SASL mechanism. (org.apache.zookeeper.client.ZooKeeperSaslClient)</span><br><span class="line">[2019-02-24 14:06:09,657] INFO Opening socket connection to server localhost/0:0:0:0:0:0:0:1:2181. Will attempt to SASL-authenticate using Login Context section <span class="string">&#x27;Client&#x27;</span> (org.apache.zookeeper.ClientCnxn)</span><br><span class="line">[2019-02-24 14:06:09,676] INFO Socket connection established to localhost/0:0:0:0:0:0:0:1:2181, initiating session (org.apache.zookeeper.ClientCnxn)</span><br><span class="line">[2019-02-24 14:06:09,795] INFO Session establishment complete on server localhost/0:0:0:0:0:0:0:1:2181, sessionid = 0x100043c21d70000, negotiated <span class="built_in">timeout</span> = 6000 (org.apache.zookeeper.ClientCnxn)</span><br><span class="line">[2019-02-24 14:06:09,799] INFO [ZooKeeperClient] Connected. (kafka.zookeeper.ZooKeeperClient)</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-broker"><a href="#2-2-broker" class="headerlink" title="2.2 broker"></a>2.2 broker</h2><h4 id="2-2-1-server-properties"><a href="#2-2-1-server-properties" class="headerlink" title="2.2.1 server.properties"></a>2.2.1 server.properties</h4><p>listeners&#x3D;SASL_PLAINTEXT:&#x2F;&#x2F;bin:9092</p>
+<p>########### SASL&#x2F;SCRAM ############################<br>security.inter.broker.protocol&#x3D;SASL_PLAINTEXT<br>sasl.mechanism.inter.broker.protocol&#x3D;SCRAM-SHA-256<br>sasl.enabled.mechanisms&#x3D;SCRAM-SHA-256</p>
+<p>########### ACL ############################<br>authorizer.class.name&#x3D;kafka.security.auth.SimpleAclAuthorizer<br>allow.everyone.if.no.acl.found&#x3D;true<br>super.users&#x3D;User:Admin</p>
+<p>######################### ZK ############################<br>zookeeper.set.acl&#x3D;true</p>
+<p>######################### ZK ############################<br>auto.create.topics.enable&#x3D;false</p>
+<h4 id="2-2-2-kafka-server-jaas-conf"><a href="#2-2-2-kafka-server-jaas-conf" class="headerlink" title="2.2.2 kafka_server_jaas.conf"></a>2.2.2 kafka_server_jaas.conf</h4><p>新增jaas文件，内容如下：</p>
+<p>KafkaServer {<br>    org.apache.kafka.common.security.scram.ScramLoginModule required<br>    username&#x3D;”admin”<br>    password&#x3D;”admin-secret”;<br>};</p>
+<p>Client {<br>    org.apache.zookeeper.server.auth.DigestLoginModule required<br>    username&#x3D;”admin”<br>    password&#x3D;”admin-secret”;<br>};</p>
+<p>此配置通过在kafka-server-start.sh中添加如下命令，将jaas文件加入broker的jvm中。</p>
+<p>export KAFKA_OPTS&#x3D;”-Djava.security.auth.login.config&#x3D;$KAFKA_HOME&#x2F;config&#x2F;kafka_server_jaas.conf”</p>
+<h2 id="2-3-zookeeper"><a href="#2-3-zookeeper" class="headerlink" title="2.3 zookeeper"></a>2.3 zookeeper</h2><h4 id="2-3-1-kafka-zk-jaas-conf"><a href="#2-3-1-kafka-zk-jaas-conf" class="headerlink" title="2.3.1 kafka_zk_jaas.conf"></a>2.3.1 kafka_zk_jaas.conf</h4><p>新增jaas文件，内容如下：</p>
+<p>Server {<br>    org.apache.zookeeper.server.auth.DigestLoginModule required<br>    user_admin&#x3D;”admin-secret”;<br>};</p>
+<p>需要和kafka_server_jaas.conf里Client对应。</p>
+<p>此配置通过在zookeeper-server-start.sh中添加如下命令，将jaas文件加入zk的jvm中。</p>
+<p>export KAFKA_OPTS&#x3D;”-Djava.security.auth.login.config&#x3D;$KAFKA_HOME&#x2F;config&#x2F;kafka_zk_jaas.conf”</p>
+<h3 id="2-3-2-zoo-cfg"><a href="#2-3-2-zoo-cfg" class="headerlink" title="2.3.2 zoo.cfg"></a>2.3.2 zoo.cfg</h3><p>添加如下配置：</p>
+<p>authProvider.1&#x3D;org.apache.zookeeper.server.auth.SASLAuthenticationProvider</p>
+<p>requireClientAuthScheme&#x3D;sasl</p>
+<h2 id="2-4-client"><a href="#2-4-client" class="headerlink" title="2.4 client"></a>2.4 client</h2><h3 id="2-4-1-kafka-client-jaas-conf"><a href="#2-4-1-kafka-client-jaas-conf" class="headerlink" title="2.4.1 kafka_client_jaas.conf"></a>2.4.1 kafka_client_jaas.conf</h3><p>新增jaas文件，内容如下：</p>
+<p>KafkaClient {<br>    org.apache.kafka.common.security.scram.ScramLoginModule required<br>    username&#x3D;”alice”<br>    password&#x3D;”alice-secret”;<br>};</p>
+<p>此配置通过在kafka-console-consumer.sh和kafka-console-producer.sh中添加如下命令，将jaas文件加入zk的jvm中。</p>
+<p>export KAFKA_OPTS&#x3D;”-Djava.security.auth.login.config&#x3D;&#x2F;Users&#x2F;liubinbin&#x2F;Documents&#x2F;install&#x2F;kafka_2.12-2.1.0&#x2F;config&#x2F;kafka_client_jaas.conf”</p>
+<h3 id="2-4-2-saslscram-producer-properties"><a href="#2-4-2-saslscram-producer-properties" class="headerlink" title="2.4.2 saslscram-producer.properties"></a>2.4.2 saslscram-producer.properties</h3><p>添加如下配置：</p>
+<p>security.protocol&#x3D;SASL_PLAINTEXT<br>sasl.mechanism&#x3D;SCRAM-SHA-256</p>
+<h3 id="2-4-3-saslscram-consumer-properties"><a href="#2-4-3-saslscram-consumer-properties" class="headerlink" title="2.4.3 saslscram-consumer.properties"></a>2.4.3 saslscram-consumer.properties</h3><p>添加如下配置：</p>
+<p>security.protocol&#x3D;SASL_PLAINTEXT<br>sasl.mechanism&#x3D;SCRAM-SHA-256</p>
+<h1 id="3-命令"><a href="#3-命令" class="headerlink" title="3. 命令"></a>3. 命令</h1><h2 id="3-1-认证"><a href="#3-1-认证" class="headerlink" title="3.1 认证"></a>3.1 认证</h2><h3 id="3-1-1-添加用户"><a href="#3-1-1-添加用户" class="headerlink" title="3.1.1 添加用户"></a>3.1.1 添加用户</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-configs.sh --zookeeper localhost:2181 --alter --add-config &#x27;SCRAM-SHA-256=[iterations=8192,password=alice-secret],SCRAM-SHA-512=[password=alice-secret]&#x27; --entity-type users --entity-name alice</span><br><span class="line">bin/kafka-configs.sh --zookeeper localhost:2181 --alter --add-config &#x27;SCRAM-SHA-256=[password=admin-secret],SCRAM-SHA-512=[password=admin-secret]&#x27; --entity-type users --entity-name admin</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-1-2-列出用户"><a href="#3-1-2-列出用户" class="headerlink" title="3.1.2 列出用户"></a>3.1.2 列出用户</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-configs.sh --zookeeper localhost:2181 --describe --entity-type users</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-1-3-查看用户"><a href="#3-1-3-查看用户" class="headerlink" title="3.1.3 查看用户"></a>3.1.3 查看用户</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-configs.sh --zookeeper localhost:2181 --describe --entity-type users --entity-name alice</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-1-4-删除用户"><a href="#3-1-4-删除用户" class="headerlink" title="3.1.4 删除用户"></a>3.1.4 删除用户</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-configs.sh --zookeeper localhost:2181 --alter --delete-config &#x27;SCRAM-SHA-512&#x27; --entity-type users --entity-name alice</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-2-权限"><a href="#3-2-权限" class="headerlink" title="3.2 权限"></a>3.2 权限</h2><h3 id="3-2-1-增加权限"><a href="#3-2-1-增加权限" class="headerlink" title="3.2.1 增加权限"></a>3.2.1 增加权限</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:alice --operation Write --topic liubb</span><br><span class="line">bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:alice --operation Read --topic liubb --group test-consumer-group</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-2-列出权限"><a href="#3-2-2-列出权限" class="headerlink" title="3.2.2 列出权限"></a>3.2.2 列出权限</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --list --topic liubb</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-3-删除权限"><a href="#3-2-3-删除权限" class="headerlink" title="3.2.3 删除权限"></a>3.2.3 删除权限</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --remove --allow-principal User:alice --operation Read --operation Write --topic liubb</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-3-客户端"><a href="#3-3-客户端" class="headerlink" title="3.3 客户端"></a>3.3 客户端</h2><p>ps：localhost 在虚拟机内可能需要换成 hostname</p>
+<h3 id="3-3-1-生产者"><a href="#3-3-1-生产者" class="headerlink" title="3.3.1 生产者"></a>3.3.1 生产者</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-producer.sh --broker-list localhost:9092  --topic liubb --producer.config config/saslscram-producer.properties</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-2-消费者"><a href="#3-3-2-消费者" class="headerlink" title="3.3.2 消费者"></a>3.3.2 消费者</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic liubb --consumer.config config/saslscram-consumer.properties</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2019/02/24/kafka-security-saslscram-acl/" data-id="clyh5n1q7001deb60gx0hesw6" data-title="kafka-security-saslscram-acl" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/07/23/some-new-thoughts-about-career-development/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          some-new-thoughts-about-career-development
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/02/24/kafka-series/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">kafka-series</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/" rel="tag">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank-reading/" rel="tag">bank, reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career/" rel="tag">career</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career-reading/" rel="tag">career,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/" rel="tag">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/" rel="tag">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/" rel="tag">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/" rel="tag">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/" rel="tag">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-reading/" rel="tag">life,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/" rel="tag">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/" rel="tag">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/" rel="tag">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/" rel="tag">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/" rel="tag">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/" rel="tag">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/" rel="tag">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src-treemap/" rel="tag">src, treemap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/" rel="tag">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/writing/" rel="tag">writing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/" rel="tag">zk</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank-reading/" style="font-size: 10px;">bank, reading</a> <a href="/tags/career/" style="font-size: 10px;">career</a> <a href="/tags/career-reading/" style="font-size: 10px;">career,reading</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12.5px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 20px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 15px;">hdfs</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kafka/" style="font-size: 12.5px;">kafka</a> <a href="/tags/life/" style="font-size: 20px;">life</a> <a href="/tags/life-reading/" style="font-size: 10px;">life,reading</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 17.5px;">reading</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/src/" style="font-size: 10px;">src</a> <a href="/tags/src-treemap/" style="font-size: 10px;">src, treemap</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/writing/" style="font-size: 10px;">writing</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/01/26/%E5%8F%AA%E4%B8%93%E6%B3%A8%E4%B8%80%E4%BB%B6%E4%BA%8B%E6%83%85/">只专注一件事情</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/12/%E6%8E%A8%E6%BC%94%E8%83%BD%E5%8A%9B/">推演能力</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/12/%E5%B1%80%E9%83%A8%E4%BB%A5%E5%A4%9A%E6%89%93%E5%B0%91/">局部以多打少</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/12/%E6%88%90%E5%8A%9F%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%89%E4%B8%AA%E7%89%B9%E5%BE%81/">成功人士的三个特征</a>
+          </li>
+        
+          <li>
+            <a href="/2023/06/11/%E6%9B%BC%E5%9F%8E%E8%B5%A2%E4%B8%8B%E7%9A%87%E9%A9%AC%E3%80%81%E6%8B%BF%E5%88%B0%E6%AC%A7%E5%86%A0%E7%9A%84%E6%80%9D%E8%80%83/">曼城赢下皇马、拿到欧冠的思考</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

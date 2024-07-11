@@ -4,14 +4,19 @@
   <meta charset="utf-8">
   
   
-  <title>Archives | Hexo</title>
+  <title>最近使用docker的一些小记录 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/archives/index.html">
+  <meta name="description" content="mysql出了需要grant之外，还要修改bind-address docker 基本命令 docker 中container基于image制作，image类似一个模版，基于某个image制作的contaner都具有和image一样的内容 我们可以根据REPOSITORY来判断这个镜像是来自哪个服务器，如果没有 &#x2F; 则表示官方镜像，并且在search的时候会标有OFFICIAL，类似于i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最近使用docker的一些小记录">
+<meta property="og:url" content="http://example.com/2017/08/25/docker-basics/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="mysql出了需要grant之外，还要修改bind-address docker 基本命令 docker 中container基于image制作，image类似一个模版，基于某个image制作的contaner都具有和image一样的内容 我们可以根据REPOSITORY来判断这个镜像是来自哪个服务器，如果没有 &#x2F; 则表示官方镜像，并且在search的时候会标有OFFICIAL，类似于i">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-08-25T14:22:15.000Z">
+<meta property="article:modified_time" content="2018-12-02T07:36:37.377Z">
 <meta property="article:author" content="John Doe">
+<meta property="article:tag" content="life">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
@@ -67,236 +72,105 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2024" class="archive-year">2024</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2024/01/26/%E5%8F%AA%E4%B8%93%E6%B3%A8%E4%B8%80%E4%BB%B6%E4%BA%8B%E6%83%85/" class="archive-article-date">
-  <time class="dt-published" datetime="2024-01-26T12:47:31.000Z" itemprop="datePublished">Jan 26</time>
+        <section id="main"><article id="post-docker-basics" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/08/25/docker-basics/" class="article-date">
+  <time class="dt-published" datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/01/26/%E5%8F%AA%E4%B8%93%E6%B3%A8%E4%B8%80%E4%BB%B6%E4%BA%8B%E6%83%85/">只专注一件事情</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      最近使用docker的一些小记录
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>mysql出了需要grant之外，还要修改bind-address</p>
+<p>docker 基本命令</p>
+<p>docker 中container基于image制作，image类似一个模版，基于某个image制作的contaner都具有和image一样的内容</p>
+<p>我们可以根据REPOSITORY来判断这个镜像是来自哪个服务器，如果没有 &#x2F; 则表示官方镜像，并且在search的时候会标有OFFICIAL，类似于ip:port&#x2F;repos_name则表示的是私服。</p>
+<p>docker pull username&#x2F;repository&lt;:tag_name&gt; 或者 docker pull repository，pull和push相对应。</p>
+<h4 id="5-2-运行出一个container放到后台运行"><a href="#5-2-运行出一个container放到后台运行" class="headerlink" title="5.2 运行出一个container放到后台运行"></a>5.2 运行出一个container放到后台运行</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># docker run -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 2; done&quot;</span><br><span class="line">ae60c4b642058fefcc61ada85a610914bed9f5df0e2aa147100eab85cea785dc</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>它将直接把启动的container挂起放在后台运行（这才叫saas），并且会输出一个<code>CONTAINER ID</code>，通过<code>docker ps</code>可以看到这个容器的信息，可在container外面查看它的输出<code>docker logs ae60c4b64205</code>，也可以通过<code>docker attach ae60c4b64205</code>连接到这个正在运行的终端，此时在<code>Ctrl+C</code>退出container就消失了，按ctrl-p ctrl-q可以退出到宿主机，而保持container仍然在运行</p>
+<p>端口映射</p>
+<p>Docker中运行的程序的端口是不能直接访问的，需要映射到本地，通过-p参数实现，例如将6379端口映射到本机的6378端口</p>
+<p>容器日志</p>
+<p>查看当前容器的日志</p>
+<p><code>docker logs container-name/container-id</code></p>
+<p>我们可以查看之前redis镜像的容器</p>
+<p><code>docker logs test-redis</code></p>
+<p>可以看到redis启动的日志</p>
+<p>运行中的容器其实就是一个完备的Linux操作系统，我们可以登录访问当前容器，登录后可以在容器中进行常规的Linux操作。<br><code>docker exec -it container-id/container-name bash</code></p>
+<p>系统版本</p>
+<p>[root@bogon yum.repos.d]# uname -a<br>Linux bogon 2.6.32-642.el6.x86_64 #1 SMP Tue May 10 17:27:01 UTC 2016 x86_64 x86_64 x86_64 GNU&#x2F;Linux<br>[root@bogon yum.repos.d]# cat &#x2F;etc&#x2F;redhat-release<br>CentOS release 6.8 (Final)</p>
+<p>安装EPEL</p>
+<p>因为系统自带的repo中不带docker需要安装epel</p>
+<p>rpm -Uvh <a target="_blank" rel="noopener" href="http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm">http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm</a></p>
+<p>安装Docker</p>
+<p>yum install -y docker-io</p>
+<p>开机自启动与启动Docker</p>
+<p>[root@bogon yum.repos.d]# service docker start<br>Starting cgconfig service:                                 [  OK  ]<br>Starting docker:                                       [  OK  ]<br>[root@bogon yum.repos.d]# chkconfig docker on<br>[root@bogon yum.repos.d]# chkconfig docker –list<br>docker          0:off   1:off   2:on    3:on    4:on    5:on    6:off<br>[root@bogon yum.repos.d]# </p>
+<p>至此docker已经安装完成</p>
+<p>docker rm 删除container</p>
+<p>docker rmi 删除image</p>
+<p><a target="_blank" rel="noopener" href="http://blog.csdn.net/permike/article/details/51879578">http://blog.csdn.net/permike/article/details/51879578</a> 总结的非常好</p>
+<p>已完成<br>docker pull morrisjobke&#x2F;docker-swift-onlyone<br>docker pull kahing&#x2F;docker-swift<br>docker pull debian</p>
+<p>docker pull [选项] [Docker Registry 地址[:端口号]&#x2F;]仓库名[:标签]</p>
+<p>启动container<br>  docker run -d -P -v &#x2F;srv&#x2F;node&#x2F;sdb1&#x2F;docker&#x2F;:&#x2F;swift&#x2F;nodes -t bouncestorage&#x2F;swift-aio<br>通过docker ps 获取端口<br>然后通过<a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1</a>:<port>&#x2F;auth&#x2F;v1.0 进行系统的操作和访问<br>具体的命令形式如下<br>  swift -A <a target="_blank" rel="noopener" href="http://127.0.0.1:32770/auth/v1.0">http://127.0.0.1:32770/auth/v1.0</a> -U test:tester -K testing</p>
+<p>swift-aio-docker</p>
+<p>docker run -it –rm debian bash<br>  -it: 这是两个参数，一个是 -i：交互式操作，一个是 -t 终端。<br>  –rm: 这个参数是说容器退出后随之将其删除</p>
+<p><code>bash</code>：放在镜像名后的是<strong>命令</strong>，这里我们希望有个交互式 Shell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]</span><br></pre></td></tr></table></figure>
+
+<p>Docker Registry 地址[:端口号] 默认docker hub</p>
+<p>仓库名为<code>&lt;用户名&gt;/&lt;软件名&gt;</code> ，默认为 <code>library</code></p>
+<p>latest为默认标签<br>​	</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/08/25/docker-basics/" data-id="clyh5n1q30008eb601j35249h" data-title="最近使用docker的一些小记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/10/08/a-special-case-about-rwlock/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          一个奇怪的rwlock锁卡住的case
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/08/25/some-thoughts/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">最近感想</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2024/01/12/%E6%8E%A8%E6%BC%94%E8%83%BD%E5%8A%9B/" class="archive-article-date">
-  <time class="dt-published" datetime="2024-01-12T14:52:32.000Z" itemprop="datePublished">Jan 12</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/01/12/%E6%8E%A8%E6%BC%94%E8%83%BD%E5%8A%9B/">推演能力</a>
-    </h1>
-  
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2024/01/12/%E5%B1%80%E9%83%A8%E4%BB%A5%E5%A4%9A%E6%89%93%E5%B0%91/" class="archive-article-date">
-  <time class="dt-published" datetime="2024-01-12T14:51:57.000Z" itemprop="datePublished">Jan 12</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/01/12/%E5%B1%80%E9%83%A8%E4%BB%A5%E5%A4%9A%E6%89%93%E5%B0%91/">局部以多打少</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2024/01/12/%E6%88%90%E5%8A%9F%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%89%E4%B8%AA%E7%89%B9%E5%BE%81/" class="archive-article-date">
-  <time class="dt-published" datetime="2024-01-12T14:49:34.000Z" itemprop="datePublished">Jan 12</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/01/12/%E6%88%90%E5%8A%9F%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%89%E4%B8%AA%E7%89%B9%E5%BE%81/">成功人士的三个特征</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2023" class="archive-year">2023</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2023/06/11/%E6%9B%BC%E5%9F%8E%E8%B5%A2%E4%B8%8B%E7%9A%87%E9%A9%AC%E3%80%81%E6%8B%BF%E5%88%B0%E6%AC%A7%E5%86%A0%E7%9A%84%E6%80%9D%E8%80%83/" class="archive-article-date">
-  <time class="dt-published" datetime="2023-06-11T15:31:39.000Z" itemprop="datePublished">Jun 11</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/06/11/%E6%9B%BC%E5%9F%8E%E8%B5%A2%E4%B8%8B%E7%9A%87%E9%A9%AC%E3%80%81%E6%8B%BF%E5%88%B0%E6%AC%A7%E5%86%A0%E7%9A%84%E6%80%9D%E8%80%83/">曼城赢下皇马、拿到欧冠的思考</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2023/05/17/%E5%88%AB%E7%BA%A0%E7%BB%93/" class="archive-article-date">
-  <time class="dt-published" datetime="2023-05-17T10:35:15.000Z" itemprop="datePublished">May 17</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/05/17/%E5%88%AB%E7%BA%A0%E7%BB%93/">别纠结</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2023/05/07/%E6%88%90%E4%B8%BA%E6%9C%AC%E8%AF%A5%E6%88%90%E4%B8%BA%E7%9A%84%E4%BA%BA/" class="archive-article-date">
-  <time class="dt-published" datetime="2023-05-07T12:24:05.000Z" itemprop="datePublished">May 7</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/05/07/%E6%88%90%E4%B8%BA%E6%9C%AC%E8%AF%A5%E6%88%90%E4%B8%BA%E7%9A%84%E4%BA%BA/">成为本该成为的人</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2022" class="archive-year">2022</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2022/05/05/%E3%80%8A%E5%86%B3%E7%AD%96%E7%9A%84%E8%89%BA%E6%9C%AF%E3%80%8B%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time class="dt-published" datetime="2022-05-05T15:44:02.000Z" itemprop="datePublished">May 5</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/05/05/%E3%80%8A%E5%86%B3%E7%AD%96%E7%9A%84%E8%89%BA%E6%9C%AF%E3%80%8B%E7%AC%94%E8%AE%B0/">《决策的艺术》笔记</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2022/05/04/%E3%80%8A%E9%AB%98%E6%95%88%E8%83%BD%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%83%E4%B8%AA%E4%B9%A0%E6%83%AF%E3%80%8B%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time class="dt-published" datetime="2022-05-04T03:11:54.000Z" itemprop="datePublished">May 4</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/05/04/%E3%80%8A%E9%AB%98%E6%95%88%E8%83%BD%E4%BA%BA%E5%A3%AB%E7%9A%84%E4%B8%83%E4%B8%AA%E4%B9%A0%E6%83%AF%E3%80%8B%E7%AC%94%E8%AE%B0/">《高效能人士的七个习惯》笔记</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2022/03/27/%E6%80%9D%E7%BB%B4%E6%96%B9%E5%BC%8F/" class="archive-article-date">
-  <time class="dt-published" datetime="2022-03-26T16:19:27.000Z" itemprop="datePublished">Mar 27</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/03/27/%E6%80%9D%E7%BB%B4%E6%96%B9%E5%BC%8F/">思维方式的重要性</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
-    
-    <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/5/">5</a><a class="extend next" rel="next" href="/archives/page/2/">Next &raquo;</a>
-  </nav>
 
 </section>
         
