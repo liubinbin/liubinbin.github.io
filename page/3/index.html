@@ -73,6 +73,53 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-jdb-usage" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/10/13/jdb-usage/" class="article-date">
+  <time class="dt-published" datetime="2019-10-13T14:19:34.000Z" itemprop="datePublished">2019-10-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2019/10/13/jdb-usage/">jdb-usage</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>在 java 进程有一些莫名其妙的问题，可以通过 jdb 来处理问题。</p>
+<p>在上周在通过 HttpClient 访问时，有发现代码里的 NPE，从源码日志看逻辑是没有问题，运行的进程的 jar 包又不好替换，就使用 jdb 命令发现 getContentLength 方法返回值为 -1（后来发现另一个可以使用的接口里没有判断这个值，并且这个值也为 -1，我猜想是从 stream中获取导致不需要这个值），会导致 NPE。在这种情况下使用 jdb 命令非常方便的看到是怎么回事。</p>
+<p>具体使用方法有两个博客可以参考，这里记录一下：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.ibm.com/developerworks/cn/java/joy-jdb/index.html">https://www.ibm.com/developerworks/cn/java/joy-jdb/index.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/arkblue/article/details/39718947">https://blog.csdn.net/arkblue/article/details/39718947</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2019/10/13/jdb-usage/" data-id="clyi5d7iz00180260b20w8hpb" data-title="jdb-usage" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/" rel="tag">java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-just-pick-the-first-one-from-todolist-and-finish-that" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/" class="article-date">
@@ -106,7 +153,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/" data-id="clyhbhbz30018na60hw9f9tuf" data-title="just-pick-the-first-one-from-todolist-and-finish-that" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/" data-id="clyi5d7j0001b02602t1vap1h" data-title="just-pick-the-first-one-from-todolist-and-finish-that" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -182,7 +229,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/09/22/timezone-in-spring-mybatis-mysql/" data-id="clyhbhbz5001yna60hdckgwlw" data-title="timezone-in-spring-mybatis-mysql" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/09/22/timezone-in-spring-mybatis-mysql/" data-id="clyi5d7j1001z026059ne859g" data-title="timezone-in-spring-mybatis-mysql" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -234,7 +281,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/09/01/some-thoughts-about-recent-internal-job-transfer/" data-id="clyhbhbz4001rna609y0x9unc" data-title="some-thoughts-about-recent-internal-job-transfer" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/09/01/some-thoughts-about-recent-internal-job-transfer/" data-id="clyi5d7j1001u02603woifcu3" data-title="some-thoughts-about-recent-internal-job-transfer" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -318,7 +365,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/08/05/jdk-src-treemap/" data-id="clyhbhbz30017na60c58t4rmj" data-title="jdk-src-treemap" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/08/05/jdk-src-treemap/" data-id="clyi5d7iz001a02607s6i2hbm" data-title="jdk-src-treemap" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -365,7 +412,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="clyhbhbz4001pna60ecc39nwq" data-title="some-new-thoughts-about-career-development" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="clyi5d7j1001r02603auy5owr" data-title="some-new-thoughts-about-career-development" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -476,7 +523,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/02/24/kafka-security-saslscram-acl/" data-id="clyhbhbz3001ana60aild54km" data-title="kafka-security-saslscram-acl" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/02/24/kafka-security-saslscram-acl/" data-id="clyi5d7j0001d0260fr2sbqyz" data-title="kafka-security-saslscram-acl" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -520,7 +567,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/02/24/kafka-series/" data-id="clyhbhbz4001cna604595483q" data-title="kafka-series" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/02/24/kafka-series/" data-id="clyi5d7j0001f0260hbtf64jl" data-title="kafka-series" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -571,7 +618,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hbase-src-series/" data-id="clyhbhbz1000nna606dom7zc5" data-title="HBase源码系列" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/hbase-src-series/" data-id="clyi5d7ix000o02605j9v4nsj" data-title="HBase源码系列" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -668,59 +715,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hbase-src-wal/" data-id="clyhbhbz1000qna60dwi43rvt" data-title="HBase源码系列之wal" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/hbase-src-wal/" data-id="clyi5d7ix000r02603lbs4ezv" data-title="HBase源码系列之wal" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-hadoop-hbase-mvn-cmd" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2018/12/30/hadoop-hbase-mvn-cmd/" class="article-date">
-  <time class="dt-published" datetime="2018-12-30T14:49:06.000Z" itemprop="datePublished">2018-12-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2018/12/30/hadoop-hbase-mvn-cmd/">hadoop&amp;hbase编译打包</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>#hbase 编译 </p>
-<p>命令：mvn clean package -Pdist,native, -DskipTests -Dtar</p>
-<p>hbase编译打包好像没有遇到什么问题，很顺利。</p>
-<p>#hadoop 编译</p>
-<p>命令：mvn clean package -DskipTests -Pdist,native -Dtar </p>
-<p>hadoop编译打包时还是遇到了些问题，主要是类似OPENSSL和findbugs等，看以下两个链接应该基本就能解决了。</p>
-<p><a target="_blank" rel="noopener" href="http://bigdatadecode.club/mac%E4%B8%8B%E7%BC%96%E8%AF%91Hadoop.html">http://bigdatadecode.club/mac%E4%B8%8B%E7%BC%96%E8%AF%91Hadoop.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/36818957/mac-hadoop-2-7-failed-to-execute-goal-org-apache-maven-pluginsmaven-antrun">https://stackoverflow.com/questions/36818957/mac-hadoop-2-7-failed-to-execute-goal-org-apache-maven-pluginsmaven-antrun</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="clyhbhbz0000ana602ye86pj3" data-title="hadoop&amp;hbase编译打包" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mvn/" rel="tag">mvn</a></li></ul>
 
     </footer>
   </div>
@@ -780,6 +779,10 @@
       <ul>
         
           <li>
+            <a href="/2024/07/12/%E5%86%99%E4%B8%8B%E6%9D%A5/">写下来</a>
+          </li>
+        
+          <li>
             <a href="/2024/07/11/%E5%81%9A%E4%BA%8B%E6%96%B9%E5%BC%8F/">做事方式</a>
           </li>
         
@@ -793,10 +796,6 @@
         
           <li>
             <a href="/2024/07/11/%E5%81%9A%E5%86%B3%E5%AE%9A%E7%9A%84%E6%96%B9%E5%BC%8F/">做决定的方式</a>
-          </li>
-        
-          <li>
-            <a href="/2024/07/11/%E8%B4%A1%E7%8C%AE%E7%A1%AE%E5%AE%9A%E6%80%A7/">贡献确定性</a>
           </li>
         
       </ul>

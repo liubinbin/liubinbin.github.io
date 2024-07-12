@@ -73,6 +73,66 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-balance-in-hdfs" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/04/26/balance-in-hdfs/" class="article-date">
+  <time class="dt-published" datetime="2017-04-26T15:33:10.000Z" itemprop="datePublished">2017-04-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/04/26/balance-in-hdfs/">hdfs balance的一些解读和问题记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>##balance过程的解读</p>
+<ol>
+<li><p>准备工作<br>获取的namenode</p>
+</li>
+<li><p>调用Balancer.run L1422，开始迭代<br>一个循环（除了2.1的返回结果ReturnStatus.IN_PROGRESS 继续之外，其他都结束）</p>
+</li>
+</ol>
+<p> 2.1 ReturnStatus r &#x3D; b.run L1352</p>
+<p> ​	2.1.1 initNode获取需要移动的字节数bytesLeftToMove<br> ​			计算平均使用率<br> ​			计算出过载和未充分利用的节点需要移动的字节数，两者选取较大值（已排除在与平均值相差在threshold内的节点）<br> ​	2.1.2 chooseNode获取决定要移动的字节<br>             chooseDatanodes: 三种匹配类型Matcher选取（同一组，同一机架，剩下的），每一类型做如下类型操作</p>
+<p>​	1. 处理过载到未好好利用的。 2. 处理过载到使用少的。 3. 处理多使用到少使用</p>
+<p>​	chooseCandidate对于每个源节点，选个候选节点（如果能符合匹配规则Matcher就选择他）<br>​				matchSourceWithTargetToMove选择两者能移动的少的字节数，形成NodeTask<br>​	2.1.3 dispatchBlockMoves L1103启动线程去移动数据，处理NodeTask<br>​		{两个条件会结束noPendingBlockIteration &gt;&#x3D; MAX_NO_PENDING_BLOCK_ITERATIONS 和Time.now()-				startTime &gt; MAX_ITERATION_TIME}<br>​		dispatchBlocks L614 为每个source启动一个线程去移动数据(线程放入dispatcherExecutor线程池)，然后等待回复<br>​		此处一轮迭代有时间限制<br>​			dispatcherExecutor.submit(source.new BlockMoveDispatcher());(调用dispatchBlocks())<br>​				chooseNextBlockToMove 获取下一步需要移动block，选择的代理节点是拥有此block但是传递到target比较好。<br>​				此处有一个5个任务的限制，难怪增大timeout的时间之后不会quota is exceeded***<br>​					chooseBlockAndProxy 选择块和代理节点<br>​						isGoodBlockCandidate 选择好的块<br>​						chooseProxySource 在选中的块中选择一个和target比较好的location<br>​				scheduleBlockMove 发送到代理节点并给代理节点的发送复制请求<br>​					dispatch() 发送数据(<em><strong>此处看代码不是异步处理，果然不是</strong></em>)<br>​					在目的节点DataXceiver.replaceBlock方法接受来自proxy的block发送流<br>​						在此处有balanceThrottler限制<br>​				filterMovedBlocks 过滤<br>​				判断需要不需要更多的block<br>​			waitForMoveCompletion()等待所有targets里的pending任务结束(如果没有结束此处会等待)<br>​	shouldContinue如果移动字节数(dispatchBlockMoves结果)大于零或等于零次数少于	MAX_NOT_CHANGED_ITERATIONS就是in_progress<br>2.2 resetData清楚数据，为再来一次循环做准备<br>2.3 根据r判断是否结束，判断条件在上面</p>
+<p>简单概括</p>
+<pre><code>--&gt; 计算那些需要移动的节点 
+--&gt; 在此节点中选择想要移动的block 
+--&gt; 对此block选择一个proxy（此proxy也有这个block的副本，并且传输起来比较好） 
+--&gt; 建立任务（向target节点发送replaceBlock请求，target节点向proxy节点发送copyBlock请求）拷贝数据
+</code></pre>
+<h2 id="问题与解决"><a href="#问题与解决" class="headerlink" title="问题与解决"></a>问题与解决</h2><ol>
+<li>balancer节点发送请求会有超时，在日志文件中报Read timed out -&gt; 日志会报线程数超出配额 -&gt; 提早退出balance过程，这种情况是balancer节点和target节点之间的rpc断开连接。只要改大超时设置就可以了（不清楚为啥不把超时统一到那个配置，并且hdfs把那些异常处理不打印问题，这个处理方式也很奇怪，可能新版本有改进）。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clyi5d7iv00070260her91f1f" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/" rel="tag">hdfs</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-hbase-src-get-in-server" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2017/04/25/hbase-src-get-in-server/" class="article-date">
@@ -217,7 +277,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clyhbhbz1000fna602gqh0d29" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clyi5d7iw000f02600v8hgs2u" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -302,7 +362,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clyhbhbz1000kna606s93aydk" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clyi5d7ix000k0260as8zdg2m" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -366,7 +426,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clyhbhbz1000mna606yjr2psx" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clyi5d7ix000m0260f2wx58a5" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -416,7 +476,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/03/20/to-Hangzhou/" data-id="clyhbhbz5001wna607sul3ida" data-title="去杭州" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/03/20/to-Hangzhou/" data-id="clyi5d7j100210260g3ly2yui" data-title="去杭州" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -494,7 +554,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="clyhbhbz50023na600jwfbbwd" data-title="写RCFile不停报的ArrayIndexOutOfBoundsException错误" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="clyi5d7j200260260ghb441xn" data-title="写RCFile不停报的ArrayIndexOutOfBoundsException错误" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -558,6 +618,10 @@
       <ul>
         
           <li>
+            <a href="/2024/07/12/%E5%86%99%E4%B8%8B%E6%9D%A5/">写下来</a>
+          </li>
+        
+          <li>
             <a href="/2024/07/11/%E5%81%9A%E4%BA%8B%E6%96%B9%E5%BC%8F/">做事方式</a>
           </li>
         
@@ -571,10 +635,6 @@
         
           <li>
             <a href="/2024/07/11/%E5%81%9A%E5%86%B3%E5%AE%9A%E7%9A%84%E6%96%B9%E5%BC%8F/">做决定的方式</a>
-          </li>
-        
-          <li>
-            <a href="/2024/07/11/%E8%B4%A1%E7%8C%AE%E7%A1%AE%E5%AE%9A%E6%80%A7/">贡献确定性</a>
           </li>
         
       </ul>
