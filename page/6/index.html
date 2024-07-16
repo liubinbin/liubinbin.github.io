@@ -73,6 +73,135 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-hbase-src-compaction" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/05/09/hbase-src-compaction/" class="article-date">
+  <time class="dt-published" datetime="2017-05-09T15:44:59.000Z" itemprop="datePublished">2017-05-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/05/09/hbase-src-compaction/">HBase源码系列之compaction</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>像hbase这种基于LSM的架构，compaction是其中很重要一个环节。</p>
+<h2 id="触发compaction"><a href="#触发compaction" class="headerlink" title="触发compaction"></a>触发compaction</h2><ol>
+<li><p>手工出发</p>
+</li>
+<li><p>chore线程</p>
+<ol>
+<li>CompactionChecker里判断 「s.needsCompaction() 和 s.isMajorCompaction()」</li>
+</ol>
+</li>
+<li><p>flush触发</p>
+</li>
+</ol>
+<h2 id="执行compaction"><a href="#执行compaction" class="headerlink" title="执行compaction"></a>执行compaction</h2><p>​	此处才是本文的重点，上面的触发更多是条件的判断，不过也很重要（对于线上系统的运维和问题定位解决）此张章节会来较详细讨论HBase的compaction的有关源码方面的一些记录。</p>
+<p>​	首先调用的是如下方法，生成CompactionContext构造CompactionRunner放入线程池中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">synchronized</span> CompactionRequest <span class="title function_">requestCompactionInternal</span><span class="params">(<span class="keyword">final</span> HRegion r, <span class="keyword">final</span> Store s,</span></span><br><span class="line"><span class="params">      <span class="keyword">final</span> String why, <span class="type">int</span> priority, CompactionRequest request, <span class="type">boolean</span> selectNow, User user)</span></span><br></pre></td></tr></table></figure>
+
+<p>​	在里面调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">boolean</span> <span class="variable">completed</span> <span class="operator">=</span> region.compact(compaction, store, compactionThroughputController, user);</span><br></pre></td></tr></table></figure>
+
+<p>​	然后调用相应store的compact方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">store.compact(compaction, throughputController, user);</span><br></pre></td></tr></table></figure>
+
+<p>​	里面一个compact操作具体的步骤如下：</p>
+<p>​	1. 开始合并返回合并的结果。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Path&gt; newFiles = compaction.compact(throughputController, user);</span><br></pre></td></tr></table></figure>
+
+<p>​	此方法中一个判断是否是major</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ScanType</span> <span class="variable">scanType</span> <span class="operator">=</span> scannerFactory.getScanType(request);</span><br></pre></td></tr></table></figure>
+
+<p>​	此ScanType传递给了ScanQueryMatcher来做scan类型的判断。</p>
+<p>​	2. 结果写入对应的cf的目录中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sfs = moveCompatedFilesIntoPlace(cr, newFiles, user);</span><br></pre></td></tr></table></figure>
+
+<p>​	3. 将本次compaction写入HLOG中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">writeCompactionWalRecord(filesToCompact, sfs);</span><br></pre></td></tr></table></figure>
+
+<p>​	4. 更新StoreFileManager的storefiles，去除旧的文件，加入新的文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">replaceStoreFiles(filesToCompact, sfs);</span><br></pre></td></tr></table></figure>
+
+<p>​	5. 此时已经可以安心的文件读取了，最后一步骤就是删除旧的数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">completeCompaction(filesToCompact); </span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/05/09/hbase-src-compaction/" data-id="clyo56o18000cm66047da9cie" data-title="HBase源码系列之compaction" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-HBase-trap" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/05/05/HBase-trap/" class="article-date">
+  <time class="dt-published" datetime="2017-05-05T14:29:12.000Z" itemprop="datePublished">2017-05-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/05/05/HBase-trap/">HBase的一些坑</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>最近遇到了一些hbase的坑，先记录一下。</p>
+<ol>
+<li><p>mvcc的坑：在前几天的同事的一次调试，使用的put的指定了ts &#x3D;&gt; 想再测一次就删除了 &#x3D;&gt; 这些数据再次加入hbase查不到。 因为hbase的多版本方式不删除数据，所以在major_compact之前，delete的这个操作是保存在hbase中的。在这种情况下，如果新加入的数据的ts不必delete大时，会被hbase认为这些数据应该被删除。（不过这个感觉很比较，可以使用mvcc的版本来解决操作请求的顺序，而不出现delete后加入的数据的不能被显示出来）</p>
+</li>
+<li><p>有时候重启regionserver需要有些region没有上线，需要执行hbase hbck -repair，此命令很危险。</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/05/05/HBase-trap/" data-id="clyo56o160003m6605utyggzb" data-title="HBase的一些坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-balance-in-hdfs" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2017/04/26/balance-in-hdfs/" class="article-date">
@@ -119,7 +248,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clyi5d7iv00070260her91f1f" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clyo56o170007m660712w59su" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -277,7 +406,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clyi5d7iw000f02600v8hgs2u" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clyo56o18000fm660f8nla0az" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -362,7 +491,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clyi5d7ix000k0260as8zdg2m" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clyo56o19000km6607hmyekz5" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -426,7 +555,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clyi5d7ix000m0260f2wx58a5" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clyo56o19000om6608unv4df8" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -476,7 +605,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/03/20/to-Hangzhou/" data-id="clyi5d7j100210260g3ly2yui" data-title="去杭州" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/03/20/to-Hangzhou/" data-id="clyo56o1d0021m660ds5g1o7c" data-title="去杭州" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -554,7 +683,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="clyi5d7j200260260ghb441xn" data-title="写RCFile不停报的ArrayIndexOutOfBoundsException错误" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="clyo56o1d0026m660gyje7l4l" data-title="写RCFile不停报的ArrayIndexOutOfBoundsException错误" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -618,6 +747,14 @@
       <ul>
         
           <li>
+            <a href="/2024/07/16/%E5%8A%AA%E5%8A%9B%E5%B0%B1%E5%A5%BD%E4%BA%86/">努力就好了</a>
+          </li>
+        
+          <li>
+            <a href="/2024/07/12/%E5%8F%AA%E9%9D%A0%E8%87%AA%E5%B7%B1/">只靠自己</a>
+          </li>
+        
+          <li>
             <a href="/2024/07/12/%E5%86%99%E4%B8%8B%E6%9D%A5/">写下来</a>
           </li>
         
@@ -627,14 +764,6 @@
         
           <li>
             <a href="/2024/07/11/%E6%8A%95%E8%B5%84%E4%BD%93%E7%B3%BB/">投资体系</a>
-          </li>
-        
-          <li>
-            <a href="/2024/07/11/%E5%AD%A6%E4%BC%9A%E5%88%86%E8%A7%A3%E4%BB%BB%E5%8A%A1/">学会分解任务</a>
-          </li>
-        
-          <li>
-            <a href="/2024/07/11/%E5%81%9A%E5%86%B3%E5%AE%9A%E7%9A%84%E6%96%B9%E5%BC%8F/">做决定的方式</a>
           </li>
         
       </ul>
