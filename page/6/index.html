@@ -73,6 +73,50 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-rit-in-HBase" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/05/30/rit-in-HBase/" class="article-date">
+  <time class="dt-published" datetime="2017-05-30T12:08:15.000Z" itemprop="datePublished">2017-05-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/05/30/rit-in-HBase/">rit in HBase</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>以前在别人博客中看到看到hbase中RIT的蛋疼，最近也确实感觉这个状态是比较尴尬的，别人会来找你。最近会放一些精力来解析hbase的rit状态，同时也是希望自己能对hbase有更全面和深入的了解。感觉过去两个月对hbase的的检索和加载流程看的比较多了。</p>
+<p>遇到一个case：</p>
+<p>一个region处于pending_open的状态。</p>
+<p>大概逻辑，本来master给某个节点发送open此region的请求，过程进行的很好。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/05/30/rit-in-HBase/" data-id="clyo6cop8001pbp606hghh57q" data-title="rit in HBase" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-hbase-src-hfile" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2017/05/14/hbase-src-hfile/" class="article-date">
@@ -167,7 +211,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/14/hbase-src-hfile/" data-id="clyo624yo000hvr603rqp8lpt" data-title="HBase源码系列之HFile" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/14/hbase-src-hfile/" data-id="clyo6cop5000hbp601ov18xlu" data-title="HBase源码系列之HFile" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -249,7 +293,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/09/hbase-src-compaction/" data-id="clyo624yo000cvr601d3q39m7" data-title="HBase源码系列之compaction" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/09/hbase-src-compaction/" data-id="clyo6cop4000abp603g2h59q3" data-title="HBase源码系列之compaction" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -296,7 +340,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/05/HBase-trap/" data-id="clyo624ym0003vr606ud21ae2" data-title="HBase的一些坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/05/HBase-trap/" data-id="clyo6cop30003bp603wy749gm" data-title="HBase的一些坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -356,7 +400,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clyo624yn0007vr6058j1c3cc" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clyo6cop30007bp602co68be0" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -514,7 +558,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clyo624yo000fvr600w8wa4t4" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clyo6cop4000fbp6063clc8gr" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -599,7 +643,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clyo624yp000kvr607o1c2xcz" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clyo6cop5000kbp60hckg7qn2" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -663,7 +707,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clyo624yp000mvr608e8v4fe4" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clyo6cop5000mbp6052mr69bd" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -713,7 +757,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/03/20/to-Hangzhou/" data-id="clyo624yt0021vr608choav64" data-title="去杭州" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/03/20/to-Hangzhou/" data-id="clyo6cop90021bp603m8j8lxm" data-title="去杭州" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -791,7 +835,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="clyo624yu0026vr60hjis83ef" data-title="写RCFile不停报的ArrayIndexOutOfBoundsException错误" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/03/08/writing-RCFile-throws-ArrayIndexOutOfBoundsException-again-and-again/" data-id="clyo6cop90026bp605hg9bp0z" data-title="写RCFile不停报的ArrayIndexOutOfBoundsException错误" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -855,6 +899,10 @@
       <ul>
         
           <li>
+            <a href="/2024/07/16/%E5%81%9A%E5%AF%B9%E7%9A%84%E4%BA%8B%EF%BC%8C%E6%8A%8A%E4%BA%8B%E5%81%9A%E5%AF%B9/">做对的事，把事做对</a>
+          </li>
+        
+          <li>
             <a href="/2024/07/16/%E5%BF%AB%E9%80%9F%E8%B0%83%E6%95%B4%E8%83%BD%E5%8A%9B/">快速调整能力</a>
           </li>
         
@@ -868,10 +916,6 @@
         
           <li>
             <a href="/2024/07/12/%E5%86%99%E4%B8%8B%E6%9D%A5/">写下来</a>
-          </li>
-        
-          <li>
-            <a href="/2024/07/11/%E5%81%9A%E4%BA%8B%E6%96%B9%E5%BC%8F/">做事方式</a>
           </li>
         
       </ul>
