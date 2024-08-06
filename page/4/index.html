@@ -73,6 +73,90 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-jdk-src-treemap" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/08/05/jdk-src-treemap/" class="article-date">
+  <time class="dt-published" datetime="2019-08-05T15:50:40.000Z" itemprop="datePublished">2019-08-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2019/08/05/jdk-src-treemap/">jdk-src-treemap</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>wiki: <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91">https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91</a></p>
+<h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h2><pre><code>static final class Entry&lt;K, V&gt; implements Map.Entry&lt;K, V&gt; &#123;
+    K key;
+    V value;
+    Entry&lt;K, V&gt; left;
+    Entry&lt;K, V&gt; right;
+    Entry&lt;K, V&gt; parent;
+    boolean color = BLACK;
+    ...
+&#125;
+</code></pre>
+<p>Entry 成员变量有 key，value，左子节点，右子节点和颜色（默认为黑色）。</p>
+<h2 id="查看源码小窍门"><a href="#查看源码小窍门" class="headerlink" title="查看源码小窍门"></a>查看源码小窍门</h2><p>由于 TreeMap 的代码比较干净和独立，我从源码包 src.zip 中拷贝出 TreeMap.java 重命名加入自己的工程内。就你可以对源码直接编辑了。</p>
+<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><ul>
+<li>把红节点往上推或者往另一个子树推。</li>
+</ul>
+<h2 id="写入数据"><a href="#写入数据" class="headerlink" title="写入数据"></a>写入数据</h2><p>public V put(K key, V value) ：</p>
+<ol>
+<li><p>如果 root 为空，则先设置 root。</p>
+</li>
+<li><p>不停的按树的结构寻找需要放 key 的 Entry。</p>
+<p>2.1 如果数中有对应 key 的 Entry，直接设置并返回。</p>
+<p>2.2 如果没有，则找到 key 对应的 parent。</p>
+</li>
+<li><p>新建 key 和 value 的 Entry，加入到 parent 的子树中。</p>
+</li>
+<li><p>执行 fixAfterInsertion。</p>
+</li>
+<li><p>设置 size 和 modCount 值。</p>
+</li>
+</ol>
+<p>fixAfterInsertion代码解读注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">fixAfterInsertion</span><span class="params">(Entry&lt;K, V&gt; x)</span> &#123;</span><br><span class="line">	x.color = RED;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (x != <span class="literal">null</span> &amp;&amp; x != root &amp;&amp; x.parent.color == RED) &#123;</span><br><span class="line">		<span class="comment">// 如果是父节点是黑色的话，则不会改变红黑树性质，不做调整。如果父节点则说明无法满足性质，需要调整。</span></span><br><span class="line">		<span class="keyword">if</span> (parentOf(x) == leftOf(parentOf(parentOf(x)))) &#123;</span><br><span class="line">			<span class="comment">// 父节点是祖父节点做子节点。else里和此对应。</span></span><br><span class="line">			<span class="comment">// 获取叔父节点</span></span><br><span class="line">			Entry&lt;K, V&gt; y = rightOf(parentOf(parentOf(x)));</span><br><span class="line">			<span class="keyword">if</span> (colorOf(y) == RED) &#123;</span><br><span class="line">				<span class="comment">// 情形3</span></span><br><span class="line">				setColor(parentOf(x), BLACK);</span><br><span class="line">				setColor(y, BLACK);</span><br><span class="line">				setColor(parentOf(parentOf(x)), RED);</span><br><span class="line">				x = parentOf(parentOf(x));</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">if</span> (x == rightOf(parentOf(x))) &#123;</span><br><span class="line">					<span class="comment">// 情形4（此情形是为5服务的）</span></span><br><span class="line">					x = parentOf(x);</span><br><span class="line">					<span class="comment">// 左旋</span></span><br><span class="line">					rotateLeft(x);</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="comment">// 情形5，</span></span><br><span class="line">				setColor(parentOf(x), BLACK);</span><br><span class="line">				setColor(parentOf(parentOf(x)), RED);</span><br><span class="line">				<span class="comment">// 右旋，右旋的意义在于不改变平衡树和红黑树性质的情况下，把一个红色转移到另一子树中。应为子树不会影响性质。</span></span><br><span class="line">				rotateRight(parentOf(parentOf(x)));</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">// 与if内容类似，只是更改了左右方向。</span></span><br><span class="line">			Entry&lt;K, V&gt; y = leftOf(parentOf(parentOf(x)));</span><br><span class="line">			<span class="keyword">if</span> (colorOf(y) == RED) &#123;</span><br><span class="line">				setColor(parentOf(x), BLACK);</span><br><span class="line">				setColor(y, BLACK);</span><br><span class="line">				setColor(parentOf(parentOf(x)), RED);</span><br><span class="line">				x = parentOf(parentOf(x));</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">if</span> (x == leftOf(parentOf(x))) &#123;</span><br><span class="line">					x = parentOf(x);</span><br><span class="line">					rotateRight(x);</span><br><span class="line">				&#125;</span><br><span class="line">				setColor(parentOf(x), BLACK);</span><br><span class="line">				setColor(parentOf(parentOf(x)), RED);</span><br><span class="line">				rotateLeft(parentOf(parentOf(x)));</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	root.color = BLACK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h2><p>和二叉树的搜索一样，根据大小的比较不停的往左子树和右子树搜索。知道找到对应的值或到叶子节点。</p>
+<h2 id="删除数据"><a href="#删除数据" class="headerlink" title="删除数据"></a>删除数据</h2><p>删除逻辑的思路其实比较清晰，就是一步步去构造情形6，因为6可以通过旋转达到我们改变路径中黑色节点的个数。</p>
+<p>deleteEntry代码解读注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">deleteEntry</span><span class="params">(Entry&lt;K, V&gt; p)</span> &#123;</span><br><span class="line">	modCount++;</span><br><span class="line">	size--;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// If strictly internal, copy successor&#x27;s element to p and then make p</span></span><br><span class="line">	<span class="comment">// point to successor.</span></span><br><span class="line">	<span class="comment">// 如果有两个子节点，则获取后继，然后将后继的节点的内容拷贝至p中，接下来要处理的就变成后继节点。</span></span><br><span class="line">	<span class="keyword">if</span> (p.left != <span class="literal">null</span> &amp;&amp; p.right != <span class="literal">null</span>) &#123;</span><br><span class="line">		Entry&lt;K, V&gt; s = successor(p);</span><br><span class="line">		p.key = s.key;</span><br><span class="line">		p.value = s.value;</span><br><span class="line">		p = s;</span><br><span class="line">	&#125; <span class="comment">// p has 2 children</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Start fixup at replacement node, if it exists.</span></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 *  在这个时候我们可以保证的是，p节点最多只有一个子节点。分为三种情况。</span></span><br><span class="line"><span class="comment">	 *  1. 有一个节点</span></span><br><span class="line"><span class="comment">	 *  2. 此节点为ROOT</span></span><br><span class="line"><span class="comment">	 *  3. 没有子节点</span></span><br><span class="line"><span class="comment">	 *  此外，我们需要做当节点是黑色时 ，我们需要进行旋转，因为删除黑色会改变红黑树的性质。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	</span><br><span class="line">	Entry&lt;K, V&gt; replacement = (p.left != <span class="literal">null</span> ? p.left : p.right);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (replacement != <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="comment">// 1. 有一个节点</span></span><br><span class="line">		<span class="comment">// Link replacement to parent</span></span><br><span class="line">		<span class="comment">// 将replacement替换给节点p，替换之后，我们就少了一个节点，如果的节点p是黑色，我们需要做些调整。</span></span><br><span class="line">		replacement.parent = p.parent;</span><br><span class="line">		<span class="keyword">if</span> (p.parent == <span class="literal">null</span>)</span><br><span class="line">			root = replacement;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (p == p.parent.left)</span><br><span class="line">			p.parent.left = replacement;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			p.parent.right = replacement;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Null out links so they are OK to use by fixAfterDeletion.</span></span><br><span class="line">		p.left = p.right = p.parent = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Fix replacement</span></span><br><span class="line">		<span class="keyword">if</span> (p.color == BLACK)</span><br><span class="line">			fixAfterDeletion(replacement);</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (p.parent == <span class="literal">null</span>) &#123; <span class="comment">// return if we are the only node.</span></span><br><span class="line">		<span class="comment">// 2. 此节点为ROOT</span></span><br><span class="line">		root = <span class="literal">null</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123; <span class="comment">// No children. Use self as phantom replacement and unlink.</span></span><br><span class="line">		<span class="comment">// 3. 没有子节点</span></span><br><span class="line">		<span class="comment">// 节点p是的黑色的话，需要做调整，然后才能把节点p移除。</span></span><br><span class="line">		<span class="keyword">if</span> (p.color == BLACK)</span><br><span class="line">			fixAfterDeletion(p);</span><br><span class="line">		<span class="comment">// 解除掉节点p</span></span><br><span class="line">		<span class="keyword">if</span> (p.parent != <span class="literal">null</span>) &#123;</span><br><span class="line">			<span class="keyword">if</span> (p == p.parent.left)</span><br><span class="line">				p.parent.left = <span class="literal">null</span>;</span><br><span class="line">			<span class="keyword">else</span> <span class="keyword">if</span> (p == p.parent.right)</span><br><span class="line">				p.parent.right = <span class="literal">null</span>;</span><br><span class="line">			p.parent = <span class="literal">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>fixAfterDeletion代码解读注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** From CLR</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> *  x 节点需要调整，x节点的路径少了个黑色节点，需要平衡。</span></span><br><span class="line"><span class="comment"> *  	1. x下面的有一个黑色节点删除。</span></span><br><span class="line"><span class="comment"> *  	2. x会被删除，x是黑色。</span></span><br><span class="line"><span class="comment"> *  </span></span><br><span class="line"><span class="comment"> *  */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">fixAfterDeletion</span><span class="params">(Entry&lt;K, V&gt; x)</span> &#123;</span><br><span class="line">	<span class="keyword">while</span> (x != root &amp;&amp; colorOf(x) == BLACK) &#123;</span><br><span class="line">		<span class="keyword">if</span> (x == leftOf(parentOf(x))) &#123;</span><br><span class="line">			Entry&lt;K, V&gt; sib = rightOf(parentOf(x));</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (colorOf(sib) == RED) &#123;</span><br><span class="line">				<span class="comment">// 情形2</span></span><br><span class="line">				setColor(sib, BLACK);</span><br><span class="line">				setColor(parentOf(x), RED);</span><br><span class="line">				rotateLeft(parentOf(x));</span><br><span class="line">				sib = rightOf(parentOf(x));</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">// 到此为止，sib变为黑色</span></span><br><span class="line">			<span class="keyword">if</span> (colorOf(leftOf(sib)) == BLACK &amp;&amp; colorOf(rightOf(sib)) == BLACK) &#123;</span><br><span class="line">				<span class="comment">// 情形3</span></span><br><span class="line">				setColor(sib, RED);</span><br><span class="line">				x = parentOf(x);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">if</span> (colorOf(rightOf(sib)) == BLACK) &#123;</span><br><span class="line">					<span class="comment">// 情形5</span></span><br><span class="line">					setColor(leftOf(sib), BLACK);</span><br><span class="line">					setColor(sib, RED);</span><br><span class="line">					rotateRight(sib);</span><br><span class="line">					sib = rightOf(parentOf(x));</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="comment">// 情形6</span></span><br><span class="line">				setColor(sib, colorOf(parentOf(x)));</span><br><span class="line">				setColor(parentOf(x), BLACK);</span><br><span class="line">				setColor(rightOf(sib), BLACK);</span><br><span class="line">				rotateLeft(parentOf(x));</span><br><span class="line">				x = root;  <span class="comment">// 可以终止算法，说明这种情形是我们最终的想要的。</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123; <span class="comment">// symmetric</span></span><br><span class="line">			...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	setColor(x, BLACK);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2019/08/05/jdk-src-treemap/" data-id="clzi3t6yd0016el60eqqucx3g" data-title="jdk-src-treemap" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src-treemap/" rel="tag">src, treemap</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-some-new-thoughts-about-career-development" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2019/07/23/some-new-thoughts-about-career-development/" class="article-date">
@@ -106,7 +190,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="clyojihct001sxy60cvclfrn4" data-title="some-new-thoughts-about-career-development" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="clzi3t6ye001oel609vv49zcj" data-title="some-new-thoughts-about-career-development" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -217,7 +301,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/02/24/kafka-security-saslscram-acl/" data-id="clyojihcs001exy60alhs8xdx" data-title="kafka-security-saslscram-acl" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/02/24/kafka-security-saslscram-acl/" data-id="clzi3t6yd0019el605cps2cxr" data-title="kafka-security-saslscram-acl" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -261,7 +345,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/02/24/kafka-series/" data-id="clyojihct001jxy60fzvq6967" data-title="kafka-series" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/02/24/kafka-series/" data-id="clzi3t6yd001cel60a5wp4txl" data-title="kafka-series" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -312,7 +396,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hbase-src-series/" data-id="clyojihcq000oxy60ce9u7v6x" data-title="HBase源码系列" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/hbase-src-series/" data-id="clzi3t6yb000mel605i3k7373" data-title="HBase源码系列" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -409,7 +493,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hbase-src-wal/" data-id="clyojihcq000rxy609ynzgwwd" data-title="HBase源码系列之wal" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/hbase-src-wal/" data-id="clzi3t6yb000oel608dlkh79h" data-title="HBase源码系列之wal" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -457,7 +541,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="clyojihcp000axy60b4lhewvi" data-title="hadoop&amp;hbase编译打包" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="clzi3t6y90008el6062h39xhz" data-title="hadoop&amp;hbase编译打包" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -511,7 +595,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/2018-year-end-summary/" data-id="clyojihcl0000xy60afjw2u4b" data-title="2018年终总结" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/2018-year-end-summary/" data-id="clzi3t6y60000el60awxf4h9i" data-title="2018年终总结" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -557,7 +641,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/14/ability-in-profession/" data-id="clyojihco0005xy601tg20bk7" data-title="ability-in-profession" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/14/ability-in-profession/" data-id="clzi3t6y90005el60fjgbbqph" data-title="ability-in-profession" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -640,91 +724,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/02/paldb-analysis/" data-id="clyojihct001lxy6022v99z1o" data-title="paldb解读" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/02/paldb-analysis/" data-id="clzi3t6yd001hel60g7759fvw" data-title="paldb解读" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/paldb/" rel="tag">paldb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/src/" rel="tag">src</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-install-hadoop-and-hbase-in-mac" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2018/12/02/install-hadoop-and-hbase-in-mac/" class="article-date">
-  <time class="dt-published" datetime="2018-12-02T08:37:26.000Z" itemprop="datePublished">2018-12-02</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2018/12/02/install-hadoop-and-hbase-in-mac/">在macbook的os上直接安装hadoop&amp;hbase</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>今天决定抛弃vmare+centos虚拟机的形式安装hadoop&amp;hbase了，开始直接在macbook的os上安装hadoop&amp;hbase。理由：</p>
-<ol>
-<li>需要配资源，如果安装在os x上会更加直接全面地利用机器的资源。</li>
-<li>两个系统之间倒来倒去不是一件高效的事情。</li>
-<li>今天发现这台macbook的大部分使用场景都是和工作有关，那就不如直接使用macbook了。</li>
-</ol>
-<h2 id="预备"><a href="#预备" class="headerlink" title="预备"></a>预备</h2><p>现在安装的是hbase，提前需要做的就是：</p>
-<ul>
-<li><p>给macbook安装jdk</p>
-</li>
-<li><p>在Sharing里打开远程登录，使机器能免密执行ssh localhost。</p>
-</li>
-<li><p>下载zookeeper-3.4.12.tar.gz， hadoop-3.1.1.tar.gz和hbase-2.1.1-bin.tar.gz。</p>
-</li>
-</ul>
-<h2 id="zookeeper安装"><a href="#zookeeper安装" class="headerlink" title="zookeeper安装"></a>zookeeper安装</h2><p>将zoo_sample.cfg拷贝一份为zoo.cfg，就可以通过zkServer.sh的命令来启动。</p>
-<p>然后可以通过zkCli.sh来对zk服务进行访问。</p>
-<p>##hdfs安装</p>
-<ol>
-<li>修改core-site.xml，hdfs-site.xml文件。</li>
-<li>hadoop namenode -format。</li>
-<li>通过sbin&#x2F;start-dfs.sh启动服务。</li>
-</ol>
-<h2 id="hbase安装"><a href="#hbase安装" class="headerlink" title="hbase安装"></a>hbase安装</h2><p>几个坑：</p>
-<ol>
-<li><p>htrace-core-3.1.0-incubating.jar需要自己下载，并且hadoop中htrace-core4-4.0.1-incubating.jar是不行的。有不兼容的情况。</p>
-</li>
-<li><p>需要自己在配置文件中注定hbase.master.ipc.address，否则在mac中会报Can’t assign requested address 无法启动rpc，但是没有日志显示这个配置是啥。</p>
-  <property>
-​    <name>hbase.master.ipc.address</name>
-​    <value>localhost</value>
-  </property></li>
-</ol>
-<p>##集成验证</p>
-<p>在hbase shell中创建一个表，写入一条数据，检索。</p>
-<ol>
-<li>create ‘test’, ‘cf1’</li>
-<li>put ‘test’, ‘key1’, ‘cf1:col1’ , ‘value’</li>
-<li>scan ‘test’</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/02/install-hadoop-and-hbase-in-mac/" data-id="clyojihcs0016xy60bneq592y" data-title="在macbook的os上直接安装hadoop&amp;hbase" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zk/" rel="tag">zk</a></li></ul>
 
     </footer>
   </div>
@@ -771,7 +775,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">August 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -782,6 +786,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2024/08/06/%E3%80%8A%E5%A4%A7%E5%86%B3%E6%88%98%E4%B9%8B%E8%BE%BD%E6%B2%88%E6%88%98%E5%BD%B9%E3%80%8B%E8%A7%82%E5%90%8E%E6%84%9F/">《大决战之辽沈战役》观后感</a>
+          </li>
         
           <li>
             <a href="/2024/07/16/%E5%81%9A%E4%BB%8E%E9%95%BF%E6%9C%9F%E7%9C%8B%E6%98%AF%E5%AF%B9%E7%9A%84%E4%BA%8B%E6%83%85/">做从长期看是对的事情</a>
@@ -797,10 +805,6 @@
         
           <li>
             <a href="/2024/07/16/%E5%8A%AA%E5%8A%9B%E5%B0%B1%E5%A5%BD%E4%BA%86/">努力就好了</a>
-          </li>
-        
-          <li>
-            <a href="/2024/07/12/%E5%8F%AA%E9%9D%A0%E8%87%AA%E5%B7%B1/">只靠自己</a>
           </li>
         
       </ul>

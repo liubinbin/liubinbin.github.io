@@ -123,7 +123,88 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/08/25/vmware-install-centos/" data-id="clyojihcu0025xy608xdgfgth" data-title="vmware安装centos" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/08/25/vmware-install-centos/" data-id="clzi3t6yf0020el60ajbcac5v" data-title="vmware安装centos" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-docker-basics" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/08/25/docker-basics/" class="article-date">
+  <time class="dt-published" datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/08/25/docker-basics/">最近使用docker的一些小记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>mysql出了需要grant之外，还要修改bind-address</p>
+<p>docker 基本命令</p>
+<p>docker 中container基于image制作，image类似一个模版，基于某个image制作的contaner都具有和image一样的内容</p>
+<p>我们可以根据REPOSITORY来判断这个镜像是来自哪个服务器，如果没有 &#x2F; 则表示官方镜像，并且在search的时候会标有OFFICIAL，类似于ip:port&#x2F;repos_name则表示的是私服。</p>
+<p>docker pull username&#x2F;repository&lt;:tag_name&gt; 或者 docker pull repository，pull和push相对应。</p>
+<h4 id="5-2-运行出一个container放到后台运行"><a href="#5-2-运行出一个container放到后台运行" class="headerlink" title="5.2 运行出一个container放到后台运行"></a>5.2 运行出一个container放到后台运行</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># docker run -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 2; done&quot;</span><br><span class="line">ae60c4b642058fefcc61ada85a610914bed9f5df0e2aa147100eab85cea785dc</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>它将直接把启动的container挂起放在后台运行（这才叫saas），并且会输出一个<code>CONTAINER ID</code>，通过<code>docker ps</code>可以看到这个容器的信息，可在container外面查看它的输出<code>docker logs ae60c4b64205</code>，也可以通过<code>docker attach ae60c4b64205</code>连接到这个正在运行的终端，此时在<code>Ctrl+C</code>退出container就消失了，按ctrl-p ctrl-q可以退出到宿主机，而保持container仍然在运行</p>
+<p>端口映射</p>
+<p>Docker中运行的程序的端口是不能直接访问的，需要映射到本地，通过-p参数实现，例如将6379端口映射到本机的6378端口</p>
+<p>容器日志</p>
+<p>查看当前容器的日志</p>
+<p><code>docker logs container-name/container-id</code></p>
+<p>我们可以查看之前redis镜像的容器</p>
+<p><code>docker logs test-redis</code></p>
+<p>可以看到redis启动的日志</p>
+<p>运行中的容器其实就是一个完备的Linux操作系统，我们可以登录访问当前容器，登录后可以在容器中进行常规的Linux操作。<br><code>docker exec -it container-id/container-name bash</code></p>
+<p>系统版本</p>
+<p>[root@bogon yum.repos.d]# uname -a<br>Linux bogon 2.6.32-642.el6.x86_64 #1 SMP Tue May 10 17:27:01 UTC 2016 x86_64 x86_64 x86_64 GNU&#x2F;Linux<br>[root@bogon yum.repos.d]# cat &#x2F;etc&#x2F;redhat-release<br>CentOS release 6.8 (Final)</p>
+<p>安装EPEL</p>
+<p>因为系统自带的repo中不带docker需要安装epel</p>
+<p>rpm -Uvh <a target="_blank" rel="noopener" href="http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm">http://ftp.riken.jp/Linux/fedora/epel/6Server/x86_64/epel-release-6-8.noarch.rpm</a></p>
+<p>安装Docker</p>
+<p>yum install -y docker-io</p>
+<p>开机自启动与启动Docker</p>
+<p>[root@bogon yum.repos.d]# service docker start<br>Starting cgconfig service:                                 [  OK  ]<br>Starting docker:                                       [  OK  ]<br>[root@bogon yum.repos.d]# chkconfig docker on<br>[root@bogon yum.repos.d]# chkconfig docker –list<br>docker          0:off   1:off   2:on    3:on    4:on    5:on    6:off<br>[root@bogon yum.repos.d]# </p>
+<p>至此docker已经安装完成</p>
+<p>docker rm 删除container</p>
+<p>docker rmi 删除image</p>
+<p><a target="_blank" rel="noopener" href="http://blog.csdn.net/permike/article/details/51879578">http://blog.csdn.net/permike/article/details/51879578</a> 总结的非常好</p>
+<p>已完成<br>docker pull morrisjobke&#x2F;docker-swift-onlyone<br>docker pull kahing&#x2F;docker-swift<br>docker pull debian</p>
+<p>docker pull [选项] [Docker Registry 地址[:端口号]&#x2F;]仓库名[:标签]</p>
+<p>启动container<br>  docker run -d -P -v &#x2F;srv&#x2F;node&#x2F;sdb1&#x2F;docker&#x2F;:&#x2F;swift&#x2F;nodes -t bouncestorage&#x2F;swift-aio<br>通过docker ps 获取端口<br>然后通过<a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1</a>:<port>&#x2F;auth&#x2F;v1.0 进行系统的操作和访问<br>具体的命令形式如下<br>  swift -A <a target="_blank" rel="noopener" href="http://127.0.0.1:32770/auth/v1.0">http://127.0.0.1:32770/auth/v1.0</a> -U test:tester -K testing</p>
+<p>swift-aio-docker</p>
+<p>docker run -it –rm debian bash<br>  -it: 这是两个参数，一个是 -i：交互式操作，一个是 -t 终端。<br>  –rm: 这个参数是说容器退出后随之将其删除</p>
+<p><code>bash</code>：放在镜像名后的是<strong>命令</strong>，这里我们希望有个交互式 Shell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]</span><br></pre></td></tr></table></figure>
+
+<p>Docker Registry 地址[:端口号] 默认docker hub</p>
+<p>仓库名为<code>&lt;用户名&gt;/&lt;软件名&gt;</code> ，默认为 <code>library</code></p>
+<p>latest为默认标签<br>​	</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/08/25/docker-basics/" data-id="clzi3t6yj0042el604n2y7lpl" data-title="最近使用docker的一些小记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -167,7 +248,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/30/rit-in-HBase/" data-id="clyojihct001qxy607hah3et2" data-title="rit in HBase" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/30/rit-in-HBase/" data-id="clzi3t6ye001mel60e8xe3ja1" data-title="rit in HBase" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -275,7 +356,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/14/hbase-src-hfile/" data-id="clyojihcp000hxy60hzcn62p9" data-title="HBase源码系列之HFile" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/14/hbase-src-hfile/" data-id="clzi3t6ya000fel60ajzw6och" data-title="HBase源码系列之HFile" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -357,7 +438,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/09/hbase-src-compaction/" data-id="clyojihcp000cxy6015sd9nmw" data-title="HBase源码系列之compaction" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/09/hbase-src-compaction/" data-id="clzi3t6ya000ael609mqagoc7" data-title="HBase源码系列之compaction" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -404,7 +485,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/05/HBase-trap/" data-id="clyojihco0003xy60hf0iaec3" data-title="HBase的一些坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/05/HBase-trap/" data-id="clzi3t6y90003el60ezhsaoqj" data-title="HBase的一些坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -464,7 +545,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clyojihco0007xy600f6gcot9" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clzi3t6y90007el60268k3lwn" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -622,7 +703,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clyojihcp000fxy600piebg0j" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clzi3t6ya000cel603mxsb0d0" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -707,7 +788,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clyojihcp000kxy603bd1el3e" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clzi3t6ya000hel60bhs04vpv" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -771,61 +852,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clyojihcq000mxy609g692qy7" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clzi3t6ya000kel60eqqt6p6x" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-to-Hangzhou" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2017/03/20/to-Hangzhou/" class="article-date">
-  <time class="dt-published" datetime="2017-03-20T14:01:37.000Z" itemprop="datePublished">2017-03-20</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2017/03/20/to-Hangzhou/">去杭州</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>大学毕业在北京工作生活了近三年之后，即将回到自己的家乡的省会（杭州）来工作生活。明天就要去杭州正式开始我的杭州的生活了。有诸多感慨，从生活和工作两方面，在此小记一下。</p>
-<h2 id="生活"><a href="#生活" class="headerlink" title="生活"></a>生活</h2><p>北京的生活方面貌似常被吐槽，具体有空气不好，节奏快等等。但是我对北京的感觉还不错，这是个非常适合学习和工作的城市，这也是个伟大的城市。</p>
-<p>北京有十分发达的地铁网络并且有十分发达的文化资源，我在工作日可以非常便捷的去上班，在周末可以非常方便的去逛北京的博物馆，美术馆等，去了一些博物馆之后，可以感受到这个世界有很多值得我们去关注的，真是真心喜欢北京这座城市。相较之下，杭州就没这么好，很多地方没通地铁，哭。当然我隐约的感觉到杭州潜力很大，并且希望自己能参与到其中，能随着这个城市的成长而成长。</p>
-<p>在去年清明假期时，一个来杭州呆了一个假期，晚上睡宾馆，白天到处走走停停看看，感觉十分惬意，只是略讨厌那一只下雨的天气。当时第一天就去了浙大的玉泉校区，走在曾经梦想的校园里，有种考上浙大来读书的感觉，当我在留学生食堂吃完晚饭之后听着校园里的音乐，走在校园的一个个角落，我感觉这就是天堂。之后去了杭州图书馆，太子湾，植物园等，可以说这很斌斌。不知道为什么，自己很喜欢这种略文艺的东西，也许以后我会用脚步去丈量杭州的每条路。</p>
-<h2 id="工作"><a href="#工作" class="headerlink" title="工作"></a>工作</h2><p>毫无疑问，自己真的没法说喜欢在北京的工作。不仅仅是自己感觉没有激情的，而且做的事情也不是未来长期能发展的。去绿湾面试时，被问到在上一家公司的感受时，说了一句“不太开心，只是觉得数据量大，人比较有意思”，我猜这应该是我最真实的感受。</p>
-<p>到了杭州开始找工作之后，有两个问题一直在心里徘徊：技术还要做多久？我还能不能在技术深度上去努力达到一个程度了。目前还无解。</p>
-<p>最近倒是对python去分析金融信息有一定的兴趣，什么时候要搞一搞。</p>
-<h2 id="城市"><a href="#城市" class="headerlink" title="城市"></a>城市</h2><p>谈谈对杭州的感觉，据说杭州市政府对应届毕业生来杭工作给很大补助，本人也感觉杭州最近人口的增长太慢了。其次，从面试来看隐约感觉杭州现在吸引了大量的人才，而且环境好，未来估计会好。但是在六月份市政府出了如此蛋疼的入户政策，简直无语。</p>
-<p>IT和金融感觉是未来很有前途的。</p>
-<h3 id="PS"><a href="#PS" class="headerlink" title="PS"></a>PS</h3><p>其实从来也没有在网上发表过自己很内心的想法，经过这几个月，也确实发现自己需要改变，需要有更多的表达，以后要多写一些东西，多发些东西。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2017/03/20/to-Hangzhou/" data-id="clyojihcu0022xy60hyat9imo" data-title="去杭州" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li></ul>
 
     </footer>
   </div>
@@ -872,7 +903,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">August 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -883,6 +914,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2024/08/06/%E3%80%8A%E5%A4%A7%E5%86%B3%E6%88%98%E4%B9%8B%E8%BE%BD%E6%B2%88%E6%88%98%E5%BD%B9%E3%80%8B%E8%A7%82%E5%90%8E%E6%84%9F/">《大决战之辽沈战役》观后感</a>
+          </li>
         
           <li>
             <a href="/2024/07/16/%E5%81%9A%E4%BB%8E%E9%95%BF%E6%9C%9F%E7%9C%8B%E6%98%AF%E5%AF%B9%E7%9A%84%E4%BA%8B%E6%83%85/">做从长期看是对的事情</a>
@@ -898,10 +933,6 @@
         
           <li>
             <a href="/2024/07/16/%E5%8A%AA%E5%8A%9B%E5%B0%B1%E5%A5%BD%E4%BA%86/">努力就好了</a>
-          </li>
-        
-          <li>
-            <a href="/2024/07/12/%E5%8F%AA%E9%9D%A0%E8%87%AA%E5%B7%B1/">只靠自己</a>
           </li>
         
       </ul>
