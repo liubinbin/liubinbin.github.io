@@ -73,70 +73,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-vmware-install-centos" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2017/08/25/vmware-install-centos/" class="article-date">
-  <time class="dt-published" datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2017/08/25/vmware-install-centos/">vmware安装centos</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。</p>
-<h2 id="第0步-安装vmware和下载centos"><a href="#第0步-安装vmware和下载centos" class="headerlink" title="第0步 安装vmware和下载centos"></a>第0步 安装vmware和下载centos</h2><p>下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。</p>
-<h2 id="第1步-创建centos虚拟机"><a href="#第1步-创建centos虚拟机" class="headerlink" title="第1步 创建centos虚拟机"></a>第1步 创建centos虚拟机</h2><p><img src="/step1.png"></p>
-<p>选择Create a custom virtual machine</p>
-<p><img src="/step2.png"></p>
-<p>选择对应的版本CentOS 64-bit</p>
-<p><img src="/step3.png"></p>
-<p>选择Create a new virtual disk</p>
-<p><img src="/step4.png"></p>
-<p>选择Customize Settings，然后选择Save.</p>
-<p>然后开始设置配置，主要如下：</p>
-<ul>
-<li>Processors &amp; Memory	(4core 8G)</li>
-<li>Hard Disk (80G)</li>
-<li>CD&#x2F;DVD (IDE) (此处一定需要设置，将下载的iso加入配置中，并且需要连接DVD)</li>
-</ul>
-<p>然后开始安装，更改mini 安装模式，添加gnome桌面，然后进入正常的linux安装界面。之后一切就比较顺利。</p>
-<p>最后可能需要安装图形界面：<strong>yum groupinstall</strong> “GNOME Desktop”，重启进入root执行“init 5”</p>
-<p>##注意事项</p>
-<p>###新版系统需要改变设置</p>
-<p>Please check System Preferences &#x3D;&#x3D;&gt;Security&amp;Privacy&#x3D;&#x3D;&gt;Privacy&#x3D;&#x3D;&gt;Accessibility, make sure you have added Fusion into the list.</p>
-<p>###键盘切换快捷键：</p>
-<p>cmd + G ： 切到虚拟机</p>
-<p>cmd + control：切到mac系统</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2017/08/25/vmware-install-centos/" data-id="clzi3t6yf0020el60ajbcac5v" data-title="vmware安装centos" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
     <article id="post-docker-basics" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2017/08/25/docker-basics/" class="article-date">
@@ -204,7 +140,135 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/08/25/docker-basics/" data-id="clzi3t6yj0042el604n2y7lpl" data-title="最近使用docker的一些小记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/08/25/docker-basics/" data-id="clzsi8lmo00084r60as266ybt" data-title="最近使用docker的一些小记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-some-thoughts" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/08/25/some-thoughts/" class="article-date">
+  <time class="dt-published" datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/08/25/some-thoughts/">最近感想</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>最近在读萨缪尔森的《经济学》，其实很早此书就在淘宝的购物车里，一直没有买来读。大概是自己懒的原因吧。整本书很大并且很厚，很有教材的感觉，读完真的很累，但是觉得很值。现在渐渐感觉看到一件事，一个政策，一个评论能想到一些东西。</p>
+<p>之前微博里在说保险相关的信息，其实我们每个人都应该读点经济学和金融的书，使自己能更好的理解发布的各种信息背后可能隐藏的一些更深层次的信息，以便我们能更好的做出更加理智的判断。</p>
+<p><code>点赞</code>学长，前几天下载的《Linux System Prorgramming》中文翻译的pdf是工大的一些学长做的。我真的感慨自己表达出的观点真的太少，并且没有做能影响别人的事情，以后我一定要多在此博客中发表自己的想法，并且希望以后能做一些影响别人的事情，至少是一些有趣的事情。</p>
+<h2 id="经济学"><a href="#经济学" class="headerlink" title="经济学"></a>经济学</h2><p>那本书里面其实说了很多原理性的东西，读着很枯燥，但是原理又是理解一切的基础。在那本书中，我最感兴趣的其实是货币政策和财政政策这些部分，那两部分是比较接近有用，能用于生活判断一些东西。</p>
+<p>等过段时间像把货币相关的一些东西再找几本书捋一捋，希望可以到时候能更加准确的理解这些事情。等更加理解了之后再写点东西。</p>
+<p>大概一个月之前，看了《大逃港》这本书，给我的感觉是，每个人最终应该是为了利益在做事情，一件事情也只有有足够的利益诱惑才能推行直至完成。嗨，不能讲太多，不是很确定line在哪里。</p>
+<p>##最近想法</p>
+<p>最近看完那本《经济学》之后，越来越感觉自己应该找些事情做。当然基本应该是和计算机相关的，下面列一些最近想到的一些东西。</p>
+<h3 id="写一个数据库"><a href="#写一个数据库" class="headerlink" title="写一个数据库"></a>写一个数据库</h3><p>在大学时，个人对数据库其实也挺感兴趣，最近三年的工作其实很多也是和数据库相关。现在的想法是自己写个数据库应该是一件有意思的事情，另一个动因是买了《代码大全》这本书，感觉看完之后应该能够有东西来实践。两者可以结合在一起做。应该是件有意思的事情。</p>
+<h3 id="获取跑步路线"><a href="#获取跑步路线" class="headerlink" title="获取跑步路线"></a>获取跑步路线</h3><p>之前在北京的时候，跑步很多时候是在公园进行的。跑完看着那个路线图，如果自己跑了一个2017等数字的形状的，应该是件有意思的事情。</p>
+<p>最近稍微想了这个事情，这功能的实现很依赖地图数据的样子。</p>
+<h3 id="水果店买水果"><a href="#水果店买水果" class="headerlink" title="水果店买水果"></a>水果店买水果</h3><p>有一次去水果店买东西的时候，店里工作让加入一个群，说里面有各种优惠。到现在也对此种产品信息的推送感觉不是很理想。</p>
+<ol>
+<li><p>水果店的水果信息没法完全展示在顾客面前，因为每天在群里只能看到一些优惠的水果。</p>
+</li>
+<li><p>通过每个人把自己想买的东西加入一个列表里，然后在群里不停的发列表。这种方式其实是对店主友好，对群里的顾客不友好。</p>
+</li>
+<li><p>仔细想这件事，本质很团购或会员卡没什么区别，但是这其中店主和顾客之间信息的交流很不顺畅。</p>
+<p>信息的顺畅交流才能更好地提升效率，利用好互联网这个工具和提高营收。</p>
+</li>
+</ol>
+<h3 id="阅读英文查阅的很不方便和音乐软件的割裂"><a href="#阅读英文查阅的很不方便和音乐软件的割裂" class="headerlink" title="阅读英文查阅的很不方便和音乐软件的割裂"></a>阅读英文查阅的很不方便和音乐软件的割裂</h3><p>英文阅读方面，扇贝做的不错。看到有不懂的词汇或词组可以直接长摁然后显示意思，可以非常快的回到阅读中，对整体的阅读流畅性影响不是很大，有一个问题是文章比较尴尬。如果是别的文章质量更加好的app或网址的话，生词查阅方面做的没这么好。</p>
+<p>网易云音乐貌似遇到的版权问题，我看了一下我收藏的音乐，基本没有变灰无法听的，突然感觉自己的音乐品味是不是和大众不太一样。</p>
+<h3 id="研报，公告的信息获取"><a href="#研报，公告的信息获取" class="headerlink" title="研报，公告的信息获取"></a>研报，公告的信息获取</h3><p>研报和公告信息相对来说比较难。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/08/25/some-thoughts/" data-id="clzsi8lmu001w4r60hsl4ftyo" data-title="最近感想" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-vmware-install-centos" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2017/08/25/vmware-install-centos/" class="article-date">
+  <time class="dt-published" datetime="2017-08-25T14:22:15.000Z" itemprop="datePublished">2017-08-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2017/08/25/vmware-install-centos/">vmware安装centos</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>此文记录自己安装centos时的一些步骤纯粹为了下次安装更加快速的完成，因为在前段时间删除虚拟机之后发现一下子想不起来是怎么安装的centos，需要求助搜索引擎和一步步的探索才能完成。</p>
+<h2 id="第0步-安装vmware和下载centos"><a href="#第0步-安装vmware和下载centos" class="headerlink" title="第0步 安装vmware和下载centos"></a>第0步 安装vmware和下载centos</h2><p>下载centos从之前的6版本切换到了7版本，此处为了保持和目前线上机器的版本一致，可以使自己能更适应新版的centos。</p>
+<h2 id="第1步-创建centos虚拟机"><a href="#第1步-创建centos虚拟机" class="headerlink" title="第1步 创建centos虚拟机"></a>第1步 创建centos虚拟机</h2><p><img src="/step1.png"></p>
+<p>选择Create a custom virtual machine</p>
+<p><img src="/step2.png"></p>
+<p>选择对应的版本CentOS 64-bit</p>
+<p><img src="/step3.png"></p>
+<p>选择Create a new virtual disk</p>
+<p><img src="/step4.png"></p>
+<p>选择Customize Settings，然后选择Save.</p>
+<p>然后开始设置配置，主要如下：</p>
+<ul>
+<li>Processors &amp; Memory	(4core 8G)</li>
+<li>Hard Disk (80G)</li>
+<li>CD&#x2F;DVD (IDE) (此处一定需要设置，将下载的iso加入配置中，并且需要连接DVD)</li>
+</ul>
+<p>然后开始安装，更改mini 安装模式，添加gnome桌面，然后进入正常的linux安装界面。之后一切就比较顺利。</p>
+<p>最后可能需要安装图形界面：<strong>yum groupinstall</strong> “GNOME Desktop”，重启进入root执行“init 5”</p>
+<p>##注意事项</p>
+<p>###新版系统需要改变设置</p>
+<p>Please check System Preferences &#x3D;&#x3D;&gt;Security&amp;Privacy&#x3D;&#x3D;&gt;Privacy&#x3D;&#x3D;&gt;Accessibility, make sure you have added Fusion into the list.</p>
+<p>###键盘切换快捷键：</p>
+<p>cmd + G ： 切到虚拟机</p>
+<p>cmd + control：切到mac系统</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2017/08/25/vmware-install-centos/" data-id="clzsi8lmu00244r60e7i71eoe" data-title="vmware安装centos" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -248,7 +312,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/30/rit-in-HBase/" data-id="clzi3t6ye001mel60e8xe3ja1" data-title="rit in HBase" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/30/rit-in-HBase/" data-id="clzsi8lmt001p4r60c3o8h5mq" data-title="rit in HBase" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -356,7 +420,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/14/hbase-src-hfile/" data-id="clzi3t6ya000fel60ajzw6och" data-title="HBase源码系列之HFile" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/14/hbase-src-hfile/" data-id="clzsi8lmp000h4r60etieaoim" data-title="HBase源码系列之HFile" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -438,7 +502,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/09/hbase-src-compaction/" data-id="clzi3t6ya000ael609mqagoc7" data-title="HBase源码系列之compaction" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/09/hbase-src-compaction/" data-id="clzsi8lmp000c4r60g2kq00y5" data-title="HBase源码系列之compaction" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -485,7 +549,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/05/05/HBase-trap/" data-id="clzi3t6y90003el60ezhsaoqj" data-title="HBase的一些坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/05/05/HBase-trap/" data-id="clzsi8lmn00034r60fmve2yta" data-title="HBase的一些坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -545,7 +609,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clzi3t6y90007el60268k3lwn" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/26/balance-in-hdfs/" data-id="clzsi8lmo00074r60bgwa9hri" data-title="hdfs balance的一些解读和问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -703,7 +767,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clzi3t6ya000cel603mxsb0d0" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/25/hbase-src-get-in-server/" data-id="clzsi8lmp000f4r60fobj7979" data-title="HBase源码系列之server端的get请求处理" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -788,71 +852,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clzi3t6ya000hel60bhs04vpv" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-hbase-src-mvcc" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2017/04/09/hbase-src-mvcc/" class="article-date">
-  <time class="dt-published" datetime="2017-04-09T15:55:35.000Z" itemprop="datePublished">2017-04-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2017/04/09/hbase-src-mvcc/">HBase源码系列之MVCC</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h2><p>​	KeyValue类中有long mvcc的变量，感觉此处可以跟踪。</p>
-<p>​	MultiVersionConsistencyControl在一个Region有一个。</p>
-<p>​	MultiVersionConsistencyControl{</p>
-<p>​		memstoreRead：能够读取的序列号。</p>
-<p>​		memstoreWrite：写操作的序列号。</p>
-<p>​		writeQueue：写操作队列}</p>
-<h2 id="问题点"><a href="#问题点" class="headerlink" title="问题点"></a>问题点</h2><p>就是需要去回答的问题，这些问题十分有助于思考这个大问题</p>
-<ol>
-<li><p>读取是版本的选择</p>
-<p>在org.apache.hadoop.hbase.regionserver.MemStore.MemStoreScanner.getNext(Iterator<KeyValue> it)  L777中判断了曲出来的KeyValue是否到了可以读的范围（v.getMvccVersion() &lt;&#x3D; this.readPoint）。否则掠过</p>
-<p>在构造scanner时会将readpoint传入到scanner，说明能读到的版本在构造开始就定好了。</p>
-</li>
-<li><p>写的时候的版本</p>
-<p>w &#x3D; mvcc.beginMemstoreInsert();</p>
-<p>​	申请一个写操作的序列号，使用的变量是memstoreWrite</p>
-<p>mvcc.completeMemstoreInsert(w);</p>
-<p>​	标记操作结束，尽量更新memstoreRead，并且通知readWriters（在compaction和flush时会用到，因为这时需要将那时的版本都等待写完才能操作）。</p>
-<p>​	等待到此操作完成</p>
-</li>
-<li><p>回滚memstore的时候版本的控制</p>
-<p>回滚操作时找kv有版本比较MemStore.java L334。并且会滚后再执行mvcc.completeMemstoreInsert(w);</p>
-</li>
-</ol>
-<p>ps：long org.apache.hadoop.hbase.regionserver.HRegion.getReadpoint(IsolationLevel isolationLevel) L1115用了一个隔离级别。之后写一篇隔离级别的小文，加深理解。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2017/04/09/hbase-src-mvcc/" data-id="clzi3t6ya000kel60eqqt6p6x" data-title="HBase源码系列之MVCC" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2017/04/12/hbase-src-memstore/" data-id="clzsi8lmp000k4r60fmb3a08u" data-title="HBase源码系列之memstore" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -916,6 +916,10 @@
       <ul>
         
           <li>
+            <a href="/2024/08/13/%E5%90%91%E6%89%80%E6%9C%89%E4%BA%BA%E5%AD%A6%E4%B9%A0/">向所有人学习</a>
+          </li>
+        
+          <li>
             <a href="/2024/08/06/%E3%80%8A%E5%A4%A7%E5%86%B3%E6%88%98%E4%B9%8B%E8%BE%BD%E6%B2%88%E6%88%98%E5%BD%B9%E3%80%8B%E8%A7%82%E5%90%8E%E6%84%9F/">《大决战之辽沈战役》观后感</a>
           </li>
         
@@ -929,10 +933,6 @@
         
           <li>
             <a href="/2024/07/16/%E5%BF%AB%E9%80%9F%E8%B0%83%E6%95%B4%E8%83%BD%E5%8A%9B/">快速调整能力</a>
-          </li>
-        
-          <li>
-            <a href="/2024/07/16/%E5%8A%AA%E5%8A%9B%E5%B0%B1%E5%A5%BD%E4%BA%86/">努力就好了</a>
           </li>
         
       </ul>
