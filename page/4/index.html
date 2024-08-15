@@ -73,6 +73,82 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-timezone-in-spring-mybatis-mysql" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/09/22/timezone-in-spring-mybatis-mysql/" class="article-date">
+  <time class="dt-published" datetime="2019-09-22T12:07:10.000Z" itemprop="datePublished">2019-09-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2019/09/22/timezone-in-spring-mybatis-mysql/">timezone-in-spring-mybatis-mysql</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="spring，mybatis-和-mysql-里的时区问题"><a href="#spring，mybatis-和-mysql-里的时区问题" class="headerlink" title="spring，mybatis 和 mysql 里的时区问题"></a>spring，mybatis 和 mysql 里的时区问题</h1><h2 id="大概路径"><a href="#大概路径" class="headerlink" title="大概路径"></a>大概路径</h2><p>客户端发起请求</p>
+<ol>
+<li>前端请求</li>
+<li>spring 服务端</li>
+<li>mybatis 访问</li>
+<li>mysql 数据</li>
+<li>spring 服务端</li>
+<li>前端显示</li>
+</ol>
+<h2 id="mysql"><a href="#mysql" class="headerlink" title="mysql"></a>mysql</h2><p>通过命令 show variables like “%time_zone%”;  可以获取 mysql 的时区。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> databases;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+</span></span><br><span class="line"><span class="operator">|</span> Database           <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+</span></span><br><span class="line"><span class="operator">|</span> information_schema <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> test               <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+</span></span><br><span class="line"><span class="number">2</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="mybatis"><a href="#mybatis" class="headerlink" title="mybatis"></a>mybatis</h2><p>在 spring.datasource.url 参数中需要制定 serverTimezone 和数据库应该对应起来。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serverTimezone=GMT%2b8</span><br></pre></td></tr></table></figure>
+
+<h2 id="spring"><a href="#spring" class="headerlink" title="spring"></a>spring</h2><p>可以通过如下代码获取时区</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TimeZone.getDefault()</span><br></pre></td></tr></table></figure>
+
+<p>如果数据为 Date 类型我们可以在服务打印对应的数据来查看数据是否是对的（当然需要考虑时区）。</p>
+<p>在对外显示时，我们需要 spring.jackson.time-zone 参数。比如我们如下制定东八区的话就可以看到Date类型被显示成 2019-09-23T00:32:12.000+0800。 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spring.jackson.time-zone=GMT+8</span><br></pre></td></tr></table></figure>
+
+<h2 id="序列化和反序列化"><a href="#序列化和反序列化" class="headerlink" title="序列化和反序列化"></a>序列化和反序列化</h2><p>###反序列化</p>
+<p>如果在 query （ 前端传给服务端 ）中，默认格式是奇葩的 yyyy-MM-dd’T’HH:mm:ss.SSSZ 格式。一般情况我们会使用到 yyyy-MM-dd HH:mm:ss ，这时候我们需要自定义反序列化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonDeserialize(using = CustomJsonDateDeserializer.class)</span></span><br><span class="line"><span class="keyword">private</span> Date operateStartDate;</span><br></pre></td></tr></table></figure>
+
+<p>反序列化类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CustomJsonDateDeserializer</span> <span class="keyword">extends</span> <span class="title class_">JsonDeserializer</span>&lt;Date&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Date <span class="title function_">deserialize</span><span class="params">(JsonParser jp, DeserializationContext ctxt)</span> <span class="keyword">throws</span> IOException, JsonProcessingException &#123;</span><br><span class="line">        <span class="type">SimpleDateFormat</span> <span class="variable">format</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleDateFormat</span>(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">        <span class="type">String</span> <span class="variable">date</span> <span class="operator">=</span> jp.getText();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> format.parse(date);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ParseException e1) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e1);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><p>如果在 dto （服务器端传给前端）中，默认的格式是奇葩的 2019-09-22T16:32:28.000+0800。一般情况下我们会使用到 yyyy-MM-dd HH:mm:ss ，这时候我们需要自定义序列化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonSerialize(using = CustomJsonDateSerializer.class)</span></span><br><span class="line"><span class="keyword">private</span> Date create_time;</span><br></pre></td></tr></table></figure>
+
+<p>序列化类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CustomJsonDateSerializer</span> <span class="keyword">extends</span> <span class="title class_">JsonSerializer</span>&lt;Date&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">serialize</span><span class="params">(Date date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)</span> <span class="keyword">throws</span> IOException, JsonProcessingException &#123;</span><br><span class="line">        <span class="type">SimpleDateFormat</span> <span class="variable">dateFormat</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleDateFormat</span>(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">String</span> <span class="variable">dateString</span> <span class="operator">=</span> dateFormat.format(date);</span><br><span class="line">            jsonGenerator.writeString(dateString);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="多时区"><a href="#多时区" class="headerlink" title="多时区"></a>多时区</h2><p>如果是多时区，应该使用 UTC 进行存储，然后在显示的地方（前端）转换到各种地方对应的时区。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2019/09/22/timezone-in-spring-mybatis-mysql/" data-id="clzux8t0u001z9y608kf6gdzw" data-title="timezone-in-spring-mybatis-mysql" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/" rel="tag">spring</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-some-thoughts-about-recent-internal-job-transfer" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2019/09/01/some-thoughts-about-recent-internal-job-transfer/" class="article-date">
@@ -111,7 +187,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/09/01/some-thoughts-about-recent-internal-job-transfer/" data-id="clzsi8lmt001u4r602c3g29n8" data-title="some-thoughts-about-recent-internal-job-transfer" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/09/01/some-thoughts-about-recent-internal-job-transfer/" data-id="clzux8t0t001u9y607gg7akki" data-title="some-thoughts-about-recent-internal-job-transfer" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -195,7 +271,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/08/05/jdk-src-treemap/" data-id="clzsi8lms001a4r60c4m32jtc" data-title="jdk-src-treemap" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/08/05/jdk-src-treemap/" data-id="clzux8t0s001a9y60g2tnhha6" data-title="jdk-src-treemap" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -242,7 +318,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="clzsi8lmt001r4r60bmetg6l2" data-title="some-new-thoughts-about-career-development" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="clzux8t0t001r9y603d22hhvl" data-title="some-new-thoughts-about-career-development" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -353,7 +429,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/02/24/kafka-security-saslscram-acl/" data-id="clzsi8lms001d4r6023uugb7j" data-title="kafka-security-saslscram-acl" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/02/24/kafka-security-saslscram-acl/" data-id="clzux8t0s001d9y605swrca5p" data-title="kafka-security-saslscram-acl" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -397,7 +473,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/02/24/kafka-series/" data-id="clzsi8lmt001f4r60018faes7" data-title="kafka-series" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/02/24/kafka-series/" data-id="clzux8t0s001f9y604yf9emgy" data-title="kafka-series" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -448,7 +524,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hbase-src-series/" data-id="clzsi8lmq000o4r603rlidkrc" data-title="HBase源码系列" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/hbase-src-series/" data-id="clzux8t0p000o9y60754na3gr" data-title="HBase源码系列" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -545,7 +621,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hbase-src-wal/" data-id="clzsi8lmq000r4r60flzpburl" data-title="HBase源码系列之wal" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/hbase-src-wal/" data-id="clzux8t0q000r9y609wm1gar7" data-title="HBase源码系列之wal" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -593,7 +669,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="clzsi8lmp000a4r609niwhzpz" data-title="hadoop&amp;hbase编译打包" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="clzux8t0o000a9y60c60ofq07" data-title="hadoop&amp;hbase编译打包" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -647,57 +723,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/2018-year-end-summary/" data-id="clzsi8lmk00004r60bq9r00bq" data-title="2018年终总结" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/2018-year-end-summary/" data-id="clzux8t0k00009y60a1o13sg8" data-title="2018年终总结" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/summary/" rel="tag">summary</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-ability-in-profession" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2018/12/14/ability-in-profession/" class="article-date">
-  <time class="dt-published" datetime="2018-12-14T15:41:28.000Z" itemprop="datePublished">2018-12-14</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2018/12/14/ability-in-profession/">ability-in-profession</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="能力"><a href="#能力" class="headerlink" title="能力"></a>能力</h1><p>所有的事情最终都会落到成事的能力，证明成事能力的途径感觉只有两种途径。</p>
-<ol>
-<li>领导给一件事就成一件事。</li>
-<li>在专业领域展示能力，形成自己的影响力。</li>
-</ol>
-<p>其实公司不是一个让人积极向上，让人自动进步的地方，否则就不会出现这么多空降，否则就不会出现你解决不了一个项目直接裁掉从外面招人解决。能积极向上的只有自己。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/14/ability-in-profession/" data-id="clzsi8lmo00044r608ejtdp5m" data-title="ability-in-profession" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ability/" rel="tag">ability</a></li></ul>
 
     </footer>
   </div>
@@ -757,6 +787,10 @@
       <ul>
         
           <li>
+            <a href="/2024/08/15/%E4%BB%8E%E5%90%8E%E6%82%94%E4%B8%AD%E5%AD%A6%E5%88%B0%E4%B8%9C%E8%A5%BF/">从后悔中学到东西</a>
+          </li>
+        
+          <li>
             <a href="/2024/08/13/%E5%90%91%E6%89%80%E6%9C%89%E4%BA%BA%E5%AD%A6%E4%B9%A0/">向所有人学习</a>
           </li>
         
@@ -770,10 +804,6 @@
         
           <li>
             <a href="/2024/07/16/%E5%81%9A%E5%AF%B9%E7%9A%84%E4%BA%8B%EF%BC%8C%E6%8A%8A%E4%BA%8B%E5%81%9A%E5%AF%B9/">做对的事，把事做对</a>
-          </li>
-        
-          <li>
-            <a href="/2024/07/16/%E5%BF%AB%E9%80%9F%E8%B0%83%E6%95%B4%E8%83%BD%E5%8A%9B/">快速调整能力</a>
           </li>
         
       </ul>
