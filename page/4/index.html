@@ -73,6 +73,53 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-jdb-usage" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/10/13/jdb-usage/" class="article-date">
+  <time class="dt-published" datetime="2019-10-13T14:19:34.000Z" itemprop="datePublished">2019-10-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2019/10/13/jdb-usage/">jdb-usage</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>在 java 进程有一些莫名其妙的问题，可以通过 jdb 来处理问题。</p>
+<p>在上周在通过 HttpClient 访问时，有发现代码里的 NPE，从源码日志看逻辑是没有问题，运行的进程的 jar 包又不好替换，就使用 jdb 命令发现 getContentLength 方法返回值为 -1（后来发现另一个可以使用的接口里没有判断这个值，并且这个值也为 -1，我猜想是从 stream中获取导致不需要这个值），会导致 NPE。在这种情况下使用 jdb 命令非常方便的看到是怎么回事。</p>
+<p>具体使用方法有两个博客可以参考，这里记录一下：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.ibm.com/developerworks/cn/java/joy-jdb/index.html">https://www.ibm.com/developerworks/cn/java/joy-jdb/index.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/arkblue/article/details/39718947">https://blog.csdn.net/arkblue/article/details/39718947</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2019/10/13/jdb-usage/" data-id="cm3sq6omk00174260hvwl3hu0" data-title="jdb-usage" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/" rel="tag">java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-just-pick-the-first-one-from-todolist-and-finish-that" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/" class="article-date">
@@ -106,7 +153,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/" data-id="clzux8t0s001b9y6002st9ivz" data-title="just-pick-the-first-one-from-todolist-and-finish-that" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/09/22/just-pick-the-first-one-from-todolist-and-finish-that/" data-id="cm3sq6omk00184260a4wlcehp" data-title="just-pick-the-first-one-from-todolist-and-finish-that" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -182,7 +229,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/09/22/timezone-in-spring-mybatis-mysql/" data-id="clzux8t0u001z9y608kf6gdzw" data-title="timezone-in-spring-mybatis-mysql" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/09/22/timezone-in-spring-mybatis-mysql/" data-id="cm3sq6oml001w42609f1va6ya" data-title="timezone-in-spring-mybatis-mysql" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -234,7 +281,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/09/01/some-thoughts-about-recent-internal-job-transfer/" data-id="clzux8t0t001u9y607gg7akki" data-title="some-thoughts-about-recent-internal-job-transfer" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/09/01/some-thoughts-about-recent-internal-job-transfer/" data-id="cm3sq6oml001r4260c89feuix" data-title="some-thoughts-about-recent-internal-job-transfer" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -318,7 +365,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/08/05/jdk-src-treemap/" data-id="clzux8t0s001a9y60g2tnhha6" data-title="jdk-src-treemap" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/08/05/jdk-src-treemap/" data-id="cm3sq6omj001542602t6ka6ev" data-title="jdk-src-treemap" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -365,7 +412,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="clzux8t0t001r9y603d22hhvl" data-title="some-new-thoughts-about-career-development" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/07/23/some-new-thoughts-about-career-development/" data-id="cm3sq6oml001p4260dhmr85i5" data-title="some-new-thoughts-about-career-development" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -476,7 +523,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/02/24/kafka-security-saslscram-acl/" data-id="clzux8t0s001d9y605swrca5p" data-title="kafka-security-saslscram-acl" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/02/24/kafka-security-saslscram-acl/" data-id="cm3sq6omk001a4260cue7ds1j" data-title="kafka-security-saslscram-acl" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -520,7 +567,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2019/02/24/kafka-series/" data-id="clzux8t0s001f9y604yf9emgy" data-title="kafka-series" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2019/02/24/kafka-series/" data-id="cm3sq6omk001c42601gi1fy0o" data-title="kafka-series" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -571,7 +618,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hbase-src-series/" data-id="clzux8t0p000o9y60754na3gr" data-title="HBase源码系列" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/hbase-src-series/" data-id="cm3sq6omi000n4260624z71ax" data-title="HBase源码系列" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -668,59 +715,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hbase-src-wal/" data-id="clzux8t0q000r9y609wm1gar7" data-title="HBase源码系列之wal" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2018/12/30/hbase-src-wal/" data-id="cm3sq6omi000s42609vg051i3" data-title="HBase源码系列之wal" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-hadoop-hbase-mvn-cmd" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2018/12/30/hadoop-hbase-mvn-cmd/" class="article-date">
-  <time class="dt-published" datetime="2018-12-30T14:49:06.000Z" itemprop="datePublished">2018-12-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2018/12/30/hadoop-hbase-mvn-cmd/">hadoop&amp;hbase编译打包</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>#hbase 编译 </p>
-<p>命令：mvn clean package -Pdist,native, -DskipTests -Dtar</p>
-<p>hbase编译打包好像没有遇到什么问题，很顺利。</p>
-<p>#hadoop 编译</p>
-<p>命令：mvn clean package -DskipTests -Pdist,native -Dtar </p>
-<p>hadoop编译打包时还是遇到了些问题，主要是类似OPENSSL和findbugs等，看以下两个链接应该基本就能解决了。</p>
-<p><a target="_blank" rel="noopener" href="http://bigdatadecode.club/mac%E4%B8%8B%E7%BC%96%E8%AF%91Hadoop.html">http://bigdatadecode.club/mac%E4%B8%8B%E7%BC%96%E8%AF%91Hadoop.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/36818957/mac-hadoop-2-7-failed-to-execute-goal-org-apache-maven-pluginsmaven-antrun">https://stackoverflow.com/questions/36818957/mac-hadoop-2-7-failed-to-execute-goal-org-apache-maven-pluginsmaven-antrun</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2018/12/30/hadoop-hbase-mvn-cmd/" data-id="clzux8t0o000a9y60c60ofq07" data-title="hadoop&amp;hbase编译打包" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mvn/" rel="tag">mvn</a></li></ul>
 
     </footer>
   </div>
@@ -748,7 +747,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/" rel="tag">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank-reading/" rel="tag">bank, reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career/" rel="tag">career</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career-reading/" rel="tag">career,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/" rel="tag">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/" rel="tag">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/" rel="tag">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/" rel="tag">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/" rel="tag">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-reading/" rel="tag">life,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/" rel="tag">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/" rel="tag">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/" rel="tag">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/" rel="tag">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/" rel="tag">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/" rel="tag">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/" rel="tag">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src-treemap/" rel="tag">src, treemap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/" rel="tag">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/writing/" rel="tag">writing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/" rel="tag">zk</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ability/" rel="tag">ability</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bank-reading/" rel="tag">bank, reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career/" rel="tag">career</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/career-reading/" rel="tag">career,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/" rel="tag">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gc/" rel="tag">gc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/" rel="tag">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/invest/" rel="tag">invest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-concurrent/" rel="tag">java, concurrent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/" rel="tag">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life-reading/" rel="tag">life,reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvn/" rel="tag">mvn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paldb/" rel="tag">paldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/" rel="tag">paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rcfile/" rel="tag">rcfile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reading/" rel="tag">reading</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/" rel="tag">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src/" rel="tag">src</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/src-treemap/" rel="tag">src, treemap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/summary/" rel="tag">summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/writing/" rel="tag">writing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zk/" rel="tag">zk</a></li></ul>
     </div>
   </div>
 
@@ -758,7 +757,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank-reading/" style="font-size: 10px;">bank, reading</a> <a href="/tags/career/" style="font-size: 10px;">career</a> <a href="/tags/career-reading/" style="font-size: 10px;">career,reading</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 18px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 14px;">hdfs</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kafka/" style="font-size: 12px;">kafka</a> <a href="/tags/life/" style="font-size: 20px;">life</a> <a href="/tags/life-reading/" style="font-size: 10px;">life,reading</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 16px;">reading</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/src/" style="font-size: 10px;">src</a> <a href="/tags/src-treemap/" style="font-size: 10px;">src, treemap</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/writing/" style="font-size: 10px;">writing</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
+      <a href="/tags/ability/" style="font-size: 10px;">ability</a> <a href="/tags/bank-reading/" style="font-size: 10px;">bank, reading</a> <a href="/tags/career/" style="font-size: 10px;">career</a> <a href="/tags/career-reading/" style="font-size: 10px;">career,reading</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/gc/" style="font-size: 10px;">gc</a> <a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a> <a href="/tags/hbase/" style="font-size: 18px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 14px;">hdfs</a> <a href="/tags/invest/" style="font-size: 10px;">invest</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/java-concurrent/" style="font-size: 10px;">java, concurrent</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kafka/" style="font-size: 12px;">kafka</a> <a href="/tags/life/" style="font-size: 20px;">life</a> <a href="/tags/life-reading/" style="font-size: 10px;">life,reading</a> <a href="/tags/mvn/" style="font-size: 10px;">mvn</a> <a href="/tags/paldb/" style="font-size: 10px;">paldb</a> <a href="/tags/paper/" style="font-size: 10px;">paper</a> <a href="/tags/rcfile/" style="font-size: 10px;">rcfile</a> <a href="/tags/reading/" style="font-size: 16px;">reading</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/src/" style="font-size: 10px;">src</a> <a href="/tags/src-treemap/" style="font-size: 10px;">src, treemap</a> <a href="/tags/summary/" style="font-size: 10px;">summary</a> <a href="/tags/writing/" style="font-size: 10px;">writing</a> <a href="/tags/zk/" style="font-size: 10px;">zk</a>
     </div>
   </div>
 
@@ -767,7 +766,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">October 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">August 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">October 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">August 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li></ul>
     </div>
   </div>
 
@@ -778,6 +777,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2024/11/22/%E4%B8%89%E4%B8%AA%E6%8A%95%E8%B5%84%E6%96%B9%E5%90%91/">三个投资方向</a>
+          </li>
         
           <li>
             <a href="/2024/10/10/%E8%82%A1%E7%A5%A8%E6%98%AF%E4%B8%8E%E4%BA%BA%E3%80%81%E4%B8%8E%E6%97%B6%E9%97%B4%E7%9A%84%E6%B8%B8%E6%88%8F/">股票是与人、与时间的游戏</a>
@@ -793,10 +796,6 @@
         
           <li>
             <a href="/2024/08/06/%E3%80%8A%E5%A4%A7%E5%86%B3%E6%88%98%E4%B9%8B%E8%BE%BD%E6%B2%88%E6%88%98%E5%BD%B9%E3%80%8B%E8%A7%82%E5%90%8E%E6%84%9F/">《大决战之辽沈战役》观后感</a>
-          </li>
-        
-          <li>
-            <a href="/2024/07/16/%E5%81%9A%E4%BB%8E%E9%95%BF%E6%9C%9F%E7%9C%8B%E6%98%AF%E5%AF%B9%E7%9A%84%E4%BA%8B%E6%83%85/">做从长期看是对的事情</a>
           </li>
         
       </ul>
